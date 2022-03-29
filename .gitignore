@@ -1,0 +1,6 @@
+# MATLAB autosave files
+*.asv
+
+# Image files
+*.eps
+*.png
