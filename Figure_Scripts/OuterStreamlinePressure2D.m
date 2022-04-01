@@ -59,7 +59,7 @@ xlabel('$\hat{x}$');
 ylabel('$\hat{z}$');
 
 % Show axes grid
-grid on;
+% grid on;
 
 %% Creates mesh grid of values
 [X, Z] = meshgrid(xs, zs);
@@ -95,7 +95,8 @@ contourf(XNeg, ZNeg, PNeg, levels, 'Edgecolor', 'None');
 Psi = imag(1i * (Zeta.^2 - d^2).^0.5);
 
 % Plot contours of streamfunction (i.e. the streamlines)
-contour(X, Z, Psi, 15, 'Color', 'black', 'Linewidth', 2)
+contour(X, Z, Psi, 15, 'Color', 0.25 * [1 1 1], 'Linewidth', 2)
+% contour(X, Z, Psi, 20, 'Color', 'black')
 
 %% Plot colour bar for the pressure plot
 cb = colorbar('Location', 'Northoutside');
