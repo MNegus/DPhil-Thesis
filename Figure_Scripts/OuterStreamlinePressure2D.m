@@ -129,6 +129,8 @@ set(gca, 'ytick',[0, 1, 2]);
 yNames = {'0'; '$d_0(t)$'; '$2 d_0(t)$'};
 set(gca, 'YTickLabel', yNames);
 
+box on;
+
 % Axes line width
 axes1.LineWidth = 1.5;
 
