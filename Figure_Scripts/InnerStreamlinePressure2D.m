@@ -1,5 +1,5 @@
-%% OuterStreamlinePressure
-% Script to produce a figure of the streamlines and pressure in theinner
+%% InnerStreamlinePressure
+% Script to produce a figure of the streamlines and pressure in the inner
 % region for the 2D impact case. Appears in Section 3.3.4, under the Wagner
 % theory chapter. 
 % 
@@ -82,7 +82,6 @@ thetas = linspace(0, pi, 1e3);
 
 % Determine eta values
 Etas = R .* exp(1i * Thetas);
-
 
 % Determine meshgrid values for TZetas
 TZetas = tzeta(Etas);
@@ -254,11 +253,15 @@ xlim([-xMax, xMax]);
 ylim([0, zMax]);
 pbaspect([1 zMax / (2 * xMax) 1]);
 
+
+
 % Set figure size
 set(gcf,'position', [0, 0, 1200, 600]);
+box on;
 
 % Set rendered to Painters (incredibly slow but makes the figures better)
 set(gcf, 'Renderer', 'Painters');
+
 
 %% Create figures
 % Export png
