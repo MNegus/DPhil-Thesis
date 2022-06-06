@@ -16,11 +16,10 @@ DELTA_T = 1e-4;
 IMPACT_TIME = 0.125;
 T_MAX = 0.8;
 ts = - IMPACT_TIME : DELTA_T : T_MAX - IMPACT_TIME;
-ts_analytical = 0 : DELTA_T : T_MAX - IMPACT_TIME;
+ts_analytical = 1e-9 : DELTA_T : T_MAX - IMPACT_TIME;
 MAX_TIMESTEP = T_MAX / DELTA_T;
 NO_TIMESTEPS = length(ts);
 freq = 25; % Frequency
-a = 0.05; % Acceleration parameter
 
 %% Directory names
 master_dir = "/scratch/negus/DNS_Chapter_validation";
@@ -36,30 +35,32 @@ for q = 1 : no_levels - 1
     colors(q, :) = cmap(color_idxs(q), :);
 end
 
+%% Save imposed solution
+epsilon = 1; % Analytical parameter for small time 
+a = 0.00125; % Imposed parameter
+[ws, w_ts, w_tts] = ImposedPlate(ts_analytical, a);
+
 %% Plot all cases
 
 for type = types
-    
-    % Create parent_dirs
-    coeffs = [2, sqrt(3)]; % Coeff of ds_analytical
-
-    parent_dirs = strings(2, 1);
     for axi = [0, 1]
-        parent_dirs(axi + 1) = sprintf("%s/%s_maxlevel_validation/axi_%d", ...
-            master_dir,type, axi);
-    end
-
-    for parentIdx = 1 : length(parent_dirs)
         % Save for parent directory
-        parent_dir = parent_dirs(parentIdx);
-        axi = parentIdx - 1;
+        parent_dir = sprintf("%s/%s_maxlevel_validation/axi_%d", ...
+            master_dir,type, axi);
         
-        % Analytical soltution
-        if type == "stationary"
-            ds_analytical = coeffs(parentIdx) * sqrt(ts_analytical);
-        else
-            ds_analytical = coeffs(parentIdx) * sqrt(ts_analytical ...
-            - 0.5 * a * ts_analytical.^2);
+        % Analytical solutions
+        if axi == 0
+            if type == "stationary_plate"
+               FsAnalytical = AnalyticalForce2D(ts_analytical, 0, 0, 0, epsilon);
+            else
+               FsAnalytical = AnalyticalForce2D(ts_analytical, ws, w_ts, w_tts, epsilon);
+            end
+        else 
+           if type == "stationary_plate"
+               FsAnalytical = AnalyticalForceAxi(ts_analytical, 0, 0, 0, epsilon);
+            else
+               FsAnalytical = AnalyticalForceAxi(ts_analytical, ws, w_ts, w_tts, epsilon);
+            end
         end
         
         % Create figure
@@ -89,20 +90,21 @@ for type = types
         end
         
         % Analytical solution
-%         plot(ts_analytical, ds_analytical, 'linestyle', '--', 'linewidth', 2, ...
-%             'color', 'black', 'displayname', 'Analytical');
+        plot(ts_analytical, FsAnalytical, 'linestyle', '--', 'linewidth', 2, ...
+            'color', 'black', 'displayname', 'Analytical');
         
         grid on;
         if axi == 1
-            ylim([-0.4, 3.5]);
+%             ylim([-0.4, 3.5]);
         else
-            ylim([-0.8, 7]);
+            ylim([-0.8, 8]);
         end
-        xlim([-0.3, 0.8]);
+        xlim([-0.5, 0.8]);
+        xticks(-0.4 : 0.2 : 0.8);
 %         xticks(-0.125 : 0.125 : 0.8);
         
-        tix=get(gca,'ytick')';
-        set(gca,'yticklabel',num2str(tix,'%.1f'));
+%         tix=get(gca,'ytick')';
+%         set(gca,'yticklabel',num2str(tix,'%.1f'));
         set(gca, "ticklabelinterpreter", "latex", "Fontsize", fontsize);
         xlabel("$t$", 'interpreter', 'latex', "Fontsize", fontsize);
         ylabel("$F_m(t)$", 'interpreter', 'latex');
@@ -111,10 +113,10 @@ for type = types
         %% Plot L2 norm error
         if axi == 1
             legend('location', 'northwest', 'interpreter', 'latex');
-            axes('Position',[.58 .24 .3 .3]);
+            axes('Position',[.625 .24 .25 .2]);
         else
-            legend('location', 'southeast', 'interpreter', 'latex');
-            axes('Position',[.58 .60 .3 .3]);
+            legend('location', 'northwest', 'interpreter', 'latex');
+            axes('Position',[.65 .70 .25 .2]);
         end
         box on
         hold on;
@@ -149,13 +151,18 @@ for type = types
         x0=400;
         y0=400;
         height=800;
-        width=600;
+        width=650;
 
         set(gcf,'position',[x0,y0,width,height]);
         set(gcf, 'Renderer', 'Painters');
         pause(1.5);
 
-        figname = sprintf("dns_validation_figures/forces/DNSForce_%s_axi_%d", type, axi);
+        if axi == 0
+            axiStr = "2D";
+        else
+            axiStr = "Axi";
+        end
+        figname = sprintf("dns_validation_figures/forces/DNSForce_%s_%s", type, axiStr);
         
         exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
         savefig(gcf, sprintf("%s.fig", figname));

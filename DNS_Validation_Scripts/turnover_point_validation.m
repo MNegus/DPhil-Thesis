@@ -20,7 +20,7 @@ T_MAX = 0.8;
 ts_analytical = 0 : DELTA_T : T_MAX - IMPACT_TIME;
 MAX_TIMESTEP = T_MAX / DELTA_T;
 % NO_TIMESTEPS = length(ts);
-freq = 5; % Frequency
+freq = 7; % Frequency
 a = 0.05; % Acceleration parameter
 
 %% Directory names
@@ -55,8 +55,8 @@ for type = types
             master_dir, type); 
     end
     
-    for parentIdx = 1 : length(parent_dirs)
-%     for parentIdx = 1
+%     for parentIdx = 1 : length(parent_dirs)
+    for parentIdx = 1
         % Save for parent directory
         parent_dir = parent_dirs(parentIdx)
         
@@ -82,7 +82,7 @@ for type = types
         level_dir = sprintf("%s/max_level_%d", parent_dir, max(levels));
         turnover_mat = readmatrix(sprintf("%s/turnover_points.csv", level_dir));
         ds = turnover_mat(:, 2);
-        max_timestep = sum(ds <= 1) + 7 * freq;
+        max_timestep = sum(ds <= 1) + 6 * freq;
         
         % Matrix to hold the turnover points
         dns_turnovers = zeros(max_timestep, length(levels));
@@ -116,8 +116,8 @@ for type = types
         ylabel("$d_m(t)$", 'interpreter', 'latex');
         legend('location', 'southeast', 'interpreter', 'latex');
         
-%         impact_idx = IMPACT_TIME / DELTA_T;
-%         plot(ts(impact_idx : end), ds(impact_idx : end));
+        impact_idx = IMPACT_TIME / DELTA_T;
+        plot(ts(impact_idx : end), ds(impact_idx : end));
         
         %% Plot L2 norm error
         axes('Position',[.34 .6 .3 .3])
