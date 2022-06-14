@@ -1,4 +1,4 @@
-%% OuterStreamlinePressure
+%% OuterPressure2D
 % Script to produce a figure of the streamlines and pressure in the outer
 % region for the 2D impact case. Appears in Section 3.3.6, under the Wagner
 % theory chapter. 
@@ -96,7 +96,7 @@ ylim([0, 2 * extent]);
 
 % Export figure
 set(gcf, 'Renderer', 'Painters');
-exportgraphics(gca,'png/OuterOuterWhole.png', 'Resolution', 300);
+exportgraphics(gca,'png/OuterOuterWhole2D.png', 'Resolution', 300);
 
 
 
@@ -134,5 +134,5 @@ ylabel("$z$");
 
 set(gcf,'position', [0, 0, 300, 300]);
 set(gcf, 'Renderer', 'Painters');
-exportgraphics(gca,'png/OuterOuterZoomed.png', 'Resolution', 300);
+exportgraphics(gca,'png/OuterOuterZoomed2D.png', 'Resolution', 300);
 
