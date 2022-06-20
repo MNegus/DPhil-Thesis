@@ -3,12 +3,6 @@
 % region for the 2D impact case. Appears in Section 3.3.3, under the Wagner
 % theory chapter. 
 % 
-% For the figure, we neglect any motion of the membrane, taking w == 0. In
-% this case, the complex potential is given by
-% W(\zeta) =  \phi + i \psi = i(\zeta^2 - d(t)^2)^{1/2}, 
-% and the pressure is
-% p = \Re(i A(t) / (\zeta^2 - d(t)^2)^{1/2}), A(t) = d(t) d'(t).
-%
 % We plot the streamlines as a contour plot for constant \psi, and then a
 % colour plot for the pressure p. We pick a generic value of d(t) for
 % plotting clarity. 
@@ -29,33 +23,28 @@ set(groot, 'DefaultLegendInterpreter', 'latex');
 mapObj = load("fine_red_blue_cmap.mat");
 cmap = mapObj.cmap;
 
-%% Parameters
-epsilon = 0.1;
-t = 1;
+%% Quadratic substrate definition
+ts = 1; % Times
+[epsilon, L, q, omega] = quadraticparameters(); % Substrate parameters
 
-%% Substrate definition
-% Oscillatory time dependence
-L = 1;
-q = 0.1;
-omega = 2.5;
-
-a = @(t) q * L^2 * (t^2 + 1 - cos(omega * t));
-a_t = @(t) q * L^2 * (2 * t + omega * sin(omega * t));
-a_tt = @(t) q * L^2 * (2 + omega^2 * cos(omega * t));
-
-b = @(t) - a(t) / L^2;
-b_t = @(t) - a_t(t) / L^2;
-b_tt = @(t) - a_tt(t) / L^2;
+quadratic = true;
+if quadratic
+    [as, a_ts, a_tts, bs, b_ts, b_tts] ...
+        = quadraticsubstrate(ts, L, q, omega); % Substrate coefficients
+else
+    [as, a_ts, a_tts, bs, b_ts, b_tts] ...
+        = flatsubstrate(ts, q, omega); % Substrate coefficients
+end
 
 %% Save structure arrays
 % Stationary substrate case
 StationarySubstrateCoefficients = substratecoefficients(0, 0, 0, 0, 0, 0, epsilon);
-StationaryTimeDependents = timedependents(t, StationarySubstrateCoefficients);
+StationaryTimeDependents = timedependents(ts, StationarySubstrateCoefficients);
 
 % Quadratic substrate case
-SubstrateCoefficients = substratecoefficients(a(t), b(t), a_t(t), ...
-    b_t(t), a_tt(t), b_tt(t), epsilon);
-TimeDependents = timedependents(t, SubstrateCoefficients);
+SubstrateCoefficients = substratecoefficients(as, bs, a_ts, ...
+    b_ts, a_tts, b_tts, epsilon);
+TimeDependents = timedependents(ts, SubstrateCoefficients);
 
 %% Plotting parameters
 d_stat = StationaryTimeDependents.ds;
@@ -75,9 +64,11 @@ inverseScaleFun = @(val) exp(val); % Inverse of scale function
 
 
 %% Figure properties
-figure1 = figure();
-axes1 = axes('Parent',figure1);
-hold(axes1,'on');
+% figure1 = figure();
+% axes1 = axes('Parent',figure1);
+% hold(axes1,'on');
+figure(2);
+hold on;
 
 % Set colour map to cool-warm
 colormap(cmap);
@@ -109,7 +100,7 @@ pMin = min(min(ps_stat));
 pMax = max(max(ps_stat));
 
 % Find logarithmic scaling for levels
-levels = exp(linspace(-6, 1.0, noFillConts));
+levels = exp(linspace(-6, 1.5, noFillConts));
 
 % % Plot the scaled pressure on the right hand side
 contourf(XPos, ZPos, ps_stat, levels, 'Edgecolor', 'None');
@@ -186,7 +177,8 @@ set(gca, 'ytick',[0, d_stat, 2 * d_stat]);
 
 box on;
 
-
+% Add white dividing line
+xline(0, 'color', 'white', 'linewidth', 1.5);
 
 
 % Axes line width
