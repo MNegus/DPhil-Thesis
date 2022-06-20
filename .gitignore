@@ -6,3 +6,6 @@
 *.png
 *.svg
 *.fig
+
+# gfs files
+*.gfs
