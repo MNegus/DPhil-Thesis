@@ -29,3 +29,4 @@ function [ps_composite, ps_outer, ps_inner] ...
     ps_inner = innerpressure(xs, d, d_t, J, epsilon);
     ps_overlap = overlappressure(xs, d, C, epsilon);
     ps_composite = compositepressure(ps_outer, ps_inner, ps_overlap);
+end

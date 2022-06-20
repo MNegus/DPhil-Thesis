@@ -24,6 +24,7 @@ set(groot, 'DefaultLegendInterpreter', 'latex');
 
 %% Load in color map
 mapObj = load("red_blue_cmap.mat");
+% mapObj = load("fine_red_blue_cmap.mat");
 cmap = mapObj.cmap;
 
 %% Parameter definitions
@@ -138,11 +139,11 @@ axes1.LineWidth = 1.5;
 set(gcf,'position', [0, 0, 1200, 600]);
 
 % Set rendered to Painters (incredibly slow but makes the figures better)
-set(gcf, 'Renderer', 'Painters');
+% set(gcf, 'Renderer', 'Painters');
 
 %% Create figures
 % Export png
-exportgraphics(gca,'png/OuterStreamlinePressure2D.png', 'Resolution', 300);
+% exportgraphics(gca,'png/OuterStreamlinePressure2D.png', 'Resolution', 300);
 
 % Export eps (doesn't look great so left commented out)
 % exportgraphics(gca,'eps/OuterStreamlinePressure2D.eps', 'Resolution', 300);
