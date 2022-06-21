@@ -134,9 +134,10 @@ set(cb,'Position',cbPos)
 set(gca,'Position',axesPos);
 
 % Export figure
-% set(gcf, 'Renderer', 'Painters');
-% exportgraphics(gca,'png/OuterOuterWhole2D.png', 'Resolution', 300);
-
+set(gcf, 'Renderer', 'Painters');
+savefig(gcf, 'fig/OuterOuterWholeAxi.fig');
+exportgraphics(gca,'png/OuterOuterWholeAxi.png', 'Resolution', 300);
+exportgraphics(gca,'eps/OuterOuterWholeAxi.eps', 'Resolution', 300);
 
 
 %% Wedge plot
@@ -187,8 +188,10 @@ xlabel("$r$");
 ylabel("$z$");
 
 set(gcf,'position', [0, 0, 300, 300]);
-% set(gcf, 'Renderer', 'Painters');
-% exportgraphics(gca,'png/OuterOuterZoomed2D.png', 'Resolution', 300);
+set(gcf, 'Renderer', 'Painters');
+savefig(gcf, 'fig/OuterOuterZoomedAxi.fig');
+exportgraphics(gca,'png/OuterOuterZoomedAxi.png', 'Resolution', 300);
+exportgraphics(gca,'eps/OuterOuterZoomedAxi.eps', 'Resolution', 300);
 
 
 function Ps = Pfun(A, R, Z)

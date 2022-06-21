@@ -14,10 +14,8 @@ addpath("../Energies");
 set(0,'defaultTextInterpreter','latex'); %trying to set the default
 set(0,'defaultAxesFontSize', 18);
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
-set(0, 'defaultFigureRenderer', 'painters')
+set(0, 'defaultFigureRenderer', 'painters');
 set(groot, 'DefaultLegendInterpreter', 'latex');
-
-
 
 %% Load in color map
 mapObj = load("fine_red_blue_cmap.mat");
@@ -118,6 +116,7 @@ set(gcf,'position', [100, 100, 600, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, 'fig/TurnoverPointsAxi.fig');
 exportgraphics(gca,'png/TurnoverPointsAxi.png', 'Resolution', 300);
 exportgraphics(gca,'eps/TurnoverPointsAxi.eps', 'Resolution', 300);
 
@@ -139,6 +138,7 @@ set(gcf,'position', [100, 100, 600, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, 'fig/JetThicknessAxi.fig');
 exportgraphics(gca,'png/JetThicknessAxi.png', 'Resolution', 300);
 exportgraphics(gca,'eps/JetThicknessAxi.eps', 'Resolution', 300);
 
@@ -170,6 +170,7 @@ set(gcf,'position', [100, 100, 600, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, 'fig/ForceAxi.fig');
 exportgraphics(gca,'png/ForceAxi.png', 'Resolution', 300);
 exportgraphics(gca,'eps/ForceAxi.eps', 'Resolution', 300);
 
@@ -198,6 +199,7 @@ set(gcf,'position', [100, 100, 600, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, 'fig/EnergyAxi.fig');
 exportgraphics(gca,'png/EnergyAxi.png', 'Resolution', 300);
 exportgraphics(gca,'eps/EnergyAxi.eps', 'Resolution', 300);
 

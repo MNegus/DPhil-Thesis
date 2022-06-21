@@ -21,8 +21,6 @@ redCol = cmap(end, :);
 
 %% Load parameters
 
-
-
 % Substrate parameters
 [epsilon, L, q, omega] = plateparameters(); % Substrate parameters
 
@@ -103,8 +101,9 @@ end
 set(gcf,'position', [100, 100, 640, 300]);
 pause(0.1);
 
-% set(gcf, 'Renderer', 'Painters');
-% 
-% % Export figure
-% exportgraphics(gcf,'png/PressureEvolution2D.png', 'Resolution', 300);
-% exportgraphics(gcf,'eps/PressureEvolution2D.eps', 'Resolution', 300);
+set(gcf, 'Renderer', 'Painters');
+
+% Export figure
+savefig(gcf, 'fig/PressureEvolutionAxi.fig');
+exportgraphics(gcf,'png/PressureEvolutionAxi.png', 'Resolution', 300);
+exportgraphics(gcf,'eps/PressureEvolutionAxi.eps', 'Resolution', 300);
