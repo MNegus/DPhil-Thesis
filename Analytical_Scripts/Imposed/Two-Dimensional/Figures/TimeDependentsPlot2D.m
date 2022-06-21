@@ -14,6 +14,7 @@ addpath("../Energies");
 set(0,'defaultTextInterpreter','latex'); %trying to set the default
 set(0,'defaultAxesFontSize', 18);
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
+set(0, 'defaultFigureRenderer', 'painters');
 set(groot, 'DefaultLegendInterpreter', 'latex');
 
 %% Load in color map
@@ -115,6 +116,7 @@ set(gcf,'position', [100, 100, 960, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, "fig/AnalyticalImposed.fig");
 exportgraphics(gcf,'png/AnalyticalImposed.png', 'Resolution', 300);
 exportgraphics(gcf,'eps/AnalyticalImposed.eps', 'Resolution', 300);
 
@@ -138,6 +140,7 @@ set(gcf,'position', [100, 100, 600, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, "fig/TurnoverPoints2D.fig");
 exportgraphics(gca,'png/TurnoverPoints2D.png', 'Resolution', 300);
 exportgraphics(gca,'eps/TurnoverPoints2D.eps', 'Resolution', 300);
 
@@ -160,6 +163,7 @@ set(gcf,'position', [100, 100, 600, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, "fig/JetThickness2D.fig");
 exportgraphics(gca,'png/JetThickness2D.png', 'Resolution', 300);
 exportgraphics(gca,'eps/JetThickness2D.eps', 'Resolution', 300);
 
@@ -181,7 +185,7 @@ plot(ts, Quad_Fs_outer, 'color', blueCol, 'linewidth', 2, 'linestyle', '--');
 
 lh = legend(["Stationary substrate", "Flat substrate", "Curved substrate"], ...
     'Location', 'best');
-lh.Position(1) = 0.5 - lh.Position(3)/2; 
+lh.Position(1) = 0.52 - lh.Position(3)/2; 
 lh.Position(2) = 0.575 - lh.Position(4)/2;
 
 xlabel("$t$");
@@ -195,6 +199,7 @@ set(gcf,'position', [100, 100, 600, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, "fig/Force2D.fig");
 exportgraphics(gca,'png/Force2D.png', 'Resolution', 300);
 exportgraphics(gca,'eps/Force2D.eps', 'Resolution', 300);
 
@@ -219,12 +224,14 @@ legend(["Stationary substrate", "Flat substrate", "Curved substrate"], ...
 xlabel("$t$");
 ylabel("$E_{K}(t)$");
 grid on;
+ylim([0, 0.035]);
 
 % Figure settings
 set(gcf,'position', [100, 100, 600, 300]);
 pause(0.1);
 
 % Export figure
+savefig(gcf, "fig/Energy2D.fig");
 exportgraphics(gca,'png/Energy2D.png', 'Resolution', 300);
 exportgraphics(gca,'eps/Energy2D.eps', 'Resolution', 300);
 

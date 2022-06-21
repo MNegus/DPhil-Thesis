@@ -135,5 +135,6 @@ pause(0.1);
 set(gcf, 'Renderer', 'Painters');
 
 % Export figure
+savefig(gcf, 'fig/PressureEvolution2D.fig');
 exportgraphics(gcf,'png/PressureEvolution2D.png', 'Resolution', 300);
 exportgraphics(gcf,'eps/PressureEvolution2D.eps', 'Resolution', 300);

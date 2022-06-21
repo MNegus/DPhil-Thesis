@@ -134,9 +134,11 @@ set(cb,'Position',cbPos)
 set(gca,'Position',axesPos);
 
 % Export figure
-% set(gcf, 'Renderer', 'Painters');
+set(gcf, 'Renderer', 'Painters');
+savefig(gcf, 'fig/OuterOuterWhole2D.fig');
 exportgraphics(gca,'png/OuterOuterWhole2D.png', 'Resolution', 300);
-
+exportgraphics(gca,'eps/OuterOuterWhole2D.eps', 'Resolution', 300, ...
+    'BackgroundColor','none','ContentType','vector');
 
 
 %% Wedge plot
@@ -187,6 +189,10 @@ xlabel("$x$");
 ylabel("$z$");
 
 set(gcf,'position', [0, 0, 300, 300]);
-% set(gcf, 'Renderer', 'Painters');
+set(gcf, 'Renderer', 'Painters');
+
+savefig(gcf, 'fig/OuterOuterZoomed2D.fig');
 exportgraphics(gca,'png/OuterOuterZoomed2D.png', 'Resolution', 300);
+exportgraphics(gca,'eps/OuterOuterZoomed2D.eps', 'Resolution', 300, ...
+    'BackgroundColor','none','ContentType','vector');
 

@@ -26,7 +26,7 @@ redCol = cmap(end, :);
 
 tmax = 1;
 ts = tmax;
-xs = linspace(-L, L, 1e4);
+xs = linspace(-L, L, 1e3);
 
 % Stationary substrate coefficients
 zeroTerm = zeros(size(ts));
@@ -89,7 +89,7 @@ for typeIdx = 1 : length(typeArr)
     d = TimeDependents.ds;
     
     % Create xs
-    xs_Free_Surface = linspace(epsilon * d, L, 1e4);
+    xs_Free_Surface = linspace(epsilon * d, L, 1e3);
     
     % Determine free-surface
     hs = outerfreesurface(xs_Free_Surface, ts, d, SubstrateCoefficients, epsilon);
@@ -121,5 +121,6 @@ set(gcf,'position', [100, 100, 700, 350]);
 set(gcf, 'Renderer', 'painters');
 
 % Export figure
-exportgraphics(gcf,'png/FreeSurface2D.png', 'Resolution', 300);
-exportgraphics(gcf,'eps/FreeSurface2D.eps', 'Resolution', 300);
+savefig(gcf, 'fig/FreeSurface2D.fig');
+exportgraphics(gca,'png/FreeSurface2D.png', 'Resolution', 300);
+exportgraphics(gca,'eps/FreeSurface2D.eps', 'Resolution', 300);

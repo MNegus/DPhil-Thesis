@@ -188,11 +188,14 @@ xline(0, 'color', 'white', 'linewidth', 1.5);
 set(gcf,'position', [0, 0, 1200, 600]);
 
 % Set rendered to Painters (incredibly slow but makes the figures better)
-% set(gcf, 'Renderer', 'Painters');
+set(gcf, 'Renderer', 'Painters');
 
 %% Create figures
-% Export png
-% exportgraphics(gca,'png/OuterStreamlinePressure2D.png', 'Resolution', 300);
+% Export fig
+savefig(gcf, 'fig/OuterStreamlinePressure2D.fig');
 
-% Export eps (doesn't look great so left commented out)
-% exportgraphics(gca,'eps/OuterStreamlinePressure2D.eps', 'Resolution', 300);
+% Export png
+exportgraphics(gca,'png/OuterStreamlinePressure2D.png', 'Resolution', 300);
+
+% Export eps 
+exportgraphics(gca,'eps/OuterStreamlinePressure2D.eps', 'Resolution', 300);

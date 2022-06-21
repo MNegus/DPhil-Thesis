@@ -134,5 +134,6 @@ set(gcf,'position', [100, 100, 600, 400]);
 set(gcf, 'Renderer', 'Painters');
 pause(0.1);
 % 
+savefig(gcf, 'fig/ComposedPressure2D.fig');
 exportgraphics(gca,'png/CompositePressure2D.png', 'Resolution', 300);
 exportgraphics(gca,'eps/CompositePressure2D.eps', 'Resolution', 300);
