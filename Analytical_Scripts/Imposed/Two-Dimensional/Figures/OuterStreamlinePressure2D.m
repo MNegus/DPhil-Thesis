@@ -12,11 +12,19 @@ close all;
 
 addpath("../");
 
+painters = false;
+
 %% Figure options
 set(0,'defaultTextInterpreter','latex'); %trying to set the default
 set(0,'defaultAxesFontSize', 18);
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 set(groot, 'DefaultLegendInterpreter', 'latex');
+
+if painters
+    set(0, 'defaultFigureRenderer', 'painters');
+else
+    set(0, 'defaultFigureRenderer', 'opengl');
+end
 
 %% Load in color map
 % mapObj = load("red_blue_cmap.mat");
@@ -24,30 +32,21 @@ mapObj = load("fine_red_blue_cmap.mat");
 cmap = mapObj.cmap;
 
 %% Quadratic substrate definition
-ts = 1; % Times
-[epsilon, L, q, omega] = quadraticparameters(); % Substrate parameters
+t = 0.5; % Times
+[epsilon, L, q, omega] = substrateparameters(); % Substrate parameters
 
-quadratic = true;
-if quadratic
-    [as, a_ts, a_tts, bs, b_ts, b_tts] ...
-        = quadraticsubstrate(ts, L, q, omega); % Substrate coefficients
-else
-    [as, a_ts, a_tts, bs, b_ts, b_tts] ...
-        = flatsubstrate(ts, q, omega); % Substrate coefficients
-end
+substrateType = "flat";
 
-%% Save structure arrays
-% Stationary substrate case
-StationarySubstrateCoefficients = substratecoefficients(0, 0, 0, 0, 0, 0, epsilon);
-StationaryTimeDependents = timedependents(ts, StationarySubstrateCoefficients);
+%% Load in substrate functions
+StationaryFunctions = substratefunctions("stationary");
+SubstrateFunctions = substratefunctions(substrateType);
 
-% Quadratic substrate case
-SubstrateCoefficients = substratecoefficients(as, bs, a_ts, ...
-    b_ts, a_tts, b_tts, epsilon);
-TimeDependents = timedependents(ts, SubstrateCoefficients);
+%% Load in d values
+d_stat = StationaryFunctions.d(t);
+d = SubstrateFunctions.d(t);
 
 %% Plotting parameters
-d_stat = StationaryTimeDependents.ds;
+
 
 % Spatial quantities
 noPoints = 1e3; % Number of grid points per dimension
@@ -91,9 +90,7 @@ xsPos = linspace(0, xMax, noPoints / 2);
 ZetaPos = XPos + 1i * ZPos;
 
 % Determines stationary substrate solution in the right-hand-side
-d_stat = StationaryTimeDependents.ds;
-A_stat = StationaryTimeDependents.As;
-[~, ps_stat] = outersolution(ZetaPos, d_stat, A_stat, StationarySubstrateCoefficients);
+[~, ps_stat] = outersolution(ZetaPos, t, StationaryFunctions);
 
 % Find min and max of pressure
 pMin = min(min(ps_stat));
@@ -113,16 +110,14 @@ PNeg = flip(ps_stat, 2);
 contourf(XNeg, ZNeg, PNeg, levels, 'Edgecolor', 'None');
 
 % Determines moving substrate solution on right-hand-side
-d = TimeDependents.ds;
-A = TimeDependents.As;
-[Ws, ps] = outersolution(ZetaPos, d, A, SubstrateCoefficients);
+[Ws, ps] = outersolution(ZetaPos, t, SubstrateFunctions);
 
 % Plot the moving substrate pressure on the right hand side
 contourf(XPos, ZPos, ps, levels, 'Edgecolor', 'None')
 
 %% Plot streamline contours
 % Stationary substrate
-[W_stat, ~] = outersolution(ZetaNeg, d_stat, A_stat, StationarySubstrateCoefficients);
+[W_stat, ~] = outersolution(ZetaNeg, t, StationaryFunctions);
 
 % Calculate streamfunction
 Psi_stat = imag(W_stat);
@@ -131,7 +126,7 @@ Psi_stat = imag(W_stat);
 contour(XNeg, ZNeg, Psi_stat, 15, 'Color', 0.25 * [1 1 1], 'Linewidth', 2)
 
 % Moving substrate
-[W, ~] = outersolution(ZetaPos, d, A, SubstrateCoefficients);
+[W, ~] = outersolution(ZetaPos, t, SubstrateFunctions);
 
 % Calculate streamfunction
 Psi = imag(W);
@@ -187,15 +182,8 @@ xline(0, 'color', 'white', 'linewidth', 1.5);
 % Set figure size
 set(gcf,'position', [0, 0, 1200, 600]);
 
-% Set rendered to Painters (incredibly slow but makes the figures better)
-set(gcf, 'Renderer', 'Painters');
-
 %% Create figures
-% Export fig
-savefig(gcf, 'fig/OuterStreamlinePressure2D.fig');
-
-% Export png
-exportgraphics(gca,'png/OuterStreamlinePressure2D.png', 'Resolution', 300);
-
-% Export eps 
-exportgraphics(gca,'eps/OuterStreamlinePressure2D.eps', 'Resolution', 300);
+filename = "OuterStreamlinePressure2D";
+savefig(gcf, sprintf("fig/%s.fig", filename));
+exportgraphics(gca, sprintf("png/%s.png", filename), 'Resolution', 300);
+exportgraphics(gca,sprintf("eps/%s.eps", filename), 'Resolution', 300);

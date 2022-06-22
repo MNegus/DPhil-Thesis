@@ -22,45 +22,24 @@ redCol = cmap(end, :);
 
 %% Load parameters
 % Substrate parameters
-[epsilon, L, q, omega] = quadraticparameters(); 
+[epsilon, k, q, omega] = substrateparameters(); 
 
 tmax = 1;
-ts = tmax;
-xs = linspace(-L, L, 1e3);
+t = tmax;
 
-% Stationary substrate coefficients
-zeroTerm = zeros(size(ts));
-StationarySubstrateCoefficients ...
-    = substratecoefficients(zeroTerm, zeroTerm, zeroTerm, zeroTerm, zeroTerm, zeroTerm, epsilon);
+L = epsilon * 2 * sqrt(tmax);
+xs = linspace(-1.1 * L, 1.1 * L, 1e3);
 
-% Flat substrate coefficients
-[aFlats, a_tFlats, a_ttFlats, bFlats, b_tFlats, b_ttFlats] ...
-    = flatsubstrate(ts, q, omega); 
-FlatSubstrateCoefficients ...
-    = substratecoefficients(aFlats, bFlats, a_tFlats, b_tFlats, a_ttFlats, b_ttFlats, epsilon);
-
-
-% Quadratic substrate coefficients
-[aQuads, a_tQuads, a_ttQuads, bQuads, b_tQuads, b_ttQuads] ...
-    = quadraticsubstrate(ts, L, q, omega);
-QuadSubstrateCoefficients ...
-    = substratecoefficients(aQuads, bQuads, a_tQuads, b_tQuads, a_ttQuads, b_ttQuads, epsilon);
-
-%% Determine time dependents
-% Stationary substrate time dependents
-StationaryTimeDependents = timedependents(ts, StationarySubstrateCoefficients);
-
-% Flat substrate time dependents
-FlatTimeDependents = timedependents(ts, FlatSubstrateCoefficients);
-
-% Quadratic substrate time dependents
-QuadTimeDependents = timedependents(ts, QuadSubstrateCoefficients);
+%% Load in substrate functions
+StationaryFunctions = substratefunctions("stationary");
+FlatFunctions = substratefunctions("flat");
+CurvedFunctions = substratefunctions("curved");
 
 %% Free-surface plot
 
 % Array of SubstrateCoefficient structs
-SubstrateCoefficientsArray = [StationarySubstrateCoefficients, ...
-       FlatSubstrateCoefficients, QuadSubstrateCoefficients];
+SubstrateFunctionsArray = [StationaryFunctions, ...
+       FlatFunctions, CurvedFunctions];
 
 % Array of types
 typeArr = ["Stationary substrate solution", ...
@@ -80,19 +59,16 @@ for typeIdx = 1 : length(typeArr)
     end
     
     % Save SubstrateCoefficients
-    SubstrateCoefficients = SubstrateCoefficientsArray(typeIdx);
-    
-    % Determine time dependents
-    TimeDependents = timedependents(ts, SubstrateCoefficients);
+    SubstrateFunctions = SubstrateFunctionsArray(typeIdx);
     
     % Load turnover point
-    d = TimeDependents.ds;
+    d = SubstrateFunctions.d(t);
     
     % Create xs
-    xs_Free_Surface = linspace(epsilon * d, L, 1e3);
+    xs_Free_Surface = linspace(epsilon * d, 2 * L, 1e3);
     
     % Determine free-surface
-    hs = outerfreesurface(xs_Free_Surface, ts, d, SubstrateCoefficients, epsilon);
+    hs = outerfreesurface(xs_Free_Surface, t, SubstrateFunctions, epsilon);
     
     % Plot free-surface
     h(typeIdx) = plot(xs_Free_Surface, hs, 'linewidth', 2, 'color', lineColor, ...
@@ -101,15 +77,14 @@ for typeIdx = 1 : length(typeArr)
         'Displayname', type);
     
     %% Plot the substrate
-    a = SubstrateCoefficients.aHats;
-    b = SubstrateCoefficients.bHats / epsilon^2;
-    plot(xs, -epsilon^2 * (a * ones(size(xs)) + b * xs.^2), ...
+    ws = SubstrateFunctions.w(xs, t);
+    plot(xs, -epsilon^2 * ws, ...
         'Color', lineColor, 'Linestyle', ':', 'Linewidth', 2);
 end
 
 
 %% Figure settings
-xlim([-L, L]);
+% xlim([-L, L]);
 legend(h(1:3), 'Location', 'North');
 
 grid on;

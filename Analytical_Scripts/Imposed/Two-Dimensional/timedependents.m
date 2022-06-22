@@ -1,4 +1,4 @@
-function TimeDependents = timedependents(ts, SubstrateCoefficients)
+function TimeDependents = timedependents(ts, SubstrateFunctions)
 %%timedependents
 % Quadratic substrate case:
 % Given the times and the substrate coefficients, returns the 
@@ -11,18 +11,22 @@ function TimeDependents = timedependents(ts, SubstrateCoefficients)
 %   Cs: Coefficient for overlap pressure
 
     %% Load in substrate coefficients
-    aHats = SubstrateCoefficients.aHats;
-    aHat_ts = SubstrateCoefficients.aHat_ts;
-    aHat_tts = SubstrateCoefficients.aHat_tts;
+    aHats = SubstrateCoefficients.aHat(ts);
+    aHat_ts = SubstrateCoefficients.aHat_t(ts);
+    aHat_tts = SubstrateCoefficients.aHat_tt(ts);
     
-    bHats = SubstrateCoefficients.bHats;
-    bHat_ts = SubstrateCoefficients.bHat_ts;
-    bHat_tts = SubstrateCoefficients.bHat_tts;
+    bHats = SubstrateCoefficients.bHat(ts);
+    bHat_ts = SubstrateCoefficients.bHat_t(ts);
+    bHat_tts = SubstrateCoefficients.bHat_tt(ts);
     
     %% Turnover points
     ds = 2 * sqrt((ts - aHats) ./ (1 + 2 * bHats));
     d_ts = ((1 + 2 * bHats) .* (1 - aHat_ts) - 2 * (ts - aHats) .* bHat_ts) ...
         ./ (sqrt(ts - aHats) .* (1 + 2 * bHats).^(3/2));
+    d_tts = -((1 + 2 * bHats) .* d_ts.^2 ...
+        + 4 * bHat_ts .* ds .* d_ts ...
+        + 2 * aHat_tts ...
+        + bHat_tts .* ds.^2) ./ ((1 + 2 * bHats) .* ds);
     
     %% As, Bs and Cs coefficients
     % ENSURE WE COERRECTLY HANDLE AT t = 0 !!!!
@@ -46,6 +50,7 @@ function TimeDependents = timedependents(ts, SubstrateCoefficients)
     %% Fill in the structure
     TimeDependents.ds = ds;
     TimeDependents.d_ts = d_ts;
+    TimeDependents.d_tts = d_tts;
     TimeDependents.As = As;
     TimeDependents.Bs = Bs;
     TimeDependents.Cs = Cs;

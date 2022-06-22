@@ -1,5 +1,5 @@
 function [ps_composite, ps_outer, ps_inner] ...
-    = substratepressure(xs, SubstrateCoefficients, TimeDependents, epsilon)
+    = substratepressure(xs, t, SubstrateFunctions, epsilon)
 %%substratepressure
 %   Master function for determining the pressure along the substrate in the
 %   two-dimensional, quadratic substrate case. 
@@ -17,13 +17,13 @@ function [ps_composite, ps_outer, ps_inner] ...
 %   * ps_inner: The inner solution for the pressure
 
     %% Load in quantities from structure arrays
-    aHat_tt = SubstrateCoefficients.aHat_tts;
-    bHat_tt = SubstrateCoefficients.bHat_tts;
-    d = TimeDependents.ds;
-    d_t = TimeDependents.d_ts;
-    J = TimeDependents.Js;
-    A = TimeDependents.As;
-    C = TimeDependents.Cs;
+    aHat_tt = SubstrateFunctions.aHat_tt(t);
+    bHat_tt = SubstrateFunctions.bHat_tt(t);
+    d = SubstrateFunctions.d(t);
+    d_t = SubstrateFunctions.d_t(t);
+    J = SubstrateFunctions.J(t);
+    A = SubstrateFunctions.A(t);
+    C = SubstrateFunctions.C(t);
     
     %% Determine pressures
     ps_outer = outerpressure(xs, d, A, aHat_tt, bHat_tt, epsilon);

@@ -1,14 +1,17 @@
-function [Ws, ps] = outersolution(zetas, d, A, SubstrateCoefficients)
+function [Ws, ps] = outersolution(zetas, t, SubstrateFunctions)
 %OUTERSOLUTION Returns the leading-order solution in the outer region
 %   Returns the leading-order solution for W, the complex potential, and p,
 %   the pressure, in the outer region for a quadratic substrate.
 
     %% Load substrate coefficients
-    aHat_t = SubstrateCoefficients.aHat_ts;
-    aHat_tt = SubstrateCoefficients.aHat_tts;
+    d = SubstrateFunctions.d(t);
+    A = SubstrateFunctions.A(t);
     
-    bHat_t = SubstrateCoefficients.bHat_ts;
-    bHat_tt = SubstrateCoefficients.bHat_tts;
+    aHat_t = SubstrateFunctions.aHat_t(t);
+    aHat_tt = SubstrateFunctions.aHat_tt(t);
+    
+    bHat_t = SubstrateFunctions.bHat_t(t);
+    bHat_tt = SubstrateFunctions.bHat_tt(t);
     
     %% Complex potential
     % Complex integral solutions

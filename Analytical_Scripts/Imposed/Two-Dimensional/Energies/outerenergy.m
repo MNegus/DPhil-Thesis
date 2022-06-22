@@ -1,9 +1,10 @@
-function Es = outerenergy(ds, SubstrateCoefficients, epsilon)
+function Es = outerenergy(ts, SubstrateFunctions, epsilon)
 %OUTERENERGY Energy in the outer region
     
     % Load in substrate coefficients
-    aHat_ts = SubstrateCoefficients.aHat_ts;
-    bHat_ts = SubstrateCoefficients.bHat_ts;
+    ds = SubstrateFunctions.d(ts);
+    aHat_ts = SubstrateFunctions.aHat_t(ts);
+    bHat_ts = SubstrateFunctions.bHat_t(ts);
     
     % Return outer energy
     Es = (pi * epsilon^2 * ds.^2 / 4) .* (1 - aHat_ts).^2 ...

@@ -1,5 +1,5 @@
 function [Fs_composite, Fs_outer, Fs_inner] ...
-    = substrateforce(ts, TimeDependents, epsilon)
+    = substrateforce(ts, SubstrateFunctions, epsilon)
 %%substrateforce
 %   Master function for determining the force along the substrate in the
 %   two-dimensional, plate impact case. 
@@ -16,11 +16,11 @@ function [Fs_composite, Fs_outer, Fs_inner] ...
 %   * Fs_inner: The inner solution for the force
 
     %% Load in quantities from structure arrays
-    ds = TimeDependents.ds;
-    d_ts = TimeDependents.d_ts;
-    Js = TimeDependents.Js;
-    As = TimeDependents.As;
-    Cs = TimeDependents.Cs;
+    ds = SubstrateFunctions.d(ts);
+    d_ts = SubstrateFunctions.d_t(ts);
+    Js = SubstrateFunctions.J(ts);
+    As = SubstrateFunctions.A(ts);
+    Cs = SubstrateFunctions.C(ts);
     
     %% Determines pressures
     Fs_outer = outerforce(As);

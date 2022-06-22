@@ -10,6 +10,7 @@ close all;
 set(0,'defaultTextInterpreter','latex'); %trying to set the default
 set(0,'defaultAxesFontSize', 18);
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
+set(0, 'defaultFigureRenderer', 'painters');
 set(groot, 'DefaultLegendInterpreter', 'latex');
 
 %% Load in color map
@@ -20,29 +21,18 @@ colormap(cmap);
 %% Parameter definitions
 noFillConts = 50;
 
-ts = 0.25; % Times
-[epsilon, L, q, omega] = quadraticparameters(); % Substrate parameters
+t = 0.25; % Times
+[epsilon, L, q, omega] = substrateparameters(); 
 
-quadratic = true;
-if quadratic
-    [as, a_ts, a_tts, bs, b_ts, b_tts] ...
-        = quadraticsubstrate(ts, L, q, omega); % Substrate coefficients
-else
-    [as, a_ts, a_tts, bs, b_ts, b_tts] ...
-        = flatsubstrate(ts, q, omega); % Substrate coefficients
-end
+substrateType = "curved";
 
-%% Save structure arrays
-% Stationary substrate case
-StationarySubstrateCoefficients = substratecoefficients(0, 0, 0, 0, 0, 0, epsilon);
-StationaryTimeDependents = timedependents(ts, StationarySubstrateCoefficients);
-A_stationary = StationaryTimeDependents.As;
+%% Load in substrate functions
+StationaryFunctions = substratefunctions("stationary");
+SubstrateFunctions = substratefunctions(substrateType);
 
-% Moving substrate case
-SubstrateCoefficients = substratecoefficients(as, bs, a_ts, ...
-    b_ts, a_tts, b_tts, epsilon);
-TimeDependents = timedependents(ts, SubstrateCoefficients);
-A_moving = TimeDependents.As;
+%% Save A coefficients
+A_Stationary = StationaryFunctions.A(t);
+A_Substrate = SubstrateFunctions.A(t);
 
 %% Plotting parameters
 minP = 0;
@@ -63,7 +53,7 @@ thetaLeft = linspace(pi, 2 * pi, numThetas / 2);
 [R, Theta] = meshgrid(rs, thetaLeft);
 X = R .* sin(Theta);
 Z = 1 - R .* cos(Theta);
-Pleft = - A_stationary * (X.^2 + (Z - 1).^2 - 1) ./ (2 * (X.^2 + Z.^2));
+Pleft = Pfun(A_Stationary, X, Z);
 Pleft(Pleft < 0) = 0;
 contourf(X, Z, Pleft, levels, 'Edgecolor', 'None');
 
@@ -72,7 +62,7 @@ thetaRight = linspace(0, pi, numThetas / 2);
 [R, Theta] = meshgrid(rs, thetaRight);
 X = R .* sin(Theta);
 Z = 1 - R .* cos(Theta);
-Pright = - A_moving * (X.^2 + (Z - 1).^2 - 1) ./ (2 * (X.^2 + Z.^2));
+Pright = Pfun(A_Substrate, X, Z);
 Pright(Pright < 0) = 0;
 contourf(X, Z, Pright, levels, 'Edgecolor', 'None');
 
@@ -134,11 +124,10 @@ set(cb,'Position',cbPos)
 set(gca,'Position',axesPos);
 
 % Export figure
-set(gcf, 'Renderer', 'Painters');
-savefig(gcf, 'fig/OuterOuterWhole2D.fig');
-exportgraphics(gca,'png/OuterOuterWhole2D.png', 'Resolution', 300);
-exportgraphics(gca,'eps/OuterOuterWhole2D.eps', 'Resolution', 300, ...
-    'BackgroundColor','none','ContentType','vector');
+filename = "OuterOuterWhole2D";
+savefig(gcf, sprintf("fig/%s.fig", filename));
+exportgraphics(gcf, sprintf("png/%s.png", filename), 'Resolution', 300);
+exportgraphics(gcf,sprintf("eps/%s.eps", filename), 'Resolution', 300);
 
 
 %% Wedge plot
@@ -162,7 +151,7 @@ thetaLeft = linspace(-ang, 0, numThetas / 2);
 [R, Theta] = meshgrid(rs, thetaLeft);
 X = R .* sin(Theta);
 Z = 1 - R .* cos(Theta);
-Pleft = - A_stationary * (X.^2 + (Z - 1).^2 - 1) ./ (2 * (X.^2 + Z.^2));
+Pleft = Pfun(A_Stationary, X, Z);
 Pleft(Pleft < 0) = 0;
 contourf(X, Z, Pleft, levels, 'Edgecolor', 'None');
 
@@ -171,7 +160,7 @@ thetaRight = linspace(0, ang, numThetas / 2);
 [R, Theta] = meshgrid(rs, thetaRight);
 X = R .* sin(Theta);
 Z = 1 - R .* cos(Theta);
-Pright = - A_moving * (X.^2 + (Z - 1).^2 - 1) ./ (2 * (X.^2 + Z.^2));
+Pright = Pfun(A_Substrate, X, Z);
 Pright(Pright < 0) = 0;
 contourf(X, Z, Pright, levels, 'Edgecolor', 'None');
 
@@ -189,10 +178,15 @@ xlabel("$x$");
 ylabel("$z$");
 
 set(gcf,'position', [0, 0, 300, 300]);
-set(gcf, 'Renderer', 'Painters');
 
-savefig(gcf, 'fig/OuterOuterZoomed2D.fig');
-exportgraphics(gca,'png/OuterOuterZoomed2D.png', 'Resolution', 300);
-exportgraphics(gca,'eps/OuterOuterZoomed2D.eps', 'Resolution', 300, ...
-    'BackgroundColor','none','ContentType','vector');
+filename = "OuterOuterZoomed2D";
+savefig(gcf, sprintf("fig/%s.fig", filename));
+exportgraphics(gcf, sprintf("png/%s.png", filename), 'Resolution', 300);
+exportgraphics(gcf,sprintf("eps/%s.eps", filename), 'Resolution', 300);
 
+
+%% Function definitions
+function Ps = Pfun(A, X, Z)
+%PFUN Outputs the pressure 
+    Ps = -A * (X.^2 + (Z - 1).^2 - 1) ./ (2 * (X.^2 + Z.^2));
+end

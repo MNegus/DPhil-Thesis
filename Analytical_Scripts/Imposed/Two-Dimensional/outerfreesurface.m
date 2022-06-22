@@ -1,10 +1,11 @@
-function hs = outerfreesurface(xs, t, d, SubstrateCoefficients, epsilon)
+function hs = outerfreesurface(xs, t, SubstrateFunctions, epsilon)
 %OUTERFREESURFACE Summary of this function goes here
 %   Detailed explanation goes here
 
-    %% Load substrate coefficients
-    aHat = SubstrateCoefficients.aHats;
-    bHat = SubstrateCoefficients.bHats;
+    %% Load function values
+    d = SubstrateFunctions.d(t);
+    aHat = SubstrateFunctions.aHat(t);
+    bHat = SubstrateFunctions.bHat(t);
     
     %% Define xHats
     xHats = xs / epsilon;
