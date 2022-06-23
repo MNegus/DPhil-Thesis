@@ -3,6 +3,11 @@ function [Ws, ps] = outersolution(zetas, t, SubstrateFunctions)
 %   Returns the leading-order solution for W, the complex potential, and p,
 %   the pressure, in the outer region for a quadratic substrate.
 
+    %% Only works for the 2D case
+    if SubstrateFunctions.dimension == 'axi'
+       error("Invalidd dimension. Only dimension == '2D' is supported.");
+    end
+
     %% Load substrate coefficients
     d = SubstrateFunctions.d(t);
     A = SubstrateFunctions.A(t);
