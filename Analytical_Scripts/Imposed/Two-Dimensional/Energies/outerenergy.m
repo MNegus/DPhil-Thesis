@@ -18,6 +18,7 @@ function Es = outerenergy(ts, SubstrateFunctions)
         %% Axisymmetric energy
         % Load substrate coefficients
         w_ts = SubstrateFunctions.w_t(ts);
+        d_ts = SubstrateFunctions.d_t(ts);
         
         % Determine energy
         Es = (4 * epsilon^3 / 9) * ds.^4 .* d_ts .* (1 - w_ts);
