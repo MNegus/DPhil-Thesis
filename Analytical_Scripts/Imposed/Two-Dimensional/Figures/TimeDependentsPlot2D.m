@@ -40,28 +40,28 @@ CurvedFunctions = substratefunctions("curved", dimension);
 %% Determine forces
 % Stationary substrate forces
 [Stationary_Fs_composite, Stationary_Fs_outer, Stationary_Fs_inner] ...
-    = substrateforce(ts, StationaryFunctions, epsilon);
+    = substrateforce(ts, StationaryFunctions);
 
 % Flat substrate time dependents
 [Flat_Fs_composite, Flat_Fs_outer, Flat_Fs_inner] ...
-    = substrateforce(ts, FlatFunctions, epsilon);
+    = substrateforce(ts, FlatFunctions);
 
 % Quadratic substrate time dependents
 [Curved_Fs_composite, Curved_Fs_outer, Curved_Fs_inner] ...
-    = substrateforce(ts, CurvedFunctions, epsilon);
+    = substrateforce(ts, CurvedFunctions);
 
 %% Determine energies
 % Stationary substrate energies
 [Stationary_Es_outer, Stationary_Es_jets] ...
-    = dropletenergy(ts, StationaryFunctions, epsilon);
+    = dropletenergy(ts, StationaryFunctions);
 
 % Stationary substrate energies
 [Flat_Es_outer, Flat_Es_jets] ...
-    = dropletenergy(ts, FlatFunctions, epsilon);
+    = dropletenergy(ts, FlatFunctions);
 
 % Stationary substrate energies
 [Curved_Es_outer, Curved_Es_jets] ...
-    = dropletenergy(ts, CurvedFunctions, epsilon);
+    = dropletenergy(ts, CurvedFunctions);
 
 %% Substrate motion plot
 fig = tiledlayout(1, 3);
