@@ -22,6 +22,14 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     %% Load in parameters
     [epsilon, k, q, omega] = substrateparameters();
 
+    %% Set parameters
+    SubstrateFunctions.type = type;
+    SubstrateFunctions.dimension = dimension;
+    SubstrateFunctions.epsilon = epsilon;
+    SubstrateFunctions.k = k;
+    SubstrateFunctions.q = q;
+    SubstrateFunctions.omega = omega;
+    
     %% Set substrate coefficients
     if type == "stationary"
         SubstrateFunctions.a = @(t) zeros(size(t));
@@ -100,13 +108,13 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     else
     %% Axisymmetric quantities
         %% Substrate positions
-        w = @(t) SubstrateFunctions.a;
+        w = SubstrateFunctions.a;
         SubstrateFunctions.w = w;
         
-        w_t = @(t) SubstrateFunctions.a_t;
+        w_t = SubstrateFunctions.a_t;
         SubstrateFunctions.w_t = w_t;
         
-        w_tt = @(t) SubstrateFunctions.a_tt;
+        w_tt = SubstrateFunctions.a_tt;
         SubstrateFunctions.w_tt = w_tt;
         
         %% Turnover curves
@@ -118,8 +126,9 @@ function SubstrateFunctions = substratefunctions(type, dimension)
         %% Jet thickness
         SubstrateFunctions.J = @(t) 2 * d(t).^3 / (9 * pi);
         
-        %% Outer-outer pressure coefficient
+        %% Pressure coefficients
         SubstrateFunctions.A = @(t) (4 * d(t).^3 / 9) .* (4 * d_t(t).^2 + d(t) .* d_tt(t));
+        SubstrateFunctions.C = @(t) 2 * sqrt(2) * d(t).^(3/2) * d_t(t).^2 / (3 * pi);
         
         %% Full substrate solution (only works for t being a scalar)
         SubstrateFunctions.w = w;
