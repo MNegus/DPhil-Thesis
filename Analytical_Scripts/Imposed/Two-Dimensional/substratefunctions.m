@@ -11,12 +11,19 @@ function SubstrateFunctions = substratefunctions(type, dimension)
 %   = 0) or "curved" (so a = w(t) and b = -k^2 * w(t)).
 
     %% Check for valid input
+    % Valid substrate type
     if (type ~= "stationary") && (type ~= "flat") && (type ~= "curved")
         error("Invalid type. Needs to either be 'stationary', 'flat' or 'curved'.");
     end
     
+    % Valid dimension
     if (dimension ~= "2D") && (dimension ~= "axi")
-        error("Invalid dimension. Needs to either be '2D' or 'axi'");
+        error("Invalid dimension. Needs to either be '2D' or 'axi'.");
+    end
+    
+    % Error if try curved and axisymmetric
+    if (dimension == "axi") && (type == "curved")
+        error("Cannot have a curved substrate in axisymmetric dimension.");
     end
 
     %% Load in parameters
