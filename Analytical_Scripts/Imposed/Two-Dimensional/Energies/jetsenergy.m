@@ -20,6 +20,12 @@ function Es = jetsenergy(ts, SubstrateFunctions)
         
         % Define integrand 
         integrand = (8 * epsilon^3 / 9) * ds.^4 .* d_ts.^3;
+        
+        % At t == 0, set the integrand to be 0
+        zeroIdx = find(ts == 0);
+        if ~isempty(zeroIdx)
+           integrand(zeroIdx) = 0;
+        end
     else
         error("Invalid dimension. Needs to either be '2D' or 'axi'");
     end
