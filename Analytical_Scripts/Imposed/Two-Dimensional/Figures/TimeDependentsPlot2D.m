@@ -32,9 +32,10 @@ tmax = 1;
 ts = linspace(0, tmax, 1e3)';
 
 %% Load in substrate functions
-StationaryFunctions = substratefunctions("stationary");
-FlatFunctions = substratefunctions("flat");
-CurvedFunctions = substratefunctions("curved");
+dimension = "2D";
+StationaryFunctions = substratefunctions("stationary", dimension);
+FlatFunctions = substratefunctions("flat", dimension);
+CurvedFunctions = substratefunctions("curved", dimension);
 
 %% Determine forces
 % Stationary substrate forces

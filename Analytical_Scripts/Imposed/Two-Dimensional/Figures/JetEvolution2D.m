@@ -40,9 +40,10 @@ zMax = 0.8 + 1e-10;
 tauMin = 1e-5;
 
 %% Load in substrate functions
-StationaryFunctions = substratefunctions("stationary");
-FlatFunctions = substratefunctions("flat");
-CurvedFunctions = substratefunctions("curved");
+dimension = "2D";
+StationaryFunctions = substratefunctions("stationary", dimension);
+FlatFunctions = substratefunctions("flat", dimension);
+CurvedFunctions = substratefunctions("curved", dimension);
 
 typeArr = ["stationary", "flat", "curved"];
 
@@ -75,7 +76,7 @@ for type = typeArr
         t = ts(tIdx);
 
         % Load in substrate functions
-        SubstrateFunctions = substratefunctions(type);
+        SubstrateFunctions = substratefunctions(type, dimension);
 
         % Find minimum tau
         d = SubstrateFunctions.d;

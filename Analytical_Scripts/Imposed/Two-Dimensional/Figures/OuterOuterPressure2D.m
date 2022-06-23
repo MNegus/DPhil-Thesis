@@ -27,8 +27,9 @@ t = 0.25; % Times
 substrateType = "curved";
 
 %% Load in substrate functions
-StationaryFunctions = substratefunctions("stationary");
-SubstrateFunctions = substratefunctions(substrateType);
+dimension = "2D";
+StationaryFunctions = substratefunctions("stationary", dimension);
+SubstrateFunctions = substratefunctions(substrateType, dimension);
 
 %% Save A coefficients
 A_Stationary = StationaryFunctions.A(t);

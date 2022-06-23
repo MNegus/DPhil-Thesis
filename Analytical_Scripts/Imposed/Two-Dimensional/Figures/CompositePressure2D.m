@@ -29,7 +29,8 @@ xs = linspace(0, 0.4, 5e3);
 t = 2;
 
 %% Load in substrate function
-SubstrateFunctions = substratefunctions("stationary");
+dimension = "2D";
+SubstrateFunctions = substratefunctions("stationary", dimension);
 
 %% Find pressures
 [ps_composite, ps_outer, ps_inner] ...

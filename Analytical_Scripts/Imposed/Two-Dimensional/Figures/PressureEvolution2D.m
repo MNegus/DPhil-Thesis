@@ -39,10 +39,10 @@ xMax = 2 * epsilon * sqrt(tmax);
 noPoints = 1e3;
 
 %% Load in substrate functions
-StationaryFunctions = substratefunctions("stationary");
-FlatFunctions = substratefunctions("flat");
-CurvedFunctions = substratefunctions("curved");
-
+dimension = "2D";
+StationaryFunctions = substratefunctions("stationary", dimension);
+FlatFunctions = substratefunctions("flat", dimension);
+CurvedFunctions = substratefunctions("curved", dimension);
 
 %% Pressure in time plot
 

@@ -31,9 +31,10 @@ L = epsilon * 2 * sqrt(tmax);
 xs = linspace(-1.1 * L, 1.1 * L, 1e3);
 
 %% Load in substrate functions
-StationaryFunctions = substratefunctions("stationary");
-FlatFunctions = substratefunctions("flat");
-CurvedFunctions = substratefunctions("curved");
+dimension = "2D";
+StationaryFunctions = substratefunctions("stationary", dimension);
+FlatFunctions = substratefunctions("flat", dimension);
+CurvedFunctions = substratefunctions("curved", dimension);
 
 %% Free-surface plot
 
