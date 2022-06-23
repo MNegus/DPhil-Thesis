@@ -69,7 +69,8 @@ for typeIdx = 1 : length(typeArr)
     xs_Free_Surface = linspace(epsilon * d, 2 * L, 1e3);
     
     % Determine free-surface
-    hs = outerfreesurface(xs_Free_Surface, t, SubstrateFunctions, epsilon);
+    hHats = outerfreesurface(xs_Free_Surface, t, SubstrateFunctions);
+    hs = epsilon^2 * hHats;
     
     % Plot free-surface
     h(typeIdx) = plot(xs_Free_Surface, hs, 'linewidth', 2, 'color', lineColor, ...
