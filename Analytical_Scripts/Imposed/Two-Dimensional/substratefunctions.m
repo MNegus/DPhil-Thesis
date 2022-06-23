@@ -10,6 +10,11 @@ function SubstrateFunctions = substratefunctions(type)
 %   type needs to be "stationary" (so a = b = 0), "flat" (so a = w(t) and b
 %   = 0) or "curved" (so a = w(t) and b = -k^2 * w(t)).
 
+    %% Check for valid input
+    if (type ~= "stationary") && (type ~= "flat") && (type ~= "curved")
+        error("Invalid type. Needs to either be 'stationary', 'flat' or 'curved'.");
+    end
+
     %% Load in parameters
     [epsilon, k, q, omega] = substrateparameters();
 
