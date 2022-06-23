@@ -9,10 +9,13 @@
 clear;
 close all;
 
+addpath("../");
+
 %% Figure options
 set(0,'defaultTextInterpreter','latex'); %trying to set the default
 set(0,'defaultAxesFontSize', 18);
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
+set(0, 'defaultFigureRenderer', 'painters');
 set(groot, 'DefaultLegendInterpreter', 'latex');
 
 %% Load in color map
@@ -23,165 +26,117 @@ redCol = cmap(end, :);
 
 %% Load parameters
 % Substrate parameters
-[epsilon, L, q, omega] = quadraticparameters(); 
+[epsilon, k, q, omega] = substrateparameters(); 
 
 tmax = 1;
-ts = linspace(1e-5, tmax, 10);
+ts = linspace(1e-6, tmax, 1e3)';
+freq = 100;
+
+% Spatial limits
+xMin = 0;
+xMax = 3;
+zMax = 0.8 + 1e-10;
+
+tauMin = 1e-5;
+
+%% Load in substrate functions
+StationaryFunctions = substratefunctions("stationary");
+FlatFunctions = substratefunctions("flat");
+CurvedFunctions = substratefunctions("curved");
+
+typeArr = ["stationary", "flat", "curved"];
 
 %% Loop over time
-figure(1);
-for t = ts
+tiledlayout(3, 1);
 
-    % Stationary substrate coefficients
-    zeroTerm = zeros(size(t));
-    StationarySubstrateCoefficients ...
-        = substratecoefficients(zeroTerm, zeroTerm, zeroTerm, zeroTerm, zeroTerm, zeroTerm, epsilon);
+tileNo = 1;
 
-    % Flat substrate coefficients
-    [aFlats, a_tFlats, a_ttFlats, bFlats, b_tFlats, b_ttFlats] ...
-        = flatsubstrate(t, q, omega); 
-    FlatSubstrateCoefficients ...
-        = substratecoefficients(aFlats, bFlats, a_tFlats, b_tFlats, a_ttFlats, b_ttFlats, epsilon);
-
-    % Quadratic substrate coefficients
-    [aQuads, a_tQuads, a_ttQuads, bQuads, b_tQuads, b_ttQuads] ...
-        = quadraticsubstrate(t, L, q, omega);
-    QuadSubstrateCoefficients ...
-        = substratecoefficients(aQuads, bQuads, a_tQuads, b_tQuads, a_ttQuads, b_ttQuads, epsilon);
-
-    %% Determine time dependents
-    % Stationary substrate time dependents
-    StationaryTimeDependents = timedependents(t, StationarySubstrateCoefficients);
-
-    % Flat substrate time dependents
-    FlatTimeDependents = timedependents(t, FlatSubstrateCoefficients);
-
-    % Quadratic substrate time dependents
-    QuadTimeDependents = timedependents(t, QuadSubstrateCoefficients);
-
-
-    %% Spatial limits
-    % Range for x
-    xMin = 0;
-    xMax = 3;
-    zMax = 0.8;
-
-    %% Free-surface plotting
-
-
-
-    % Array of types
-%     typeArr = ["Stationary substrate solution", ...
-%         "Flat substrate solution", "Quadratic substrate solution"];
-%     typeArr = ["Stationary substrate solution"];
-%     typeArr = ["Quadratic substrate solution"];
-    typeArr = ["Flat substrate solution"];
-
+for type = typeArr
     
-    for typeIdx = 1 : length(typeArr)
-        type = typeArr(typeIdx);
+    % Set line color
+    if type == "stationary"
+        lineColor = 'black';
+        displayName = 'Free-surface: Stationary substrate';
+    elseif type == "flat"
+        lineColor = redCol;
+        displayName = 'Free-surface: Flat substrate';
+    else
+        lineColor = blueCol;
+        displayName = 'Free-surface: Curved substrate';
+    end
+    
+    % Set up tile
+    nexttile(tileNo);
+    hold on;
+    tileNo = tileNo + 1;
+    
+    % Loop over time
+    for tIdx = 1 : freq : length(ts)
+        t = ts(tIdx);
 
-        if type == "Stationary substrate solution"
+        % Load in substrate functions
+        SubstrateFunctions = substratefunctions(type);
 
-           lineColor = 'black';
+        % Find minimum tau
+        d = SubstrateFunctions.d;
+        d_t = SubstrateFunctions.d_t;
+        zeroFun = @(tau) xMax - 2 * d_t(tau) * (t - tau) - d(tau);
+        tauMin = fsolve(zeroFun, 1e-6);
 
-           % Find tauMin
-%            tauMin = fsolve(@(tau) xMax - x(tau), 1e-6);
-            tauMin = fsolve(tauMinFun, 1e-6);
-           
-            % Load in substrate coefficients
-            zeroTerm = zeros(size(taus));
-            SubstrateCoefficients ...
-                = substratecoefficients(zeroTerm, zeroTerm, zeroTerm, ...
-                    zeroTerm, zeroTerm, zeroTerm, epsilon);
-        elseif type == "Flat substrate solution"
-
-            lineColor = redCol;
-
-            % Load in substrate coefficients
-            [as, a_ts, a_tts, bs, b_ts, b_tts] ...
-                = flatsubstrate(taus, q, omega);
-            SubstrateCoefficients ...
-                = substratecoefficients(as, bs, a_ts, b_ts, a_tts, b_tts, epsilon);
-        else
-            lineColor = blueCol;
-
-            % Load in substrate coefficients
-            [as, a_ts, a_tts, bs, b_ts, b_tts] ...
-                = quadraticsubstrate(taus, L, q, omega);
-            SubstrateCoefficients ...
-                = substratecoefficients(as, bs, a_ts, b_ts, a_tts, b_tts, epsilon);
-        end
+        % Find taus
+        taus = linspace(tauMin, t, 1e2);
 
         % Find free-surface
-        [xs, hs] = freesurface(t, taus, SubstrateCoefficients);
+        [xBars, hBars] = freesurface(t, taus, SubstrateFunctions);
 
         % Plot free-surface
-        plot(xs, hs, 'linewidth', 2, 'color', lineColor, ...
-            'Displayname', type);
+        h(1) = plot(xBars, hBars, 'linewidth', 2, 'color', lineColor, ...
+            'Displayname', displayName);
         hold on;
+        
     end
-%     hold off;
+
+    % Plot turnover evolution
+    tLongs = linspace(0, 2 * tmax);
+    ds = SubstrateFunctions.d(tLongs);
+    Js = SubstrateFunctions.J(tLongs);
+    plot(ds, Js, 'color', lineColor, 'linestyle', '--');
+
+    %% Figure settings
     
-
-
-    %% Figure properties
-
     % Axes labels
     xlabel('$\bar{x}$');
     ylabel('$\bar{z}$');
 
     box on;
-
+    grid on;
+    
+    % Axes limits
     xlim([xMin, xMax]);
     ylim([0, zMax]);
-    drawnow;
-    pause(0.1)
-    % ylim([0, zMax]);
-    % pbaspect([1 zMax / (xMax- xMin) 1]);
-
-    % x-axis settings
-    % set(gca, 'xtick',[1, 2, 3]);
-    % xNames = {'$d_0(t)$'; '$2 d_0(t)$'; '$3 d_0(t)$'};
-    % set(gca, 'XTickLabel', xNames);
-    % 
-    % % y-axis settings
-    % set(gca, 'ytick',[0, 0.5 * J(t), J(t)]);
-    % yNames = {'$0$'; '$0.5 \, J(t)$'; '$J(t)$'};
-    % set(gca, 'YTickLabel', yNames);
-
-    % Set figure size
-    set(gcf,'position', [0, 0, 800, 400]);
-
+    
+    % Legend
+    legend(h(1), 'location', 'northwest');
+    
 end
 
+set(gcf,'position', [0, 0, 800, 600]);
 
 %% Create figures
-% Export png
-% exportgraphics(gca,'png/JetStreamlinePressure2D.png', 'Resolution', 300);
+
+filename = "JetEvolution2D";
+savefig(gcf, sprintf("fig/%s.fig", filename));
+exportgraphics(gcf, sprintf("png/%s.png", filename), 'Resolution', 300);
+exportgraphics(gcf,sprintf("eps/%s.eps", filename), 'Resolution', 300);
 
 %% Function definitions
+function [xBars, hBars] = freesurface(t, taus, SubstrateFunctions)
 
-function res = tauMinFun(tau, xMax, SubstrateCoefficients)
-
-    TimeDependents = timedependents(tau, SubstrateCoefficients);
-    d = TimeDependents.ds;
-    d_t = TimeDependents.d_ts;
-    res = xMax - 2 * d_t * (t - tau) - d;
-end
-
-function [xs, hs] = freesurface(t, taus, SubstrateCoefficients)
-
-    TimeDependents = timedependents(taus, SubstrateCoefficients);
+    ds = SubstrateFunctions.d(taus);
+    d_ts = SubstrateFunctions.d_t(taus);
+    d_tts = SubstrateFunctions.d_tt(taus);
+    Js = SubstrateFunctions.J(taus);
     
-    ds = TimeDependents.ds;
-    d_ts = TimeDependents.d_ts;
-    d_tts = TimeDependents.d_tts;
-    Js = TimeDependents.Js;
-    
-    xs = 2 * d_ts .* (t - taus) + ds;
-    hs = (d_ts .* Js) ./ (d_ts - 2 * d_tts .* (t - taus));
-    
-    xs
-    
+    xBars = 2 * d_ts .* (t - taus) + ds;
+    hBars = (d_ts .* Js) ./ (d_ts - 2 * d_tts .* (t - taus));
 end
