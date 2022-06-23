@@ -4,8 +4,8 @@ function [Ws, ps] = outersolution(zetas, t, SubstrateFunctions)
 %   the pressure, in the outer region for a quadratic substrate.
 
     %% Only works for the 2D case
-    if SubstrateFunctions.dimension == 'axi'
-       error("Invalidd dimension. Only dimension == '2D' is supported.");
+    if SubstrateFunctions.dimension ~= '2D'
+       error("Invalid dimension. Only dimension == '2D' is supported.");
     end
 
     %% Load substrate coefficients
