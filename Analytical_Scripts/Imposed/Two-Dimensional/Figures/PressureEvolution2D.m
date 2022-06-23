@@ -84,7 +84,7 @@ for typeIdx = 1 : length(typeArr)
 
         %% Determine x values, clustered around the maximum pressure point
         % Find maximum pressure point
-        [~, x_pMax] = pressuremax(t, SubstrateFunctions, epsilon);
+        [~, x_pMax] = pressuremax(t, SubstrateFunctions);
         
         fineWidth = 1e-3;
         leftWidth = x_pMax/ xMax;
@@ -97,7 +97,7 @@ for typeIdx = 1 : length(typeArr)
         xs = [xsLower, xsFine, xsUpper];
         
         % Load in composite pressure
-        [ps, ~, ~] = substratepressure(xs, t, SubstrateFunctions, epsilon);
+        [ps, ~, ~] = substratepressure(xs, t, SubstrateFunctions);
 
         % Plot pressure
         plot(xs, ps, 'Linewidth', 1, 'color', lineColor);
@@ -106,7 +106,7 @@ for typeIdx = 1 : length(typeArr)
     
     %% Plot maximum pressure
     tLongs = linspace(0, 2 * tmax);
-    [pMaxs, xMaxs] = pressuremax(tLongs, SubstrateFunctions, epsilon);
+    [pMaxs, xMaxs] = pressuremax(tLongs, SubstrateFunctions);
     plot(xMaxs, pMaxs, 'color', lineColor, 'linestyle', '--');
     
     %% Tile figure settings

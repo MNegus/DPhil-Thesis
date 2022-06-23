@@ -1,7 +1,8 @@
-function [pMaxs, xMaxs] = pressuremax(ts, SubstrateFunctions, epsilon)
+function [pMaxs, xMaxs] = pressuremax(ts, SubstrateFunctions)
 %PRESSUREMAX Summary of this function goes here
 %   Detailed explanation goes here
 
+    epsilon = SubstrateFunctions.epsilon;
     ds = SubstrateFunctions.d(ts);
     d_ts = SubstrateFunctions.d_t(ts);
     Js = SubstrateFunctions.J(ts);

@@ -1,7 +1,13 @@
-function ps = innerpressure(xs, d, d_t, J, epsilon)
+function ps = innerpressure(xs, t, SubstrateFunctions)
 %%innerpressure
 % Returns the inner solution for the pressure along the substrate in the
 % two-dimensional, plate impact case. 
+
+    % Load in parameters
+    d = SubstrateFunctions.d(t);
+    d_t = SubstrateFunctions.d_t(t);
+    J = SubstrateFunctions.J(t);
+    epsilon = SubstrateFunctions.epsilon;
 
     %% Define inner variables
     turnoverIdx = sum(xs < epsilon * d); % Index of the turnover point

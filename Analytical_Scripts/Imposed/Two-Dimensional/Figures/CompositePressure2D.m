@@ -34,7 +34,7 @@ SubstrateFunctions = substratefunctions("stationary", dimension);
 
 %% Find pressures
 [ps_composite, ps_outer, ps_inner] ...
-    = substratepressure(xs, t, SubstrateFunctions, epsilon);
+    = substratepressure(xs, t, SubstrateFunctions);
 
 % Restrict outer solution where zero
 ps_outer(ps_outer == 0) = nan;
