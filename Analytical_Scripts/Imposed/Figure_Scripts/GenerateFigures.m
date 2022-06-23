@@ -11,4 +11,7 @@ for dimension = ["2D", "axi"]
 
     %% Time dependents
     TimeDependentsPlot(dimension);
+    
+    %% Jet evolution
+    JetEvolutionPlot(dimension);
 end
