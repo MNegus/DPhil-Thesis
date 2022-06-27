@@ -53,47 +53,90 @@ function TimeDependentsPlot(dimension)
     ts = linspace(0, tmax, 1e3)';
 
     %% Substrate motion plot
-    fig = tiledlayout(1, 3);
+    if dimension == "2D"
+        fig = tiledlayout(1, 3);
 
-    % Need the flat functions struct
-    FlatFunctions = substratefunctions('flat', dimension);
+        % Need the flat functions struct
+        FlatFunctions = substratefunctions('flat', dimension);
+
+        % Substrate position
+        nexttile;
+        ws = FlatFunctions.a(ts);
+        plot(ts, ws, 'color', redCol, 'linewidth', 2);
+        xlabel("$t$");
+        ylabel("$w(t$)");
+        grid on;
+
+        % Substrate velocity
+        nexttile;
+        w_ts = FlatFunctions.a_t(ts);
+        plot(ts, w_ts / epsilon, 'color', redCol, 'linewidth', 2);
+        xlabel("$t$");
+        ylabel("$w'(t) / \epsilon$");
+        grid on;
+
+        % Substrate acceleration
+        nexttile;
+        w_tts = FlatFunctions.a_tt(ts);
+        plot(ts, w_tts / epsilon^2, 'color', redCol, 'linewidth', 2);
+        xlabel("$t$");
+        ylabel("$w''(t) / \epsilon^2$");
+        grid on;
+
+        % Figure settings
+        set(gcf,'position', [100, 100, 960, 300]);
+        pause(0.1);
+
+        % Export figure
+        filename = sprintf("FlatImposed_%s", dimension);
+        savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
+        exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
+        exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
+    end
+
+    %% Curved substrate spatial evolution
+    figNo = 2;
+    if dimension == "2D"
+        figure(figNo);
+        figNo = figNo + 1;
+        hold on;
+        CurvedFunctions = substratefunctions('curved', dimension);
+        freq = 100;
+        L = epsilon * 2 * sqrt(tmax);
+        xs = linspace(0, L, 1e3);
+        for tIdx = 1 : freq : length(ts)
+            t = ts(tIdx);
+            ws = CurvedFunctions.w(xs, t);
+            plot(xs, ws, 'color', blueCol, 'linewidth', 1.5);
+        end
+        grid on;
+        xlabel("$x$");
+        ylabel("$w(x, t)$");
+    end
+    set(gcf,'position', [100, 100, 600, 300]);
     
-    % Substrate position
-    nexttile;
-    ws = FlatFunctions.a(ts);
-    plot(ts, ws, 'color', 'black', 'linewidth', 2);
-    xlabel("$t$");
-    ylabel("$w(t$)");
-    grid on;
+    % Time arrow
+    annotation('arrow',[0.242 0.242],...
+    [0.709 0.873]);
 
-    % Substrate velocity
-    nexttile;
-    w_ts = FlatFunctions.a_t(ts);
-    plot(ts, w_ts / epsilon, 'color', 'black', 'linewidth', 2);
-    xlabel("$t$");
-    ylabel("$w'(t) / \epsilon$");
-    grid on;
-
-    % Substrate acceleration
-    nexttile;
-    w_tts = FlatFunctions.a_tt(ts);
-    plot(ts, w_tts / epsilon^2, 'color', 'black', 'linewidth', 2);
-    xlabel("$t$");
-    ylabel("$w''(t) / \epsilon^2$");
-    grid on;
-
-    % Figure settings
-    set(gcf,'position', [100, 100, 960, 300]);
-    pause(0.1);
-
+    % Time textbox
+    annotation('textbox',...
+        [0.250180327868853 0.84 0.0826065573770493 0.0700000000000006],...
+        'String','$t$',...
+        'LineStyle','none',...
+        'Interpreter','latex',...
+        'FitBoxToText','off', ...
+        'Fontsize', 18);
+    
     % Export figure
-    filename = sprintf("AnalyticalImposed_%s", dimension);
+    filename = sprintf("CurvedImposed_%s", dimension);
     savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
     exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
     exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
 
+    
     %% Turnover point plot
-    figNo = 2;
+    
     figure(figNo);
     figNo = figNo + 1;
     hold on;
@@ -101,7 +144,7 @@ function TimeDependentsPlot(dimension)
         plot(ts, SubstrateFunctions(typeIdx).d(ts), 'color', colors(typeIdx, :), ...
             'linewidth', 2);
     end
-    legend(displayNames, 'Location', 'southeast');
+    legend(displayNames, 'Location', 'northwest');
     xlabel("$t$");
     ylabel("$d_0(t)$");
     grid on;
@@ -166,7 +209,7 @@ function TimeDependentsPlot(dimension)
     ylabel("$F(t)$");
 
     if dimension == "2D"
-        ylim([0, 15]);
+        ylim([0, 40]);
     else
         ylim([0, 2]);
     end
@@ -206,7 +249,7 @@ function TimeDependentsPlot(dimension)
     grid on;
     
     if dimension == "2D"
-        ylim([0, 0.035]);
+        ylim([0, 0.095]);
     else
         ylim([0, 0.004]);
     end
