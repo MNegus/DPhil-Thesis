@@ -19,16 +19,20 @@ mapObj = load("fine_red_blue_cmap.mat");
 cmap = mapObj.cmap;
 blueCol = cmap(1, :);
 redCol = cmap(end, :);
+blackCol = [0, 0, 0];
 
 %% Load parameters
 % Substrate parameters
 [epsilon, k, q, omega] = substrateparameters(); 
 
 tmax = 1;
-t = tmax;
+% ts = linspace(1e-10, tmax, 10);
+ts = [0.5, tmax];
+
 
 L = epsilon * 2 * sqrt(tmax);
-xs = linspace(-1.1 * L, 1.1 * L, 1e3);
+% xs = linspace(-1.1 * L, 1.1 * L, 1e3);
+xs = linspace(0, 2 * L, 1e3);
 
 %% Load in substrate functions
 dimension = "2D";
@@ -43,61 +47,63 @@ SubstrateFunctionsArray = [StationaryFunctions, ...
        FlatFunctions, CurvedFunctions];
 
 % Array of types
-typeArr = ["Stationary substrate solution", ...
-    "Flat substrate solution", "Quadratic substrate solution"];
+types = ["stationary", "flat", "curved"];
+colors = [blackCol; redCol; blueCol];
 
-figure(1);
-hold on;
-for typeIdx = 1 : length(typeArr)
-    type = typeArr(typeIdx);
-    
-    if type == "Stationary substrate solution"
-       lineColor = 'black';
-    elseif type == "Flat substrate solution"
-        lineColor = redCol;
-    else
-        lineColor = blueCol;
+
+figNo = 1;
+for t = ts
+    figure(figNo);
+    figNo = figNo + 1;
+    for typeIdx = 1 : length(types)
+        type = types(typeIdx);
+
+        % Save SubstrateCoefficients
+        SubstrateFunctions = substratefunctions(types(typeIdx), dimension);
+        lineColor = colors(typeIdx, :);
+
+        % Load turnover point
+        d = SubstrateFunctions.d(t);
+
+        % Create xs
+        xHats_Free_Surface = linspace(d, 2 * L / epsilon, 1e3);
+
+        % Determine free-surface
+        hHats = outerfreesurface(xHats_Free_Surface, t, SubstrateFunctions);
+        hs = hHats;
+
+        % Plot free-surface
+        h(typeIdx) = plot(xHats_Free_Surface, hs, 'linewidth', 2, 'color', lineColor, ...
+            'Displayname', type);
+        hold on;
+
+        %% Plot the substrate
+        ws = SubstrateFunctions.w(xs, t);
+        plot(xs / epsilon, -ws, ...
+            'Color', lineColor, 'Linestyle', ':', 'Linewidth', 2);
     end
+    hold off;
     
-    % Save SubstrateCoefficients
-    SubstrateFunctions = SubstrateFunctionsArray(typeIdx);
+    ylim([-2, 6]);
     
-    % Load turnover point
-    d = SubstrateFunctions.d(t);
-    
-    % Create xs
-    xs_Free_Surface = linspace(epsilon * d, 2 * L, 1e3);
-    
-    % Determine free-surface
-    hHats = outerfreesurface(xs_Free_Surface, t, SubstrateFunctions);
-    hs = epsilon^2 * hHats;
-    
-    % Plot free-surface
-    h(typeIdx) = plot(xs_Free_Surface, hs, 'linewidth', 2, 'color', lineColor, ...
-        'Displayname', type);
-    plot(-xs_Free_Surface, hs, 'linewidth', 2, 'color', lineColor, ...
-        'Displayname', type);
-    
-    %% Plot the substrate
-    ws = SubstrateFunctions.w(xs, t);
-    plot(xs, -epsilon^2 * ws, ...
-        'Color', lineColor, 'Linestyle', ':', 'Linewidth', 2);
+    legend(h(1:length(types)), 'Location', 'North');
+
+    grid on;
+
+    xlabel("$x$");
+    ylabel("$z$");
+
+    set(gcf,'position', [100, 100, 500, 400]);
 end
+
 
 
 %% Figure settings
 % xlim([-L, L]);
-legend(h(1:3), 'Location', 'North');
 
-grid on;
-
-xlabel("$x$");
-ylabel("$z$");
-
-set(gcf,'position', [100, 100, 700, 350]);
 set(gcf, 'Renderer', 'painters');
 
 % Export figure
-savefig(gcf, 'fig/FreeSurface2D.fig');
-exportgraphics(gca,'png/FreeSurface2D.png', 'Resolution', 300);
-exportgraphics(gca,'eps/FreeSurface2D.eps', 'Resolution', 300);
+% savefig(gcf, 'fig/FreeSurface2D.fig');
+% exportgraphics(gca,'png/FreeSurface2D.png', 'Resolution', 300);
+% exportgraphics(gca,'eps/FreeSurface2D.eps', 'Resolution', 300);
