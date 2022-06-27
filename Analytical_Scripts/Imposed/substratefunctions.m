@@ -136,9 +136,6 @@ function SubstrateFunctions = substratefunctions(type, dimension)
         %% Pressure coefficients
         SubstrateFunctions.A = @(t) (4 * d(t).^3 / 9) .* (4 * d_t(t).^2 + d(t) .* d_tt(t));
         SubstrateFunctions.C = @(t) 2 * sqrt(2) * d(t).^(3/2) * d_t(t).^2 / (3 * pi);
-        
-        %% Full substrate solution (only works for t being a scalar)
-        SubstrateFunctions.w = w;
     end
     
     %% Load in turnover point/curve functions
