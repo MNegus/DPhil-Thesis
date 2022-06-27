@@ -34,7 +34,6 @@ cmap = mapObj.cmap;
 
 %% Quadratic substrate definition
 t = 0.5; % Times
-[epsilon, L, q, omega] = substrateparameters(); % Substrate parameters
 
 substrateType = "flat";
 
@@ -81,10 +80,6 @@ ylabel('$\hat{z}$');
 % Show axes grid
 % grid on;
 
-%% Creates mesh grid of values
-[X, Z] = meshgrid(xs, zs);
-Zeta = X + 1i * Z; % Complex variable on the mesh grid 
-
 %% Pressure surf plot
 % Determines right hand side coordinates
 xsPos = linspace(0, xMax, noPoints / 2);
@@ -112,7 +107,7 @@ PNeg = flip(ps_stat, 2);
 contourf(XNeg, ZNeg, PNeg, levels, 'Edgecolor', 'None');
 
 % Determines moving substrate solution on right-hand-side
-[Ws, ps] = outersolution(ZetaPos, t, SubstrateFunctions);
+[~, ps] = outersolution(ZetaPos, t, SubstrateFunctions);
 
 % Plot the moving substrate pressure on the right hand side
 contourf(XPos, ZPos, ps, levels, 'Edgecolor', 'None')
@@ -161,24 +156,10 @@ set(gca,'position',x1)
 pbaspect([1 zMax / (2 * xMax) 1]); % Aspect ratio of plot
 set(gca, 'Layer', 'Top'); % Set axes to be on top layer
 
-% x-axis settings
-% set(gca, 'xtick',[-1, 0, 1]);
-% xNames = {'$-d_0(t)$'; '0'; '$d_0(t)$'};
-% set(gca, 'XTickLabel', xNames);
-
-% y-axis settings
-% set(gca, 'ytick',[0, d_stat, 2 * d_stat]);
-% yNames = {'0'; '$d_0(t)$'; '$2 d_0(t)$'};
-% set(gca, 'YTickLabel', yNames);
-
 box on;
 
 % Add white dividing line
 xline(0, 'color', 'white', 'linewidth', 1.5);
-
-
-% Axes line width
-% axes1.LineWidth = 1.5;
 
 % Set figure size
 set(gcf,'position', [0, 0, 1200, 600]);
