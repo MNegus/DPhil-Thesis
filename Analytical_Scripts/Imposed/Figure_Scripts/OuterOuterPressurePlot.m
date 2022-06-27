@@ -1,9 +1,10 @@
+function OuterOuterPressurePlot(dimension)
+
 %% OuterPressure2D
 % Script to produce a figure of the streamlines and pressure in the outer
 % region for the 2D impact case. Appears in Section 3.3.6, under the Wagner
 % theory chapter. 
 
-clear;
 close all;
 
 %% Figure options
@@ -18,16 +19,28 @@ mapObj = load("fine_red_blue_cmap.mat");
 cmap = mapObj.cmap;
 colormap(cmap);
 
+%% Parameters for each dimension
+if dimension == "2D"
+    dirName = "Two-dimensional_Figures";
+    minP = 0;
+    maxP = 250;
+else
+    dirName = "Axisymmetric_Figures";
+    minP = 0;
+    maxP = 5000;
+end
+
 %% Parameter definitions
-noFillConts = 50;
-
 t = 0.25; % Times
-[epsilon, L, q, omega] = substrateparameters(); 
-
-substrateType = "curved";
 
 %% Load in substrate functions
-dimension = "2D";
+if dimension == "2D"
+    substrateType = "curved";
+    Pfun = @(A, X, Z) Pfun_2D(A, X, Z);
+else
+    substrateType = "flat";
+    Pfun = @(A, X, Z) Pfun_axi(A, X, Z);
+end
 StationaryFunctions = substratefunctions("stationary", dimension);
 SubstrateFunctions = substratefunctions(substrateType, dimension);
 
@@ -36,8 +49,6 @@ A_Stationary = StationaryFunctions.A(t);
 A_Substrate = SubstrateFunctions.A(t);
 
 %% Plotting parameters
-minP = 0;
-maxP = 250;
 levels = linspace(minP, maxP, 100);
 
 %% Surf plot for pressure
@@ -75,15 +86,27 @@ pbaspect([1 1 1]);
 
 % Colourbar 
 cb = colorbar('Location', 'Northoutside');
-cb.Label.String = '$P_0(x, z, t)$';
 cb.Label.Interpreter = 'latex';
 cb.TickLabelInterpreter = 'latex';
-cb.XTick = [0, 50, 100, 150, 200, 250];
+% 
 caxis([minP maxP]);
+
+if dimension == "2D"
+    cb.Label.String = '$P_0(x, z, t)$';
+    cb.XTick = [0, 50, 100, 150, 200, 250];
+else
+    cb.Label.String = '$P_0(r, z, t)$'; 
+    cb.XTick = [0, 2500, 5000];
+end
+    
 
 %% Whole figure settings
 grid on;
-xlabel("$x$");
+if dimension == "2D"
+    xlabel("$x$");
+else
+    xlabel("$r$");
+end
 ylabel("$z$");
 set(gcf,'position', [0, 0, 800, 600]);
 
@@ -125,10 +148,10 @@ set(cb,'Position',cbPos)
 set(gca,'Position',axesPos);
 
 % Export figure
-filename = "OuterOuterWhole2D";
-savefig(gcf, sprintf("fig/%s.fig", filename));
-exportgraphics(gcf, sprintf("png/%s.png", filename), 'Resolution', 300);
-exportgraphics(gcf,sprintf("eps/%s.eps", filename), 'Resolution', 300);
+filename = sprintf("OuterOuterWhole_%s", dimension);
+savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
+exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
+exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
 
 
 %% Wedge plot
@@ -175,19 +198,29 @@ xlim([-plotLim, plotLim]);
 ylim([0, 2 * plotLim]);
 pbaspect([1 1 1]);
 grid on;
-xlabel("$x$");
+if dimension == "2D"
+    xlabel("$x$");
+else
+    xlabel("$r$");
+end
 ylabel("$z$");
 
 set(gcf,'position', [0, 0, 300, 300]);
 
-filename = "OuterOuterZoomed2D";
-savefig(gcf, sprintf("fig/%s.fig", filename));
-exportgraphics(gcf, sprintf("png/%s.png", filename), 'Resolution', 300);
-exportgraphics(gcf,sprintf("eps/%s.eps", filename), 'Resolution', 300);
+filename = sprintf("OuterOuterZoomed_%s", dimension);
+savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
+exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
+exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
 
 
 %% Function definitions
-function Ps = Pfun(A, X, Z)
+function Ps = Pfun_2D(A, X, Z)
 %PFUN Outputs the pressure 
-    Ps = -A * (X.^2 + (Z - 1).^2 - 1) ./ (2 * (X.^2 + Z.^2));
+    Ps = A * (1 - X.^2 - (Z - 1).^2) ./ (2 * (X.^2 + Z.^2));
+end
+
+function Ps = Pfun_axi(A, X, Z)
+    Ps = A * (1 - X.^2 - (Z - 1).^2) ./ (2 * (X.^2 + Z.^2)).^(3/2);
+end
+
 end
