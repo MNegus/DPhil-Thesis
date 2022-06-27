@@ -1,14 +1,9 @@
-function hHats = outerfreesurface(xs, t, SubstrateFunctions)
+function hHats = outerfreesurface(xHats, t, SubstrateFunctions)
 %OUTERFREESURFACE Summary of this function goes here
 %   Detailed explanation goes here
 
     %% Load function values
-    epsilon = SubstrateFunctions.epsilon;
     d = SubstrateFunctions.d(t);
-    
-    
-    %% Define xHats
-    xHats = xs / epsilon;
     
     if SubstrateFunctions.dimension == "2D"
         %% Two-dimensional free-surface
@@ -38,6 +33,7 @@ function hHats = outerfreesurface(xs, t, SubstrateFunctions)
         dIdx = find(xHats == d);
         if ~isempty(dIdx)
            hHats(dIdx) = -aHat - bHat * d^2;
+           hHats(dIdx)
         end
         
     elseif SubstrateFunctions.dimension == "axi"
