@@ -1,3 +1,5 @@
+function OuterStreamlinePressure2D()
+
 %% OuterStreamlinePressure
 % Script to produce a figure of the streamlines and pressure in the outer
 % region for the 2D impact case. Appears in Section 3.3.3, under the Wagner
@@ -7,7 +9,6 @@
 % colour plot for the pressure p. We pick a generic value of d(t) for
 % plotting clarity. 
 
-clear;
 close all;
 
 addpath("../");
@@ -151,7 +152,6 @@ cb.TickLabelInterpreter = 'latex';
 x1 = get(gca,'position');
 x = get(cb,'Position');
 x(3) = 0.5 * x(3);
-x(2) = 0.95 * x(2);
 x(1) = 2.475 * x(1);
 set(cb,'Position',x)
 set(gca,'position',x1)
@@ -167,7 +167,7 @@ set(gca, 'Layer', 'Top'); % Set axes to be on top layer
 % set(gca, 'XTickLabel', xNames);
 
 % y-axis settings
-set(gca, 'ytick',[0, d_stat, 2 * d_stat]);
+% set(gca, 'ytick',[0, d_stat, 2 * d_stat]);
 % yNames = {'0'; '$d_0(t)$'; '$2 d_0(t)$'};
 % set(gca, 'YTickLabel', yNames);
 
@@ -185,6 +185,9 @@ set(gcf,'position', [0, 0, 1200, 600]);
 
 %% Create figures
 filename = "OuterStreamlinePressure2D";
-savefig(gcf, sprintf("fig/%s.fig", filename));
-exportgraphics(gca, sprintf("png/%s.png", filename), 'Resolution', 300);
-exportgraphics(gca,sprintf("eps/%s.eps", filename), 'Resolution', 300);
+dirName = "Two-dimensional_Figures";
+savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
+exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
+exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
+
+end
