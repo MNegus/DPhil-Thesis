@@ -113,6 +113,8 @@ contourf(XNeg, ZNeg, PNeg, levels, 'Edgecolor', 'None');
 contourf(XPos, ZPos, ps, levels, 'Edgecolor', 'None')
 
 %% Plot streamline contours
+noStreamlines = 20;
+
 % Stationary substrate
 [W_stat, ~] = outersolution(ZetaNeg, t, StationaryFunctions);
 
@@ -120,7 +122,7 @@ contourf(XPos, ZPos, ps, levels, 'Edgecolor', 'None')
 Psi_stat = imag(W_stat);
 
 % Plot contours of streamfunction (i.e. the streamlines)
-contour(XNeg, ZNeg, Psi_stat, 15, 'Color', 0.25 * [1 1 1], 'Linewidth', 2)
+contour(XNeg, ZNeg, Psi_stat, noStreamlines, 'Color', 0.25 * [1 1 1], 'Linewidth', 2)
 
 % Moving substrate
 [W, ~] = outersolution(ZetaPos, t, SubstrateFunctions);
@@ -129,7 +131,7 @@ contour(XNeg, ZNeg, Psi_stat, 15, 'Color', 0.25 * [1 1 1], 'Linewidth', 2)
 Psi = imag(W);
 
 % Plot contours of streamfunction (i.e. the streamlines)
-contour(XPos, ZPos, Psi, 15, 'Color', 0.25 * [1 1 1], 'Linewidth', 2)
+contour(XPos, ZPos, Psi, noStreamlines, 'Color', 0.25 * [1 1 1], 'Linewidth', 2)
 
 
 %% Scatter for turnover points
