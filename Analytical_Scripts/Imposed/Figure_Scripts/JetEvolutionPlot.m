@@ -69,12 +69,20 @@ function JetEvolutionPlot(dimension)
             % Find minimum tau
             d = SubstrateFunctions.d;
             d_t = SubstrateFunctions.d_t;
+            d_tt = SubstrateFunctions.d_tt;
             zeroFun = @(tau) xMax - 2 * d_t(tau) * (t - tau) - d(tau);
             tauMin = fsolve(zeroFun, 1e-6);
 
             % Find taus
             taus = linspace(tauMin, t, 1e2);
 
+            % Determinant of Jacobian, throw error if zero at any point
+            detJ = d_t(taus) - 2 * d_tt(taus) .* (t - taus);
+            if (sum(detJ <=0) > 1)
+                detJ
+                error("Singular Jacobian");
+            end
+            
             % Find free-surface
             [xBars, hBars] = freesurface(t, taus, SubstrateFunctions);
 
