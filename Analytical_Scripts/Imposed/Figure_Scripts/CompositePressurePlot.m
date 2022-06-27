@@ -1,4 +1,4 @@
-function CompositePressure2D(dimension)
+function CompositePressurePlot(dimension)
 %%CompositePressure2D.m
 %   Script to make a figure comparing the composite pressure to the outer
 %   and inner pressures in 2D.
