@@ -35,7 +35,7 @@ function PressureEvolutionPlot(dimension)
 
     tmax = 1;
     ts = linspace(0.05, tmax, 1000)';
-    xMax = 2 * epsilon * sqrt(tmax);
+    xMax = 1.25 * 2 * epsilon * sqrt(tmax);
     noPoints = 1e3;
     
     % Types of substrate
@@ -105,7 +105,7 @@ function PressureEvolutionPlot(dimension)
 
         %% Tile figure settings
         xlim([0, xMax]);
-        ylim([-10, 300]);
+        ylim([-10, 500]);
         if dimension == "2D"
             xlabel("$x$");
             ylabel("$p_{{comp}}(x, t)$");

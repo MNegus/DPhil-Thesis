@@ -112,27 +112,29 @@ function TimeDependentsPlot(dimension)
         grid on;
         xlabel("$x$");
         ylabel("$w(x, t)$");
-    end
-    set(gcf,'position', [100, 100, 600, 300]);
+        
+        set(gcf,'position', [100, 100, 600, 300]);
     
-    % Time arrow
-    annotation('arrow',[0.242 0.242],...
-    [0.709 0.873]);
+        % Time arrow
+        annotation('arrow',[0.242 0.242],...
+        [0.709 0.873]);
 
-    % Time textbox
-    annotation('textbox',...
-        [0.250180327868853 0.84 0.0826065573770493 0.0700000000000006],...
-        'String','$t$',...
-        'LineStyle','none',...
-        'Interpreter','latex',...
-        'FitBoxToText','off', ...
-        'Fontsize', 18);
+        % Time textbox
+        annotation('textbox',...
+            [0.250180327868853 0.84 0.0826065573770493 0.0700000000000006],...
+            'String','$t$',...
+            'LineStyle','none',...
+            'Interpreter','latex',...
+            'FitBoxToText','off', ...
+            'Fontsize', 18);
+
+        % Export figure
+        filename = sprintf("CurvedImposed_%s", dimension);
+        savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
+        exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
+        exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
+    end
     
-    % Export figure
-    filename = sprintf("CurvedImposed_%s", dimension);
-    savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
-    exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
-    exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
 
     
     %% Turnover point plot
