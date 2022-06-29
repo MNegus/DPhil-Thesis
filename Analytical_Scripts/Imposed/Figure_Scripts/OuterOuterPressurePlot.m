@@ -31,7 +31,7 @@ else
 end
 
 %% Parameter definitions
-t = 0.25; % Times
+t = 0.75; % Times
 
 %% Load in substrate functions
 if dimension == "2D"

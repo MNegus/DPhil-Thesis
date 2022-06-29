@@ -13,7 +13,7 @@ close all;
 
 addpath("../");
 
-painters = false;
+painters = true;
 
 %% Figure options
 set(0,'defaultTextInterpreter','latex'); %trying to set the default
