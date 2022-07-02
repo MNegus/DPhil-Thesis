@@ -50,9 +50,19 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     
     % Set b coefficients
     if type == "curved"
-        SubstrateFunctions.b = @(t) -k^2 * SubstrateFunctions.a(t);
-        SubstrateFunctions.b_t = @(t) - k^2 * SubstrateFunctions.a_t(t);
-        SubstrateFunctions.b_tt = @(t) - k^2 * SubstrateFunctions.a_tt(t);
+%         SubstrateFunctions.b = @(t) -k^2 * SubstrateFunctions.a(t);
+%         SubstrateFunctions.b_t = @(t) - k^2 * SubstrateFunctions.a_t(t);
+%         SubstrateFunctions.b_tt = @(t) - k^2 * SubstrateFunctions.a_tt(t);
+
+        % Alt: Curve crosses x axis at c = epsilon * p * sqrt(t) 
+        p = 2.5;
+        SubstrateFunctions.b = @(t) -SubstrateFunctions.a(t) ./ (p^2 * epsilon^2 * t);
+        SubstrateFunctions.b_t = @(t) (1 / (p^2 * epsilon^2)) ...
+             * (SubstrateFunctions.a(t) ./ t.^2 - SubstrateFunctions.a_t(t) ./ t);
+        SubstrateFunctions.b_tt = @(t) (1 / (p^2 * epsilon^2)) ...
+            * (-2 * SubstrateFunctions.a(t) ./ t.^3 ...
+              + 2 * SubstrateFunctions.a_t(t) ./ t.^2 ...
+              - SubstrateFunctions.a_tt(t) ./ t);
     else
         SubstrateFunctions.b = @(t) zeros(size(t));
         SubstrateFunctions.b_t = @(t) zeros(size(t));
@@ -94,7 +104,7 @@ function SubstrateFunctions = substratefunctions(type, dimension)
 
         %% A, B, C functions
         % B, jet-thickness factor
-        B = @(t) aHat_t(t) + 0.5 * bHat_t(t) .* d(t).^2;
+        B = @(t) BFullFun(t, d, aHat_t, bHat_t);
         SubstrateFunctions.B = B;
     
         C = @(t) CFullFun(t, d, d_t, B, aHat_t);
@@ -144,6 +154,16 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     SubstrateFunctions.d_tt = d_tt;
     
     %% Function definitions
+    % B function
+    function Bval = BFullFun(t, d, aHat_t, bHat_t)
+        Bval = aHat_t(t) + 0.5 * bHat_t(t) .* d(t).^2;
+        
+        zeroIdx = find(t == 0);
+        if ~isempty(zeroIdx)
+           Bval(zeroIdx) = aHat_t(0); 
+        end 
+    end
+
     % C function
     function Cval = CFullFun(t, d, d_t, B, aHat_t)
        % Cs, overlap pressure factor
