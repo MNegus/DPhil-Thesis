@@ -9,8 +9,8 @@ function hHats = outerfreesurface(xHats, t, SubstrateFunctions)
         %% Two-dimensional free-surface
         
         % Load function values
-        aHat = SubstrateFunctions.aHat(t);
-        bHat = SubstrateFunctions.bHat(t);
+        a = SubstrateFunctions.a(t);
+        b = SubstrateFunctions.b(t);
         
         %% Complex integral solutions
         % I1 integrals
@@ -25,14 +25,14 @@ function hHats = outerfreesurface(xHats, t, SubstrateFunctions)
         
         %% Free surface solution
         hHats = 0.5 * xHats .* sqrt(xHats.^2 - d^2) ...
-            + sqrt(xHats.^2 - d^2) .* (aHat * I2_0 + (bHat / 3) * I2_1) ...
+            + sqrt(xHats.^2 - d^2) .* (a * I2_0 + (b / 3) * I2_1) ...
             - (xHats ./ sqrt(xHats.^2 - d^2)) ...
-                .* (t - d^2 / 4 - aHat * I1_0 - (bHat / 3) * I1_1);
+                .* (t - d^2 / 4 - a * I1_0 - (b / 3) * I1_1);
         
         %% Setting turnover point value (Wagner condition)
         dIdx = find(xHats == d);
         if ~isempty(dIdx)
-           hHats(dIdx) = -aHat - bHat * d^2;
+           hHats(dIdx) = -a - b * d^2;
            hHats(dIdx)
         end
         

@@ -39,88 +39,80 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     
     %% Set substrate coefficients
     if type == "stationary"
-        SubstrateFunctions.a = @(t) zeros(size(t));
-        SubstrateFunctions.a_t = @(t) zeros(size(t));
-        SubstrateFunctions.a_tt = @(t) zeros(size(t));
+        a = @(t) zeros(size(t));
+        
+        a_t = @(t) zeros(size(t));
+        
+        a_tt = @(t) zeros(size(t));
     else
-        SubstrateFunctions.a = @(t) q * (t.^2 + 1 - cos(omega * t));
-        SubstrateFunctions.a_t = @(t) q * (2 * t + omega * sin(omega * t));
-        SubstrateFunctions.a_tt = @(t) q * (2 + omega^2 * cos(omega * t));
+        a = @(t) q * (t.^2 + 1 - cos(omega * t));
+        
+        a_t = @(t) q * (2 * t + omega * sin(omega * t));
+        
+        a_tt = @(t) q * (2 + omega^2 * cos(omega * t));
     end
     
     % Set b coefficients
     if type == "curved"
-%         SubstrateFunctions.b = @(t) -k^2 * SubstrateFunctions.a(t);
-%         SubstrateFunctions.b_t = @(t) - k^2 * SubstrateFunctions.a_t(t);
-%         SubstrateFunctions.b_tt = @(t) - k^2 * SubstrateFunctions.a_tt(t);
+%         b = @(t) -k^2 * a(t);
+%         b_t = @(t) - k^2 * a_t(t);
+%         b_tt = @(t) - k^2 * a_tt(t);
 
         % Alt: Curve crosses x axis at c = epsilon * p * sqrt(t) 
-        p = 2.5;
-        SubstrateFunctions.b = @(t) -SubstrateFunctions.a(t) ./ (p^2 * epsilon^2 * t);
-        SubstrateFunctions.b_t = @(t) (1 / (p^2 * epsilon^2)) ...
-             * (SubstrateFunctions.a(t) ./ t.^2 - SubstrateFunctions.a_t(t) ./ t);
-        SubstrateFunctions.b_tt = @(t) (1 / (p^2 * epsilon^2)) ...
-            * (-2 * SubstrateFunctions.a(t) ./ t.^3 ...
-              + 2 * SubstrateFunctions.a_t(t) ./ t.^2 ...
-              - SubstrateFunctions.a_tt(t) ./ t);
+        p = 1.25;
+        b = @(t) -a(t) ./ (p^2 * t);
+        b_t = @(t) (1 / (p^2)) * (a(t) ./ t.^2 - a_t(t) ./ t);
+        b_tt = @(t) (1 / (p^2)) * (-2 * a(t) ./ t.^3 + 2 * a_t(t) ./ t.^2 ...
+              - a_tt(t) ./ t);
     else
-        SubstrateFunctions.b = @(t) zeros(size(t));
-        SubstrateFunctions.b_t = @(t) zeros(size(t));
-        SubstrateFunctions.b_tt = @(t) zeros(size(t));
+        b = @(t) zeros(size(t));
+        b_t = @(t) zeros(size(t));
+        b_tt = @(t) zeros(size(t));
     end
     
-    %% Define outer functions (scaled with epsilons where appropriate)
-    % aHat coefficients
-    aHat = @(t) SubstrateFunctions.a(t);
-    SubstrateFunctions.aHat = aHat;
+    % Load functions into structure array
+    SubstrateFunctions.a = a;
+    SubstrateFunctions.a_t = a_t;
+    SubstrateFunctions.a_tt = a_tt;
     
-    aHat_t = @(t) SubstrateFunctions.a_t(t);
-    SubstrateFunctions.aHat_t = aHat_t;
-    
-    aHat_tt = @(t) SubstrateFunctions.a_tt(t);
-    SubstrateFunctions.aHat_tt = aHat_tt;
-    
-    % bHat coefficients
-    bHat = @(t) epsilon^2 * SubstrateFunctions.b(t);
-    SubstrateFunctions.bHat = bHat;
-    
-    bHat_t = @(t) epsilon^2 * SubstrateFunctions.b_t(t);
-    SubstrateFunctions.bHat_t = bHat_t;
-    
-    bHat_tt = @(t) epsilon^2 * SubstrateFunctions.b_tt(t);
-    SubstrateFunctions.bHat_tt = bHat_tt;
+    SubstrateFunctions.b = b;
+    SubstrateFunctions.b_t = b_t;
+    SubstrateFunctions.b_tt = b_tt;
     
     if dimension == "2D"
     %% Two-dimensional quantities
         %% Turnover points
-        d = @(t) 2 * sqrt((t - aHat(t)) ./ (1 + 2 * bHat(t)));
+        d = @(t) 2 * sqrt((t - a(t)) ./ (1 + 2 * b(t)));
         
-        d_t = @(t) ((1 + 2 * bHat(t)) .* (1 - aHat_t(t)) - 2 * (t - aHat(t)) .* bHat_t(t)) ...
-            ./ (sqrt(t - aHat(t)) .* (1 + 2 * bHat(t)).^(3/2));
-        d_tt = @(t) -((1 + 2 * bHat(t)) .* d_t(t).^2 ...
-            + 4 * bHat_t(t) .* d(t) .* d_t(t) ...
-            + 2 * aHat_tt(t) ...
-            + bHat_tt(t) .* d(t).^2) ./ ((1 + 2 * bHat(t)) .* d(t));
+        d_t = @(t) ((1 + 2 * b(t)) .* (1 - a_t(t)) - 2 * (t - a(t)) .* b_t(t)) ...
+            ./ (sqrt(t - a(t)) .* (1 + 2 * b(t)).^(3/2));
+        d_tt = @(t) -((1 + 2 * b(t)) .* d_t(t).^2 ...
+            + 4 * b_t(t) .* d(t) .* d_t(t) ...
+            + 2 * a_tt(t) ...
+            + b_tt(t) .* d(t).^2) ./ ((1 + 2 * b(t)) .* d(t));
 
         %% A, B, C functions
         % B, jet-thickness factor
-        B = @(t) BFullFun(t, d, aHat_t, bHat_t);
+        B = @(t) BFullFun(t, d, a_t, b_t);
         SubstrateFunctions.B = B;
     
-        C = @(t) CFullFun(t, d, d_t, B, aHat_t);
+        C = @(t) CFullFun(t, d, d_t, B, a_t);
         SubstrateFunctions.C = C;
         
         % A function
-        A = @(t) C(t) - 0.5 * aHat_tt(t) .* d(t).^2 ...
-            - (1 / 8) * bHat_tt(t) .* d(t).^4;
+        A = @(t) C(t) - 0.5 * a_tt(t) .* d(t).^2 ...
+            - (1 / 8) * b_tt(t) .* d(t).^4;
         SubstrateFunctions.A = A;
 
         %% Jet thickness
         SubstrateFunctions.J = @(t) pi * (1 - B(t)).^2 .* d(t) ./ (8 * d_t(t).^2);
 
         %% Full substrate solution (only works for t being a scalar)
-        SubstrateFunctions.w = @(x, t) SubstrateFunctions.a(t) * ones(size(x)) ...
-            + SubstrateFunctions.b(t) * x.^2;
+        SubstrateFunctions.w = @(x, t) a(t) * ones(size(x)) ...
+            + b(t) * x.^2 / epsilon^2;
+        SubstrateFunctions.w_x = @(x, t) 2 * b(t) * x / epsilon^2;
+        SubstrateFunctions.w_xx = @(x, t) 2 * b(t) / epsilon^2;
+        SubstrateFunctions.w_xt = @(x, t) 2 * b_t(t) * x / epsilon^2;
         
     else
     %% Axisymmetric quantities
