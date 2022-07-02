@@ -138,7 +138,6 @@ function TimeDependentsPlot(dimension)
 
     
     %% Turnover point plot
-    
     figure(figNo);
     figNo = figNo + 1;
     hold on;
@@ -157,6 +156,29 @@ function TimeDependentsPlot(dimension)
 
     % Export figure
     filename = sprintf("TurnoverPoints_%s", dimension);
+    savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
+    exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
+    exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
+    
+    %% Turnover derivative plot
+    figure(figNo);
+    figNo = figNo + 1;
+    hold on;
+    for typeIdx = 1 : length(types)
+        plot(ts, SubstrateFunctions(typeIdx).d_t(ts), 'color', colors(typeIdx, :), ...
+            'linewidth', 2);
+    end
+    legend(displayNames, 'Location', 'northwest');
+    xlabel("$t$");
+    ylabel("$d'_0(t)$");
+    grid on;
+
+    % Figure settings
+    set(gcf,'position', [100, 100, 600, 300]);
+    pause(0.1);
+
+    % Export figure
+    filename = sprintf("TurnoverPointDerivativess_%s", dimension);
     savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
     exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
     exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
@@ -235,7 +257,6 @@ function TimeDependentsPlot(dimension)
     for typeIdx = 1 : length(types)
         % Load energies
         [Es_outer, Es_jets] = dropletenergy(ts, SubstrateFunctions(typeIdx));
-        
         % Plot outer
         h(typeIdx) = plot(ts, Es_outer, 'color', colors(typeIdx, :), ...
             'linewidth', 1.5, 'Displayname', displayNames(typeIdx));

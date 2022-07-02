@@ -12,11 +12,11 @@ function [Ws, ps] = outersolution(zetas, t, SubstrateFunctions)
     d = SubstrateFunctions.d(t);
     A = SubstrateFunctions.A(t);
     
-    aHat_t = SubstrateFunctions.aHat_t(t);
-    aHat_tt = SubstrateFunctions.aHat_tt(t);
+    a_t = SubstrateFunctions.a_t(t);
+    a_tt = SubstrateFunctions.a_tt(t);
     
-    bHat_t = SubstrateFunctions.bHat_t(t);
-    bHat_tt = SubstrateFunctions.bHat_tt(t);
+    b_t = SubstrateFunctions.b_t(t);
+    b_tt = SubstrateFunctions.b_tt(t);
     
     %% Complex potential
     % Complex integral solutions
@@ -24,7 +24,7 @@ function [Ws, ps] = outersolution(zetas, t, SubstrateFunctions)
     I1_1 = d^2 / 2 + zetas.^2 - zetas.^3 ./ (zetas.^2 - d^2).^(1/2);
     
     % Solution for Ws, the complex potential
-    Ws = 1i * (zetas.^2 - d^2).^(1/2) .* (1 - aHat_t * I1_0 - (bHat_t / 3) * I1_1);
+    Ws = 1i * (zetas.^2 - d^2).^(1/2) .* (1 - a_t * I1_0 - (b_t / 3) * I1_1);
     
     %% Pressure
     % Complex integral solutions
@@ -33,6 +33,6 @@ function [Ws, ps] = outersolution(zetas, t, SubstrateFunctions)
         + 8 * zetas.^3 .* ((zetas.^2 - d^2).^(1/2) - zetas) + d^4);
     
     % Solution for ps, the pressure
-    ps = real(1i * (A - aHat_tt * I3_0 - (bHat_tt / 3) * I3_1) ./ (zetas.^2 - d^2).^(1/2));
+    ps = real(1i * (A - a_tt * I3_0 - (b_tt / 3) * I3_1) ./ (zetas.^2 - d^2).^(1/2));
 end
 

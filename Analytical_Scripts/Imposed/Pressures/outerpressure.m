@@ -18,14 +18,14 @@ function ps = outerpressure(xs, t, SubstrateFunctions)
     if SubstrateFunctions.dimension == "2D"
         %% Two-dimensional pressure
         % Load substrate quantities
-        aHat_tt = SubstrateFunctions.aHat_tt(t);
-        bHat_tt = SubstrateFunctions.bHat_tt(t);
+        a_tt = SubstrateFunctions.a_tt(t);
+        b_tt = SubstrateFunctions.b_tt(t);
         
         % Plate term
-        plateTerm = 0.5 * aHat_tt * (d^2 - 2 * xHats.^2);
+        plateTerm = 0.5 * a_tt * (d^2 - 2 * xHats.^2);
 
         % Quadratic term
-        quadTerm = (1 / 24) * bHat_tt * (d^4 + 4 * d^2 * xHats.^2 - 8 * xHats.^4);
+        quadTerm = (1 / 24) * b_tt * (d^4 + 4 * d^2 * xHats.^2 - 8 * xHats.^4);
 
         ps(xHats < d) = (1 / epsilon) * (A - plateTerm - quadTerm) ...
             ./ sqrt(d^2 - xHats.^2);

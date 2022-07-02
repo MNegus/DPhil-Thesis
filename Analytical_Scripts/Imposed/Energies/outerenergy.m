@@ -8,12 +8,12 @@ function Es = outerenergy(ts, SubstrateFunctions)
     if SubstrateFunctions.dimension == "2D"
         %% Two-dimensional energy
         % Load substrate coefficients
-        aHat_ts = SubstrateFunctions.aHat_t(ts);
-        bHat_ts = SubstrateFunctions.bHat_t(ts);
+        a_ts = SubstrateFunctions.a_t(ts);
+        b_ts = SubstrateFunctions.b_t(ts);
         
         % Return outer energy
-        Es = (pi * epsilon^2 * ds.^2 / 4) .* (1 - aHat_ts).^2 ...
-            + (5 * pi * epsilon^2 * ds.^4 / 192) .* bHat_ts .* (6 * aHat_ts + ds.^2 .* bHat_ts - 6);
+        Es = (pi * epsilon^2 * ds.^2 / 4) .* (1 - a_ts).^2 ...
+            + (5 * pi * epsilon^2 * ds.^4 / 192) .* b_ts .* (6 * a_ts + ds.^2 .* b_ts - 6);
     elseif SubstrateFunctions.dimension == "axi"
         %% Axisymmetric energy
         % Load substrate coefficients

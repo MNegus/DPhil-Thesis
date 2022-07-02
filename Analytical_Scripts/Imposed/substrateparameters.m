@@ -22,7 +22,7 @@ function [epsilon, k, q, omega] = substrateparameters()
     
     % Curved substrate root parameter.
 %     k = 2 / (3 * epsilon); % a = 3 / 4
-    k = 1 / epsilon; % a = 1/2
+    k = 1; % a = 1/2
 %     k = 3 / (4 * epsilon); % a = 2 / 3
 end
 
