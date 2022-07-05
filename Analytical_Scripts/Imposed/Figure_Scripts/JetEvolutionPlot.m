@@ -84,11 +84,17 @@ function JetEvolutionPlot(dimension)
             end
             
             % Find free-surface
-            [xBars, hBars] = freesurface(t, taus, SubstrateFunctions);
+            [xBars, hBars, uBars] = freesurface(t, taus, SubstrateFunctions);
+            
+            % Find pressure (DOESNT WORK FOR AXI)
+%             zBar = 0;
+%             pBars = pressure(t, xBars, zBar, uBars, hBars, SubstrateFunctions);
 
             % Plot free-surface
             h(1) = plot(xBars, hBars, 'linewidth', 2, 'color', colors(typeIdx, :), ...
                 'Displayname', displayNames(typeIdx));
+%             h(1) = plot(xBars, pBars, 'linewidth', 2, 'color', colors(typeIdx, :), ...
+%                 'Displayname', displayNames(typeIdx));
             hold on;
 
         end
@@ -132,7 +138,7 @@ function JetEvolutionPlot(dimension)
     exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
 
     %% Function definitions
-    function [xBars, hBars] = freesurface(t, taus, SubstrateFunctions)
+    function [xBars, hBars, uBars] = freesurface(t, taus, SubstrateFunctions)
 
         ds = SubstrateFunctions.d(taus);
         d_ts = SubstrateFunctions.d_t(taus);
@@ -141,6 +147,21 @@ function JetEvolutionPlot(dimension)
 
         xBars = 2 * d_ts .* (t - taus) + ds;
         hBars = (d_ts .* Js) ./ (d_ts - 2 * d_tts .* (t - taus));
+        uBars = 2 * d_ts;
+    end
+
+    function pBars = pressure(t, xBars, zBar, uBars, hBars, SubstrateFunctions)
+        
+        % Load w functions
+        epsilon = SubstrateFunctions.epsilon;
+        xs = epsilon * xBars;
+        wBar_xxs = epsilon^2 * SubstrateFunctions.w_xx(xs, t);
+        wBar_xts = epsilon * SubstrateFunctions.w_xt(xs,  t);
+        wBar_tts = SubstrateFunctions.w_tt(xs, t);
+        
+        % Determine pressure
+        pBars = -(wBar_tts + 2 * wBar_xts .* uBars + wBar_xxs .* uBars.^2) .* (hBars - zBar);
+        
     end
 
 end
