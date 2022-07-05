@@ -29,7 +29,8 @@ function OuterFreeSurfacePlot(dimension)
     ts = [0.5, tmax];
 
 
-    L = epsilon * 2 * sqrt(tmax);
+%     L = epsilon * 2 * sqrt(tmax);
+    L = epsilon * 3 / 2;
     xs = linspace(0, 2 * L, 1e3);
 
     %% Substrate functions
@@ -52,7 +53,7 @@ function OuterFreeSurfacePlot(dimension)
 
 
     %% Free-surface plot
-    tiledlayout(1, 2);
+    tiledlayout(2, 1);
 
     tileNo = 1;
 
@@ -76,7 +77,7 @@ function OuterFreeSurfacePlot(dimension)
             else
                 ws = SubstrateFunctions.w(t) * ones(size(xs));
             end
-            plot(xs / epsilon, -ws, ...
+            plot(xs / epsilon, - epsilon * ws, ...
                 'Color', lineColor, 'Linestyle', ':', 'Linewidth', 2);
         end
         
@@ -98,13 +99,14 @@ function OuterFreeSurfacePlot(dimension)
             hs = hHats;
 
             % Plot free-surface
-            h(typeIdx) = plot(xHats_Free_Surface, hs, 'linewidth', 2, 'color', lineColor, ...
+            h(typeIdx) = plot(xHats_Free_Surface, epsilon * hs, 'linewidth', 2, 'color', lineColor, ...
                 'Displayname', displayNames(typeIdx));
 
         end
         
         %% Figure settings
-        ylim([-1, 4]);
+        xlim([0, 2 * L / epsilon]);
+        ylim([-0.1, 0.6]);
 
         grid on;
 
