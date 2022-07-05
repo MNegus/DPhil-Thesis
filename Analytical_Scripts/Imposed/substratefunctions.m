@@ -110,9 +110,9 @@ function SubstrateFunctions = substratefunctions(type, dimension)
         %% Full substrate solution (only works for t being a scalar)
         SubstrateFunctions.w = @(x, t) a(t) * ones(size(x)) ...
             + b(t) * x.^2 / epsilon^2;
-        SubstrateFunctions.w_x = @(x, t) 2 * b(t) * x / epsilon^2;
         SubstrateFunctions.w_xx = @(x, t) 2 * b(t) / epsilon^2;
         SubstrateFunctions.w_xt = @(x, t) 2 * b_t(t) * x / epsilon^2;
+        SubstrateFunctions.w_tt = @(x, t) a_tt(t) + b_tt(t) * x.^2 / epsilon^2;
         
     else
     %% Axisymmetric quantities
