@@ -41,8 +41,12 @@ function PressureEvolutionPlot(dimension)
     % Types of substrate
     if dimension == "2D"
         typeArr = ["stationary", "flat", "curved"];
+        displayNames = ["Stationary substrate", ...
+            "Flat substrate", "Curved substrate"];
     else
         typeArr = ["stationary", "flat"];
+        displayNames = ["Stationary substrate", ...
+            "Flat substrate"];
     end
 
     %% Pressure in time plot
@@ -94,7 +98,8 @@ function PressureEvolutionPlot(dimension)
             [ps, ~, ~] = substratepressure(xs, t, SubstrateFunctions);
 
             % Plot pressure
-            plot(xs, ps, 'Linewidth', 1, 'color', lineColor);
+            h(1) = plot(xs, ps, 'Linewidth', 1.2, 'color', lineColor, ...
+                'Displayname', displayNames(typeIdx));
 
         end
 
@@ -105,7 +110,8 @@ function PressureEvolutionPlot(dimension)
 
         %% Tile figure settings
         xlim([0, xMax]);
-        ylim([-10, 500]);
+        ylim([0, 500]);
+        legend(h(1), 'location', 'northeast');
         if dimension == "2D"
             xlabel("$x$");
             ylabel("$p_{{comp}}(x, t)$");

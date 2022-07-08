@@ -83,7 +83,7 @@ function OuterFreeSurfacePlot(dimension)
         
         %% Plot free-surfaces
 %         for typeIdx = length(types) : -1 : 1
-        for typeIdx = 1 : length(types)
+        for typeIdx = 1
 
             % Save SubstrateCoefficients
             SubstrateFunctions = substratefunctions(types(typeIdx), dimension);
@@ -119,12 +119,12 @@ function OuterFreeSurfacePlot(dimension)
         ylabel("$\hat{z}$");
         
         if tileNo == 2
-%             leg = legend(h(1 : length(types)), 'Orientation', 'Horizontal', 'Location', 'northeastoutside');
+            leg = legend(h(1 : length(types)), 'Orientation', 'Horizontal', 'Location', 'northoutside');
         end
         
     end
     
-    leg = legend(h(1 : length(types)), 'Orientation', 'Horizontal', 'Location', 'northoutside');
+%     leg = legend(h(1 : length(types)), 'Orientation', 'Horizontal', 'Location', 'northoutside');
 %     leg.Layout.Tile = 'north';
 
 
