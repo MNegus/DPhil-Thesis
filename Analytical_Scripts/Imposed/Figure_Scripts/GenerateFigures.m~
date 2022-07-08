@@ -9,7 +9,7 @@ end
 
 %% Loop over dimensions
 % for dimension = ["2D", "axi"]
-for dimension = "axi"
+for dimension = "2D"
 
     %% Time dependents
     TimeDependentsPlot(dimension);
@@ -24,10 +24,10 @@ for dimension = "axi"
     PressureEvolutionPlot(dimension);
 
     %% Outer free surface plot
-    OuterFreeSurfacePlot(dimension);
+%     OuterFreeSurfacePlot(dimension);
 
     %% Outer outer pressure
-    OuterOuterPressurePlot(dimension);
+%     OuterOuterPressurePlot(dimension);
 
 
 end

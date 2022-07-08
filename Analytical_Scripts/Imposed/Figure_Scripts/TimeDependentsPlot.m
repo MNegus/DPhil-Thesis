@@ -13,6 +13,7 @@ function TimeDependentsPlot(dimension)
     %% Figure options
     set(0,'defaultTextInterpreter','latex'); %trying to set the default
     set(0,'defaultAxesFontSize', 18);
+    set(0,'defaultLegendFontSize', 18, 'DefaultLegendFontSizeMode','manual');
     set(0, 'defaultAxesTickLabelInterpreter', 'latex');
     set(0, 'defaultFigureRenderer', 'painters');
     set(groot, 'DefaultLegendInterpreter', 'latex');
@@ -70,21 +71,21 @@ function TimeDependentsPlot(dimension)
         % Substrate velocity
         nexttile;
         w_ts = FlatFunctions.a_t(ts);
-        plot(ts, w_ts / epsilon, 'color', redCol, 'linewidth', 2);
+        plot(ts, w_ts, 'color', redCol, 'linewidth', 2);
         xlabel("$t$");
-        ylabel("$w'(t) / \epsilon$");
+        ylabel("$\dot{w}(t)$");
         grid on;
 
         % Substrate acceleration
         nexttile;
         w_tts = FlatFunctions.a_tt(ts);
-        plot(ts, w_tts / epsilon^2, 'color', redCol, 'linewidth', 2);
+        plot(ts, w_tts, 'color', redCol, 'linewidth', 2);
         xlabel("$t$");
-        ylabel("$w''(t) / \epsilon^2$");
+        ylabel("$\ddot{w}(t)$");
         grid on;
 
         % Figure settings
-        set(gcf,'position', [100, 100, 960, 300]);
+        set(gcf,'position', [100, 100, 800, 250]);
         pause(0.1);
 
         % Export figure
@@ -101,19 +102,33 @@ function TimeDependentsPlot(dimension)
         figNo = figNo + 1;
         hold on;
         CurvedFunctions = substratefunctions('curved', dimension);
-        freq = 100;
+        
         L = epsilon * 2 * sqrt(tmax);
         xs = linspace(0, L, 1e3);
-        for tIdx = 1 : freq : length(ts)
-            t = ts(tIdx);
-            ws = CurvedFunctions.w(xs, t);
-            plot(xs, ws, 'color', blueCol, 'linewidth', 1.5);
+        
+        % Determine number of times
+        freq = 100;
+        tIdxs = 1 : freq : length(ts);
+        
+        length(cmap)
+        length(tIdxs)
+        colorFreq = floor(length(cmap) / length(tIdxs));
+        
+        for k = 1 : length(tIdxs)
+            t = ts(tIdxs(k));
+            if t == 0
+                ws = zeros(size(xs));
+            else
+                ws = CurvedFunctions.w(xs, t);
+            end
+            plot(xs, ws, 'color', cmap(k * colorFreq, :), 'linewidth', 1.5);
         end
         grid on;
         xlabel("$x$");
         ylabel("$w(x, t)$");
+        ylim([-0.6, 0.4]);
         
-        set(gcf,'position', [100, 100, 600, 300]);
+        set(gcf,'position', [100, 100, 800, 400]);
     
         % Time arrow
         annotation('arrow',[0.242 0.242],...
@@ -145,13 +160,13 @@ function TimeDependentsPlot(dimension)
         plot(ts, SubstrateFunctions(typeIdx).d(ts), 'color', colors(typeIdx, :), ...
             'linewidth', 2);
     end
-    legend(displayNames, 'Location', 'northwest');
+    legend(displayNames, 'Location', 'southeast');
     xlabel("$t$");
     ylabel("$d_0(t)$");
     grid on;
 
     % Figure settings
-    set(gcf,'position', [100, 100, 600, 300]);
+    set(gcf,'position', [100, 100, 800, 400]);
     pause(0.1);
 
     % Export figure
@@ -168,13 +183,15 @@ function TimeDependentsPlot(dimension)
         plot(ts, SubstrateFunctions(typeIdx).d_t(ts), 'color', colors(typeIdx, :), ...
             'linewidth', 2);
     end
-    legend(displayNames, 'Location', 'northwest');
+    legend(displayNames, 'Location', 'northeast');
     xlabel("$t$");
-    ylabel("$d'_0(t)$");
+    ylabel("$\dot{d}_0(t)$");
     grid on;
 
+    ylim([0, 10]);
+    
     % Figure settings
-    set(gcf,'position', [100, 100, 600, 300]);
+    set(gcf,'position', [100, 100, 800, 400]);
     pause(0.1);
 
     % Export figure
@@ -198,7 +215,7 @@ function TimeDependentsPlot(dimension)
     grid on;
 
     % Figure settings
-    set(gcf,'position', [100, 100, 600, 300]);
+    set(gcf,'position', [100, 100, 800, 400]);
     pause(0.1);
 
     % Export figure
@@ -233,14 +250,14 @@ function TimeDependentsPlot(dimension)
     ylabel("$F(t)$");
 
     if dimension == "2D"
-        ylim([0, 40]);
+        ylim([0, 15]);
     else
         ylim([0, 2]);
     end
     grid on;
 
     % Figure settings
-    set(gcf,'position', [100, 100, 600, 300]);
+    set(gcf,'position', [100, 100, 800, 400]);
     pause(0.1);
 
     % Export figure
@@ -272,13 +289,13 @@ function TimeDependentsPlot(dimension)
     grid on;
     
     if dimension == "2D"
-        ylim([0, 0.095]);
+        ylim([0, 0.06]);
     else
         ylim([0, 0.004]);
     end
 
     % Figure settings
-    set(gcf,'position', [100, 100, 600, 300]);
+    set(gcf,'position', [100, 100, 800, 400]);
     pause(0.1);
 
     % Export figure
