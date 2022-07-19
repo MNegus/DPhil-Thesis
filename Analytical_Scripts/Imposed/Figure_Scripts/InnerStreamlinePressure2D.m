@@ -21,7 +21,7 @@ xMax = 1;
 zMax = 1;
 
 %% Load in color map
-mapObj = load("red_blue_cmap.mat");
+mapObj = load("fine_red_blue_cmap.mat");
 cmap = mapObj.cmap;
 
 %% Parameter definitions
@@ -88,17 +88,17 @@ TZetas = tzeta(Etas);
 X = real(TZetas);
 Z = imag(TZetas);
 
-% Determine pressure values
-P = (d_t^2 / 2) * (1 - abs((1 + 1i * sqrt(Etas)) ./ (1 - 1i * sqrt(Etas))).^2);
+% Determine pressure values (divided by d_t^2)
+P = (1 / 2) * (1 - abs((1 + 1i * sqrt(Etas)) ./ (1 - 1i * sqrt(Etas))).^2);
 
 % Pressure levels
 noFillConts = 30; % Number of filled contours
 % levels = exp(linspace(-6, 1.8, noFillConts));
-levels = 60;
+levels = 40;
 
 % Plot the pressure
 % figure(1);
-contourf(X, Z, P, 'Edgecolor', 'None');
+contourf(X / J, Z / J, P, levels, 'Edgecolor', 'None');
 
 %% Plot the free-surface
 noPoints = 1e3;
@@ -116,7 +116,7 @@ hsUpper = (J / pi) * (pi + 4 * sqrt(xisUpper + 1));
 
 % Combine and plot
 % figure(1);
-plot([xsLower, xsUpper], [hsLower, hsUpper], 'color', 'black', 'linewidth', 2);
+plot([xsLower, xsUpper] / J, [hsLower, hsUpper] / J, 'color', 'black', 'linewidth', 2);
 
 %% Plot the jet-streamlines
 % kappas = linspace(0, pi, 10); % kappa from 0 to pi
@@ -172,7 +172,7 @@ for kappa = kappas
     
     %% Plot the streamline
 %     figure(1);
-    plot(xs(restrictIdxs), zs(restrictIdxs), 'color', 0.25 * [1 1 1], 'Linewidth', 2);
+    plot(xs(restrictIdxs) / J, zs(restrictIdxs) / J, 'color', 0.25 * [1 1 1], 'Linewidth', 2);
     
     %% Plot etas
 %     figure(2);
@@ -192,7 +192,7 @@ tzetas(end) = tzeta(-1);
 
 % Plot the stagnation line
 % figure(1);
-plot(real(tzetas), imag(tzetas), 'color', 'black', 'linestyle', '--', 'linewidth', 2);
+plot(real(tzetas) / J, imag(tzetas) / J, 'color', 'black', 'linestyle', '--', 'linewidth', 2);
 
 %% Plot the outer-streamlines
 % MAKE THE DIFFERENCE BETWEEN EACH KAPPA THE SAME
@@ -221,7 +221,7 @@ for kappa = kappas(2 : end)
     
     % Plot the streamline
 %     figure(1);
-    plot(xs(restrictIdxs), zs(restrictIdxs), 'color', 0.25 * [1 1 1], 'Linewidth', 2);
+    plot(xs(restrictIdxs) / J, zs(restrictIdxs) / J, 'color', 0.25 * [1 1 1], 'Linewidth', 2);
     
     % Plot etas
 %     figure(2);
@@ -231,7 +231,7 @@ end
 
 %% Plot colour bar for the pressure plot
 cb = colorbar('Location', 'Northoutside');
-cb.Label.String = '$\tilde{p}_0(\tilde{x}, \tilde{z}, t)$';
+cb.Label.String = '$\tilde{p}_0(\tilde{x}, \tilde{z}, t) / \dot{d}_0(t)^2$';
 cb.Label.Interpreter = 'latex';
 cb.TickLabelInterpreter = 'latex';
 
@@ -249,10 +249,16 @@ set(gca,'position',x1)
 
 %% Figure scalings
 figure(1);
-xlim([-xMax, xMax]);
-ylim([0, zMax]);
+xlim([-xMax / J, xMax / J]);
+ylim([0, zMax / J]);
 pbaspect([1 zMax / (2 * xMax) 1]);
 
+% Set tick values
+xTicks = ["$-8J(t)$", "$-4J(t)$", "$0$", "$4J(t)$", "$8J(t)$"];
+yTicks = ["$0$", "$2J(t)$", "$4J(t)$", "$6J(t)$", "$8J(t)$", "$10J(t)$"];
+set(gca,'xtick', [-8 : 4 : 8],'xticklabel', xTicks);
+set(gca,'ytick', [0 : 2 : 10],'yticklabel', yTicks);
+% Add J(t) labellings to x and y limits
 
 
 % Set figure size
@@ -264,6 +270,10 @@ box on;
 
 
 %% Create figures
-% Export png
-% exportgraphics(gca,'png/InnerStreamlinePressure2D.png', 'Resolution', 300);
+filename = "InnerStreamlinePressure2D";
+dirName = "Two-dimensional_Figures";
+savefig(gcf, sprintf("%s/fig/%s.fig", dirName, filename));
+exportgraphics(gcf, sprintf("%s/png/%s.png", dirName, filename), 'Resolution', 300);
+exportgraphics(gcf,sprintf("%s/eps/%s.eps", dirName, filename), 'Resolution', 300);
+
 

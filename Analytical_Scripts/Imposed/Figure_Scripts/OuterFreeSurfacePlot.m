@@ -39,13 +39,13 @@ function OuterFreeSurfacePlot(dimension)
         types = ["stationary", "flat", "curved"];
         colors = [blackCol; redCol; blueCol];
         displayNames = ["Stationary substrate", ...
-            "Flat substrate", "Curved substrate"];
+            "Moving substrate (rigid)", "Moving substrate (curved)"];
         dirName = "Two-dimensional_Figures";
     elseif dimension == "axi"
         types = ["stationary", "flat"];
         colors = [blackCol; redCol];
         displayNames = ["Stationary substrate", ...
-            "Flat substrate"];
+            "Moving substrate"];
         dirName = "Axisymmetric_Figures";
     else
         error("Invalid dimension");
@@ -56,7 +56,6 @@ function OuterFreeSurfacePlot(dimension)
     tiledlayout(1, 2);
 
     tileNo = 1;
-
     
     for t = ts
         
@@ -77,8 +76,9 @@ function OuterFreeSurfacePlot(dimension)
             else
                 ws = SubstrateFunctions.w(t) * ones(size(xs));
             end
-            plot(xs / epsilon, - epsilon * ws, ...
-                'Color', lineColor, 'Linestyle', ':', 'Linewidth', 2);
+            h(typeIdx) = plot(xs / epsilon, - epsilon * ws, ...
+                'Color', lineColor, 'Linestyle', ':', 'Linewidth', 2, ...
+                'Displayname', 'Substrate');
         end
         
         %% Plot free-surfaces
@@ -100,14 +100,16 @@ function OuterFreeSurfacePlot(dimension)
             hs = hHats;
 
             % Plot free-surface
-            h(typeIdx) = plot(xHats_Free_Surface, epsilon * hs, 'linewidth', 2, 'color', lineColor, ...
-                'Displayname', displayNames(typeIdx));
+            h(length(types) + typeIdx) = plot(xHats_Free_Surface, epsilon * hs, 'linewidth', 2, 'color', lineColor, ...
+                'Displayname', 'Free surface');
 
         end
         
         %% Figure settings
         xlim([0, 2 * L / epsilon]);
         ylim([-0.1, 0.4]);
+        titleStr = "$t$ = " + num2str(t);
+        title(titleStr, 'Interpreter', 'latex');
 
         grid on;
 
@@ -118,19 +120,19 @@ function OuterFreeSurfacePlot(dimension)
         end
         ylabel("$\hat{z}$");
         
-        if tileNo == 2
+%         if tileNo == 2
 %             leg = legend(h(1 : length(types)), 'Orientation', 'Horizontal', 'Location', 'northeastoutside');
-        end
+%         end
         
     end
     
-    leg = legend(h(1 : length(types)), 'Orientation', 'Horizontal', 'Location', 'northoutside');
-%     leg.Layout.Tile = 'north';
+    leg = legend(h([length(types) + 1, 1]), 'Orientation', 'Horizontal', 'Location', 'northoutside', 'Numcolumns', 3);
+    leg.Layout.Tile = 'north';
 
 
     %% Figure settings
     % xlim([-L, L]);
-    set(gcf,'position', [100, 100, 800, 400]);
+    set(gcf,'position', [100, 100, 1000, 500]);
     set(gcf, 'Renderer', 'painters');
 
     % Export figure

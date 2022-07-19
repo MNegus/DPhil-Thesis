@@ -9,6 +9,7 @@ function JetEvolutionPlot(dimension)
     %% Figure options
     set(0,'defaultTextInterpreter','latex'); %trying to set the default
     set(0,'defaultAxesFontSize', 18);
+    set(0,'defaultLegendFontSize', 18, 'DefaultLegendFontSizeMode','manual');
     set(0, 'defaultAxesTickLabelInterpreter', 'latex');
     set(0, 'defaultFigureRenderer', 'painters');
     set(groot, 'DefaultLegendInterpreter', 'latex');
@@ -34,14 +35,14 @@ function JetEvolutionPlot(dimension)
     if dimension == "2D"
         types = ["stationary", "flat", "curved"];
         colors = [blackCol; redCol; blueCol];
-        displayNames = ["Free-surface: Stationary substrate", ...
-            "Free-surface: Flat substrate", "Free-surface: Curved substrate"];
+        displayNames = ["Stationary substrate", ...
+            "Moving substrate (rigid)", "Moving substrate (curved)"];
         dirName = "Two-dimensional_Figures";
     elseif dimension == "axi"
         types = ["stationary", "flat"];
         colors = [blackCol; redCol];
-        displayNames = ["Free-surface: Stationary substrate", ...
-            "Free-surface: Flat substrate"];
+        displayNames = ["Stationary substrate", ...
+            "Moving substrate"];
         dirName = "Axisymmetric_Figures";
     else
         error("Invalid dimension");
@@ -110,12 +111,14 @@ function JetEvolutionPlot(dimension)
         % Axes labels
         if dimension == "2D"
             xlabel('$\bar{x}$');
+            ylabel('$\bar{h}_0(\bar{x}, t)$');
             height = 600;
         else
             xlabel('$\bar{r}$');
+            ylabel('$\bar{h}_0(\bar{r}, t)$');
             height = 400;
         end
-        ylabel('$\bar{z}$');
+        
 
         box on;
         grid on;
@@ -129,7 +132,7 @@ function JetEvolutionPlot(dimension)
 
     end
 
-    set(gcf,'position', [0, 0, 800, height]);
+    set(gcf,'position', [0, 0, 1000, height]);
 
     %% Create figures
     filename = sprintf("JetEvolution_%s", dimension);

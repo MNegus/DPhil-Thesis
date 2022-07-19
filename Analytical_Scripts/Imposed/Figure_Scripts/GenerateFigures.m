@@ -1,3 +1,5 @@
+clear;
+close all;
 
 %% Create figure directories
 for dirName = ["Two-dimensional_Figures", "Axisymmetric_Figures"]
@@ -12,19 +14,19 @@ end
 for dimension = "axi"
 
     %% Time dependents
-    TimeDependentsPlot(dimension);
+%     TimeDependentsPlot(dimension);
     
     %% Jet evolution
-    JetEvolutionPlot(dimension);
+%     JetEvolutionPlot(dimension);
     
     %% Composite pressure 
-    CompositePressurePlot(dimension);
+%     CompositePressurePlot(dimension);
     
     %% Pressure evolution
-    PressureEvolutionPlot(dimension);
+%     PressureEvolutionPlot(dimension);
 
     %% Outer free surface plot
-    OuterFreeSurfacePlot(dimension);
+%     OuterFreeSurfacePlot(dimension);
 
     %% Outer outer pressure
     OuterOuterPressurePlot(dimension);
