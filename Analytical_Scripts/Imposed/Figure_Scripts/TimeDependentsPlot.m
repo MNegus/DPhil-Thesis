@@ -17,6 +17,10 @@ function TimeDependentsPlot(dimension)
     set(0, 'defaultAxesTickLabelInterpreter', 'latex');
     set(0, 'defaultFigureRenderer', 'painters');
     set(groot, 'DefaultLegendInterpreter', 'latex');
+    
+    % Main figure options
+    width = 900;
+    height = 450;
 
     %% Load in color map
     mapObj = load("fine_red_blue_cmap.mat");
@@ -29,12 +33,12 @@ function TimeDependentsPlot(dimension)
     if dimension == "2D"
         types = ["stationary", "flat", "curved"];
         colors = [blackCol; redCol; blueCol];
-        displayNames = ["Stationary substrate", "Flat substrate", "Curved substrate"];
+        displayNames = ["Stationary substrate", "Moving substrate (rigid)", "Moving substrate (curved)"];
         dirName = "Two-dimensional_Figures";
     elseif dimension == "axi"
         types = ["stationary", "flat"];
         colors = [blackCol; redCol];
-        displayNames = ["Stationary substrate", "Flat substrate"];
+        displayNames = ["Stationary substrate", "Moving substrate"];
         dirName = "Axisymmetric_Figures";
     else
         error("Invalid dimension");
@@ -63,7 +67,7 @@ function TimeDependentsPlot(dimension)
         % Substrate position
         nexttile;
         ws = FlatFunctions.a(ts);
-        plot(ts, ws, 'color', redCol, 'linewidth', 2);
+        plot(ts, ws, 'color', blackCol, 'linewidth', 2);
         xlabel("$t$");
         ylabel("$w(t$)");
         grid on;
@@ -71,7 +75,7 @@ function TimeDependentsPlot(dimension)
         % Substrate velocity
         nexttile;
         w_ts = FlatFunctions.a_t(ts);
-        plot(ts, w_ts, 'color', redCol, 'linewidth', 2);
+        plot(ts, w_ts, 'color', blackCol, 'linewidth', 2);
         xlabel("$t$");
         ylabel("$\dot{w}(t)$");
         grid on;
@@ -79,7 +83,7 @@ function TimeDependentsPlot(dimension)
         % Substrate acceleration
         nexttile;
         w_tts = FlatFunctions.a_tt(ts);
-        plot(ts, w_tts, 'color', redCol, 'linewidth', 2);
+        plot(ts, w_tts, 'color', blackCol, 'linewidth', 2);
         xlabel("$t$");
         ylabel("$\ddot{w}(t)$");
         grid on;
@@ -110,8 +114,6 @@ function TimeDependentsPlot(dimension)
         freq = 100;
         tIdxs = 1 : freq : length(ts);
         
-        length(cmap)
-        length(tIdxs)
         colorFreq = floor(length(cmap) / length(tIdxs));
         
         for k = 1 : length(tIdxs)
@@ -157,7 +159,9 @@ function TimeDependentsPlot(dimension)
     figNo = figNo + 1;
     hold on;
     for typeIdx = 1 : length(types)
-        plot(ts, SubstrateFunctions(typeIdx).d(ts), 'color', colors(typeIdx, :), ...
+        ds = SubstrateFunctions(typeIdx).d(ts);
+        ds(1) = 0; % Correct for singularities
+        plot(ts, ds, 'color', colors(typeIdx, :), ...
             'linewidth', 2);
     end
     legend(displayNames, 'Location', 'southeast');
@@ -166,7 +170,7 @@ function TimeDependentsPlot(dimension)
     grid on;
 
     % Figure settings
-    set(gcf,'position', [100, 100, 800, 400]);
+    set(gcf,'position', [100, 100, width, height]);
     pause(0.1);
 
     % Export figure
@@ -191,7 +195,7 @@ function TimeDependentsPlot(dimension)
     ylim([0, 10]);
     
     % Figure settings
-    set(gcf,'position', [100, 100, 800, 400]);
+    set(gcf,'position', [100, 100, width, height]);
     pause(0.1);
 
     % Export figure
@@ -208,14 +212,14 @@ function TimeDependentsPlot(dimension)
         plot(ts, SubstrateFunctions(typeIdx).J(ts), 'color', colors(typeIdx, :), ...
             'linewidth', 2);
     end
-
+    ylim([0, 0.8]);
     legend(displayNames, 'Location', 'northwest');
     xlabel("$t$");
     ylabel("$J(t)$");
     grid on;
 
     % Figure settings
-    set(gcf,'position', [100, 100, 800, 400]);
+    set(gcf,'position', [100, 100, width, height]);
     pause(0.1);
 
     % Export figure
@@ -257,7 +261,7 @@ function TimeDependentsPlot(dimension)
     grid on;
 
     % Figure settings
-    set(gcf,'position', [100, 100, 800, 400]);
+    set(gcf,'position', [100, 100, width, height]);
     pause(0.1);
 
     % Export figure
@@ -295,7 +299,7 @@ function TimeDependentsPlot(dimension)
     end
 
     % Figure settings
-    set(gcf,'position', [100, 100, 800, 400]);
+    set(gcf,'position', [100, 100, width, height]);
     pause(0.1);
 
     % Export figure

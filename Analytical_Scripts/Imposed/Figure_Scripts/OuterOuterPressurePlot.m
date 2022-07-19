@@ -22,27 +22,28 @@ colormap(cmap);
 %% Parameters for each dimension
 if dimension == "2D"
     dirName = "Two-dimensional_Figures";
-    minP = 0;
-    maxP = 250;
 else
     dirName = "Axisymmetric_Figures";
-    minP = 0;
-    maxP = 5000;
 end
+
+minP = 0;
+maxP = 250;
 
 %% Parameter definitions
 t = 0.5; % Times
 
 %% Load in substrate functions
+StationaryFunctions = substratefunctions("stationary", dimension);
+epsilon = StationaryFunctions.epsilon;
 if dimension == "2D"
     substrateType = "curved";
     Pfun = @(A, X, Z) Pfun_2D(A, X, Z);
 else
     substrateType = "flat";
-    Pfun = @(A, X, Z) Pfun_axi(A, X, Z);
+    Pfun = @(A, X, Z) epsilon * Pfun_axi(A, X, Z);
 end
-StationaryFunctions = substratefunctions("stationary", dimension);
 SubstrateFunctions = substratefunctions(substrateType, dimension);
+
 
 %% Save A coefficients
 A_Stationary = StationaryFunctions.A(t);
@@ -93,12 +94,12 @@ caxis([minP maxP]);
 
 if dimension == "2D"
     cb.Label.String = '$P_0(x, z, t)$';
-    cb.XTick = [0, 50, 100, 150, 200, 250];
+%     cb.XTick = [0, 50, 100, 150, 200, 250];
 else
-    cb.Label.String = '$P_0(r, z, t)$'; 
-    cb.XTick = [0, 2500, 5000];
+    cb.Label.String = '$\epsilon P_0(r, z, t)$'; 
+%     cb.XTick = [0, 2500, 5000] * epsilon;
 end
-    
+    cb.XTick = [0, 50, 100, 150, 200, 250];
 
 %% Whole figure settings
 grid on;

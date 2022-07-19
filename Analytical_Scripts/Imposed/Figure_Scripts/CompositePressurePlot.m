@@ -70,7 +70,7 @@ function CompositePressurePlot(dimension)
     if dimension == "2D"
         dirName = "Two-dimensional_Figures";
         xlabel("$x$");
-        ylabel("$p(x, 0, t)$");
+        ylabel("$p(x, -\epsilon^2 w(x, t), t)$");
     else
         dirName = "Axisymmetric_Figures";
         xlabel("$r$");
@@ -85,7 +85,7 @@ function CompositePressurePlot(dimension)
     legend(h(1:3), 'Location', 'Northwest');
 
     % Set figure position
-    set(gcf,'position', [100, 100, 600, 400]);
+    set(gcf,'position', [100, 100, 800, 400]);
 
     set(gcf, 'Renderer', 'Painters');
     pause(0.1);

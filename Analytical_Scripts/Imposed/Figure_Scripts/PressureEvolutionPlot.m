@@ -15,6 +15,7 @@ function PressureEvolutionPlot(dimension)
     set(0,'defaultTextInterpreter','latex'); %trying to set the default
     set(0,'defaultAxesFontSize', 18);
     set(0, 'defaultAxesTickLabelInterpreter', 'latex');
+    set(0,'defaultLegendFontSize', 18, 'DefaultLegendFontSizeMode','manual');
     set(groot, 'DefaultLegendInterpreter', 'latex');
 
     if painters
@@ -42,11 +43,11 @@ function PressureEvolutionPlot(dimension)
     if dimension == "2D"
         typeArr = ["stationary", "flat", "curved"];
         displayNames = ["Stationary substrate", ...
-            "Flat substrate", "Curved substrate"];
+            "Moving substrate (rigid)", "Moving substrate (curved)"];
     else
         typeArr = ["stationary", "flat"];
         displayNames = ["Stationary substrate", ...
-            "Flat substrate"];
+            "Moving substrate"];
     end
 
     %% Pressure in time plot
@@ -135,7 +136,7 @@ function PressureEvolutionPlot(dimension)
         height = 400;
     end
     
-    set(gcf,'position', [100, 100, 800, height]);
+    set(gcf,'position', [100, 100, 900, height]);
     pause(0.1);
     
     % Export figure
