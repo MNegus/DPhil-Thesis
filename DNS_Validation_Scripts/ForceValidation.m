@@ -1,4 +1,4 @@
-%% force_validation.m
+%% ForceValidation.m
 % Validates the force in the DNS by comparing it for multiple levels
 
 clear;
@@ -12,8 +12,6 @@ addpath("../Analytical_Scripts/Imposed/Forces");
 cmap_mat = matfile('red_blue_cmap.mat');
 cmap = cmap_mat.cmap;
 
-
-
 %% Figure options
 fontsize = 12;
 lineWidth = 1.25;
@@ -25,19 +23,13 @@ set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 set(0, 'defaultFigureRenderer', 'painters');
 set(0, 'DefaultLegendInterpreter', 'latex');
 
-%% Load in analytical parameters
-% analyticalType = "flatDNS";
-% [epsilon, q, omega, p, L] = substrateparameters(analyticalType);
-
 %% Parameters
 DELTA_T = 1e-4;
 IMPACT_TIME = 0.125;
 T_MAX = 0.8;
 ts = - IMPACT_TIME : DELTA_T : T_MAX - IMPACT_TIME;
-tsAnalytical = 1e-9 : DELTA_T : T_MAX - IMPACT_TIME;
 MAX_TIMESTEP = T_MAX / DELTA_T;
 NO_TIMESTEPS = length(ts);
-freq = 25; % Frequency
 
 %% Directory names
 master_dir = "/scratch/negus/DNS_Chapter_validation";
@@ -53,26 +45,27 @@ for q = 1 : no_levels - 1
     colors(q, :) = cmap(color_idxs(q), :);
 end
 
-%% Norms matrix
-
-
 %% Plot all cases
+% Loop over dimensions
 for axi = [0, 1]
-% for axi = 0
     tileFig = tiledlayout(1, 2, 'Tilespacing', 'compact', 'padding', 'compact');
     
     % Norms matrix
     norms = zeros(length(levels) - 1, 2);
+    
+    % Loop over types (stationary or moving) 
     for typeIdx = 1 : length(types)
-        type = types(typeIdx);
+        type = types(typeIdx); % Load type
         
-        tileFig;
-        % Save for parent directory
+        tileFig; % Change to tiled figure
+        
+        % Save parent directory
         parent_dir = sprintf("%s/%s_maxlevel_validation/axi_%d", ...
             master_dir,type, axi);
         
-        %% Analytical solutions
-        % Set analytical type
+        %% Determine analytical solutions
+        
+        % Set analytical type and title string
         if type == "stationary_plate"
             analyticalType = "stationary";
             titleStr = "(a) Stationary substrate setup.";
@@ -106,32 +99,35 @@ for axi = [0, 1]
             = substrateforce(tsAnalyticalRestricted, SubstrateFunctions);
         
         %% Plot DNS solutions
+        % Move to relevant tile
         nexttile(typeIdx);
         hold on;
         
-        % Matrix to hold the turnover points
+        % Matrix to hold the force locations
         dns_forces = zeros(NO_TIMESTEPS, length(levels));
         
         % Loop over the levels
         for level_idx = 1 : length(levels)
+            % Save level and directory
             level = levels(level_idx);
             level_dir = sprintf("%s/max_level_%d", parent_dir, level);
 
+            % Load matrix containing forces
             forces_mat = readmatrix(sprintf("%s/cleaned_data/output.txt", level_dir));
             ts = forces_mat(1 : NO_TIMESTEPS, 1) - IMPACT_TIME;
             Fs = forces_mat(1 : NO_TIMESTEPS, 3);
 
-            dns_forces(:, level_idx) = Fs;
-
-%             scatter(ts(1 : freq : end), Fs(1 : freq : end), [], cmap(color_idxs(level_idx), :), ...
-%                 'linewidth', 2, 'Displayname', sprintf("$m$ = %d", level));
+            dns_forces(:, level_idx) = Fs; % Save forces into matrix
+            
+            % Plot DNS forces
             h(level_idx) = plot(ts, Fs, 'color', cmap(color_idxs(level_idx), :), ...
                 'linewidth', lineWidth, 'Displayname', sprintf("$m$ = %d", level));
         end
         
         %% Determine norms
-        Fs_max = dns_forces(:, length(levels));
+        Fs_max = dns_forces(:, length(levels)); % Force of maximum level
 
+        % Loop over levels
         for level_idx = 1 : length(levels) - 1
             level = levels(level_idx);
 
@@ -141,59 +137,62 @@ for axi = [0, 1]
         end
         
         %% Plot analytical solutions
-        % Plot empty white line
+        % Plot empty white line for legend purposes
         h(length(levels) + 1) = scatter(10, 10, [], 'white', 'Displayname', '');
         
-        % Outer force
+        % Plot outer force
         h(length(levels) + 2) = plot(tsAnalyticalRestricted * epsilon^2, Fs_outer, ...
             'linestyle', '--', 'linewidth', lineWidth, ...
             'color', 'black', 'displayname', 'Analytical (leading-order)');
         
-        % Composite force
+        % Plot composite force
         h(length(levels) + 3) = plot(tsAnalyticalRestricted * epsilon^2, Fs_composite, ...
             'linewidth', lineWidth, ...
             'color', 'black', 'displayname', 'Analytical (composite)');
         
         % Plot vertical line where analytical solution ends
-        xline(tsAnalyticalRestricted(end) * epsilon^2, 'linestyle', '--', 'color', 0.5 * [1 1 1]);
+        xline(tsAnalyticalRestricted(end) * epsilon^2, ...
+            'linestyle', '--', 'color', 0.5 * [1 1 1]);
         
+        %% Tile figure options
         grid on;
+        
+        % Adjust axes limits depending on dimension
         if axi == 1
             ylim([-0.5, 7]);
         else
             ylim([-0.5, 8]);
         end
+        
+        % Set axes limits and ticks
         xlim([-0.2, 0.8]);
         xticks(-0.4 : 0.2 : 0.8);
         
+        % Axes labels
         xlabel("$t$");
         ylabel("$F_m(t)$");
         
-        %% Create title
+        % Create title
         title(titleStr, 'Fontsize', fontsize);
         set(gca, 'TitleFontSizeMultiplier', 1);
     end
-   
     
-    %% Set figure size
+    %% Set options for entire figure
+    % Set legend
     lh = legend(h(1 : length(levels) + 3), 'interpreter', 'latex', 'Numcolumns', 3);
     lh.Layout.Tile = 'South'; 
     
-    % Pixel options
-%     x0=400;
-%     y0=400;
-%     height=700;
-%     width=1150;
-%     set(gcf,'position',[x0,y0,width,height]);
-    
-    % Inches options
+    % Set size in inches
     width = 6;
     height = 3.65;
-    set(gcf,'units', 'inches', 'position',[0.5 * width, 0.5 * height, width, height]);
+    set(gcf,'units', 'inches', ...
+        'position',[0.5 * width, 0.5 * height, width, height]);
     
-    %% Plot L2 norm error
+    %% Plot L2 norm error as inset plot
+    % Loop over types
     for typeIdx = 1 : length(types)
         
+        % Define axes options for the inset
         insetWidth = 0.10;
         insetHeight = 0.16;
         if axi == 1
@@ -212,39 +211,47 @@ for axi = [0, 1]
             end
         end
         
+        % Define inset axes
         axes('Position',[horizontalPos, verticalPos, insetWidth, insetHeight]);
-
-        box on
+        box on;
+        grid on;
         hold on;
 
+        % Plot black line for norms
         plot(levels(1 : end - 1), norms(:, typeIdx), 'color', 'black', ...
             'linewidth', lineWidth);
 
+        % Plot scatter for norms solution
         sz = 35;
         scatter(levels(1 : end - 1), norms(:, typeIdx), sz, colors, 'filled');
-
+        hold off;
+        
+        % Set axes options
         set(gca, 'yscale', 'log');
         xlim([min(levels) - 0.5, max(levels) - 0.5])
         ylim([10^-2, 1]);
         xticks(levels(1 : end - 1));
-
-        grid on;
+        
+        % Set axes labels
         xlabel("$m$");
         ylabel("$||F_m - F_{14}||_2$");
-        hold off;
     end
     
     %% Save figure
     set(gcf, 'Renderer', 'Painters');
     pause(1.5);
 
+    % Suffix string depending on dimension
     if axi == 0
         axiStr = "2D";
     else
         axiStr = "Axi";
     end
+    
+    % Figure name
     figname = sprintf("dns_validation_figures/forces/DNSForce_%s", axiStr);
         
+    % Export figure
     exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
     savefig(gcf, sprintf("%s.fig", figname));
 end
