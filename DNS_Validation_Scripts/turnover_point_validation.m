@@ -55,8 +55,8 @@ for type = types
             master_dir, type); 
     end
     
-%     for parentIdx = 1 : length(parent_dirs)
-    for parentIdx = 1
+    for parentIdx = 1 : length(parent_dirs)
+%     for parentIdx = 1
         % Save for parent directory
         parent_dir = parent_dirs(parentIdx)
         
