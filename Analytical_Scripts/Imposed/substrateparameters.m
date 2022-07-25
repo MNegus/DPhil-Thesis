@@ -1,4 +1,4 @@
-function [epsilon, k, q, omega] = substrateparameters()
+function [epsilon, q, omega, p, L] = substrateparameters(type)
 %QUADRATICPARAMETERS Set consistent parameters for moving substrate.
 %   The substrate parameters are defined such that we have for the flat
 %   substrate,
@@ -6,23 +6,66 @@ function [epsilon, k, q, omega] = substrateparameters()
 %   and for the curved substrate,
 %   w(x, t) = w(t) (1 - k^2 * x.^2).
 %   
-%   Assuming that tmax = 1, the turnover point (in 2D) at tmax is at 
-%   epsilon * dmax = 2 * epsilon.
-%   If we want the root of the quadratic to remain fixed at some a *
-%   epsilon * dmax, then we must have k = 1 / (2 * a * epsilon);
+%   The type parameter denotes the type of imposed substrate we have. If
+%   "type" is "stationary", "flat" or "curved", then we have the parameters
+%   from the analytical chapter. If "type" is "flatDNS" or "curvedDNS",
+%   then we have the parameters for the DNS chapter.
 
-    % Small time parameter
-    epsilon = 0.1;
-    
-    % Oscillation magnitude
-    q = 0.1;
-    
-    % Oscillation frequency
-	omega = 3.0;
-    
-    % Curved substrate root parameter.
-%     k = 2 / (3 * epsilon); % a = 3 / 4
-    k = 1; % a = 1/2
-%     k = 3 / (4 * epsilon); % a = 2 / 3
+    if ~exist('type','var')
+        % If type is not given, default it to "stationary"
+        type = "stationary";
+    end
+
+    if (type == "stationary") || (type == "flat") || (type == "curved") 
+        %% Analytical chapter parameters
+        % Small time parameter
+        epsilon = 0.1;
+
+        % Oscillation magnitude
+        q = 0.1;
+
+        % Oscillation frequency
+        omega = 3.0;
+
+        % Curved substrate crossed x axis at c = epsilon * p * sqrt(t)
+        p = 1.25; 
+
+        % Substrate radius
+        L = 2;
+    elseif (type == "flatDNS")
+        %% Flat DNS validation parameters
+        % Small time parameter (O(1) in this case)
+        epsilon = 1;
+        
+        % Oscillation magnitude
+        q = 0.00125;
+        
+        % Oscillation frequency
+        omega = 12;
+        
+        % Curved susbtrate parameter (not used here)
+        p = 1;
+        
+        % Substrate radius
+        L = 2;
+    elseif (type == "curvedDNS")
+        %% Curved DNS validation parameters
+        % Small time parameter (O(1) in this case)
+        epsilon = 1;
+        
+        % Oscillation magnitude
+        q = 0.05;
+        
+        % Oscillation frequency
+        omega = 4;
+        
+        % Curved susbtrate parameter (not used here)
+        p = 1;
+        
+        % Substrate radius
+        L = 2;
+    else
+        error("Invalid type.");
+    end
 end
 

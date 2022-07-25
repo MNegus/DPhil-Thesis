@@ -1,18 +1,12 @@
 function SubstrateFunctions = substratefunctions(type, dimension)
 %SUBSTRATEFUNCTIONS Returns substrate coefficient functions for the imposed
 %substrate.
-%   We assume a quadratic substrate of the form
-%   w(x, t) = w(t) (1 - x^2 / L^2),
-%   where
-%   w(t) = q * (t + 1 - cos(omega * t)),
-%   we return the substrate coefficients such that
-%   w(x, t) = a(t) + b(t) * x^2.
-%   type needs to be "stationary" (so a = b = 0), "flat" (so a = w(t) and b
-%   = 0) or "curved" (so a = w(t) and b = -k^2 * w(t)).
+%   WRITE UPDATED DESCRIPTION
 
     %% Check for valid input
     % Valid substrate type
-    if (type ~= "stationary") && (type ~= "flat") && (type ~= "curved")
+    if (type ~= "stationary") && (type ~= "flat") && (type ~= "curved") ...
+            && (type ~= "flatDNS") && (type ~= "curvedDNS")
         error("Invalid type. Needs to either be 'stationary', 'flat' or 'curved'.");
     end
     
@@ -27,15 +21,16 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     end
 
     %% Load in parameters
-    [epsilon, k, q, omega] = substrateparameters();
+    [epsilon, q, omega, p, L] = substrateparameters(type);
 
     %% Set parameters
-    SubstrateFunctions.type = type;
-    SubstrateFunctions.dimension = dimension;
-    SubstrateFunctions.epsilon = epsilon;
-    SubstrateFunctions.k = k;
-    SubstrateFunctions.q = q;
-    SubstrateFunctions.omega = omega;
+    SubstrateFunctions.type = type; % Substrate type
+    SubstrateFunctions.dimension = dimension; % Dimension
+    SubstrateFunctions.epsilon = epsilon; % Small time parameter
+    SubstrateFunctions.q = q; % Magnitude of imposed substrate
+    SubstrateFunctions.omega = omega; % Angular velocity of imposed substrate
+    SubstrateFunctions.p = p; % Such that substrate crosses x axis at epsilon * p * sqrt(t) 
+    SubstrateFunctions.L = L; % Substrate radius
     
     %% Set substrate coefficients
     if type == "stationary"
@@ -45,6 +40,7 @@ function SubstrateFunctions = substratefunctions(type, dimension)
         
         a_tt = @(t) zeros(size(t));
     else
+        % Imposed susbtrate motion
         a = @(t) q * (t.^2 + 1 - cos(omega * t));
         
         a_t = @(t) q * (2 * t + omega * sin(omega * t));
@@ -54,17 +50,19 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     
     % Set b coefficients
     if type == "curved"
-%         b = @(t) -k^2 * a(t);
-%         b_t = @(t) - k^2 * a_t(t);
-%         b_tt = @(t) - k^2 * a_tt(t);
-
-        % Alt: Curve crosses x axis at c = epsilon * p * sqrt(t) 
+        % Curved substrate crosses x axis at c = epsilon * p * sqrt(t) 
         p = 1.25;
         b = @(t) -a(t) ./ (p^2 * t);
         b_t = @(t) (1 / (p^2)) * (a(t) ./ t.^2 - a_t(t) ./ t);
         b_tt = @(t) (1 / (p^2)) * (-2 * a(t) ./ t.^3 + 2 * a_t(t) ./ t.^2 ...
               - a_tt(t) ./ t);
+    elseif type == "curvedDNS"
+        % Curved DNS substrate crosses x axis at x = L
+        b = @(t) -epsilon^2 * a(t) / L^2;
+        b_t = @(t) -epsilon^2 * a_t(t) / L^2;
+        b_tt = @(t) -epsilon^2 * a_tt(t) / L^2;
     else
+        % Else we have no curved part
         b = @(t) zeros(size(t));
         b_t = @(t) zeros(size(t));
         b_tt = @(t) zeros(size(t));
@@ -110,6 +108,8 @@ function SubstrateFunctions = substratefunctions(type, dimension)
         %% Full substrate solution (only works for t being a scalar)
         SubstrateFunctions.w = @(x, t) a(t) * ones(size(x)) ...
             + b(t) * x.^2 / epsilon^2;
+        SubstrateFunctions.w_t = @(x, t) a_t(t) * ones(size(x)) ...
+            + b_t(t) .* x.^2 / epsilon^2;
         SubstrateFunctions.w_xx = @(x, t) 2 * b(t) / epsilon^2;
         SubstrateFunctions.w_xt = @(x, t) 2 * b_t(t) * x / epsilon^2;
         SubstrateFunctions.w_tt = @(x, t) a_tt(t) + b_tt(t) * x.^2 / epsilon^2;
