@@ -13,7 +13,7 @@ cmap_mat = matfile('red_blue_cmap.mat');
 cmap = cmap_mat.cmap;
 
 %% Figure options
-fontsize = 12;
+fontsize = 11;
 lineWidth = 1.25;
 set(0,'defaultTextInterpreter','latex');
 set(0,'defaultAxesFontSize', fontsize);
