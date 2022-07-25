@@ -3,12 +3,22 @@
 % case
 
 clear;
+close all;
 
 % Load in red-blue colour map
 cmap_mat = matfile('red_blue_cmap.mat');
 cmap = cmap_mat.cmap;
 
-fontsize = 22;
+%% Figure options
+fontsize = 11;
+lineWidth = 1.25;
+set(0,'defaultTextInterpreter','latex');
+set(0,'defaultAxesFontSize', fontsize);
+set(0, 'DefaultTextFontSize', fontsize);
+set(0,'defaultLegendFontSize', fontsize, 'DefaultLegendFontSizeMode','manual');
+set(0, 'defaultAxesTickLabelInterpreter', 'latex');
+set(0, 'defaultFigureRenderer', 'painters');
+set(0, 'DefaultLegendInterpreter', 'latex');
 
 %% Parameters
 L = 2;
@@ -16,15 +26,15 @@ DELTA_T = 1e-4;
 IMPACT_TIME = 0.125;
 T_MAX = 0.8;
 ts = - IMPACT_TIME : DELTA_T : T_MAX - IMPACT_TIME;
-ts_analytical = 0 : DELTA_T : T_MAX - IMPACT_TIME;
 MAX_TIMESTEP = T_MAX / DELTA_T;
 NO_TIMESTEPS = length(ts);
 freq = 100; % Frequency
 
 %% Directory names
 master_dir = "/scratch/negus/DNS_Chapter_validation";
-type = ["imposed_membrane_0.0025"];
+type = ["imposed_0.05_omega_4"];
 levels = 10 : 14;
+imposed_coeffs = ["0"; "0.05"];
 
 %% Set up colors
 color_idxs = floor(linspace(1, length(cmap), length(levels)));
@@ -35,29 +45,39 @@ for q = 1 : no_levels - 1
     colors(q, :) = cmap(color_idxs(q), :);
 end
 
-%% Analytical solution
-epsilon = 1; % Analytical parameter for small time 
-a = 0.0025; % Imposed parameter
-[ws, w_ts, w_tts] = ImposedPlate(ts_analytical, a);
-lambda = pi / (2 * L);
+%% Find analytical solution
+[epsilon, q, omega, ~, L] = substrateparameters("curvedDNS");
+SubstrateFunctions = substratefunctions("curvedDNS", "2D");
 
-% Solution for ds
-options = optimoptions('fsolve', 'TolFun', 1e-10, 'TolX', 1e-10);
-dsGuess = 2 * sqrt(ts_analytical);
-ds_zero_fun = @(d) ts_analytical - d.^2 / 4 - ws .* besselj(0, epsilon * lambda * d);
-ds = fsolve(ds_zero_fun, dsGuess, options);
+% Find analytical times
+tsAnalyticalUnRestricted = (1e-9 : DELTA_T : T_MAX - IMPACT_TIME) / epsilon^2;
 
-% Solution for fluxes
-fluxes = 2 * w_ts .* sin(lambda * ds) / lambda;
+% Load analytical turnover points
+dsAnalyticalUnRestricted = SubstrateFunctions.d(tsAnalyticalUnRestricted);
 
-% Solution for mass loss
-massLoss = -cumtrapz(ts_analytical, fluxes);
-AsAnalytical = massLoss / pi;
+% Find times restricted to where where turnover point less that 1
+% tsAnalytical = tsAnalyticalUnRestricted(epsilon * dsAnalyticalUnRestricted <= 1);
+% ds = dsAnalyticalUnRestricted(epsilon * dsAnalyticalUnRestricted <= 1);
+tsAnalytical = tsAnalyticalUnRestricted;
+ds = dsAnalyticalUnRestricted;
+
+
+% Find fluxes leaving boundary
+fluxes = 2 * q * (2 * tsAnalytical + omega * sin(omega * tsAnalytical)) ... 
+    .* ds .* (1 - ds.^2 / (3 * L^2));
+
+% FLUX ASSUMING ALL PLATE IS WETTED
+fluxesMax = 2 * q * (2 * tsAnalytical + omega * sin(omega * tsAnalytical)) ... 
+    .* 2 * L / 3;
+
 
 %% Plot all cases
-close all;
+% Set up tiled figure
+tileFig = tiledlayout(1, 2, 'Tilespacing', 'compact', 'padding', 'compact');
 
-imposed_coeffs = ["0"; "0.0025"];
+% Norms matrix
+norms = zeros(length(levels) - 1, 2);
+
 for imposedIdx = 1 : 2
     
     imposed_coeff = imposed_coeffs(imposedIdx);
@@ -65,15 +85,26 @@ for imposedIdx = 1 : 2
     parent_dir = sprintf("%s/%s_maxlevel_validation/imposed_coeff_%s", ...
         master_dir, type, imposed_coeff);
 
-    % Create figure
-    close(figure(1));
-    figure(1);
-%     figure(imposedIdx);
-    hold on;
+    tileFig; % Change to tiled figure
 
+    % Save parent directory
+    parent_dir = sprintf("%s/%s_maxlevel_validation/imposed_coeff_%s", ...
+        master_dir, type, imposed_coeff);
+    
+    % Figure titles
+    if imposed_coeff == "0"
+        titleStr = "(a) Stationary substrate setup.";
+    else
+        titleStr = "(b) Linearised boundary setup.";
+    end
+
+    %% Plot DNS solutions
     % Matrix to hold the turnover points
     dns_masses = zeros(NO_TIMESTEPS, length(levels));
 
+    nexttile(imposedIdx);
+    hold on;
+    
     % Loop over the levels
     for level_idx = 1 : length(levels)
         level = levels(level_idx);
@@ -86,48 +117,98 @@ for imposedIdx = 1 : 2
         mass_ratio = (mass - pi) / pi;
 
         dns_masses(:, level_idx) = mass_ratio;
-
-        scatter(ts(1 : freq : end), mass_ratio(1 : freq : end), [], cmap(color_idxs(level_idx), :), ...
-            'linewidth', 2, 'Displayname', sprintf("$m$ = %d", level));
-        drawnow;
+    
+        sz = 15;
+        h(level_idx) = scatter(ts(1 : freq : end), mass_ratio(1 : freq : end), sz, cmap(color_idxs(level_idx), :), ...
+            'linewidth', lineWidth, 'Displayname', sprintf("$m$ = %d", level));
     end
-    % Analytical solution
-    if imposed_coeff == '0'
-        plot(ts_analytical, zeros(size(ts_analytical)), ...
-            'linestyle', '--', 'linewidth', 2, 'color', 'black', ...
-            'displayname', 'Analytical');
-    else
-        plot(ts_analytical, AsAnalytical, 'linestyle', '--', 'linewidth', 2, ...
-            'color', 'black', 'displayname', 'Analytical');
-    end
-
-    grid on;
-    xlim([-0.32, 0.8]);
-    ylim([-4, 5] * 10^(-3));
-    set(gca, "ticklabelinterpreter", "latex", "Fontsize", fontsize);
-    xlabel("$t$", 'interpreter', 'latex', "Fontsize", fontsize);
-    ylabel("$R_m(t)$", 'interpreter', 'latex');
-    legend('location', 'southwest', 'interpreter', 'latex');
-
-    %% Plot L2 norm error
-    axes('Position',[.36 .6 .3 .3])
-    box on
-    hold on;
-    mass_max = dns_masses(:, length(levels));
-
-
-    norms = zeros(length(levels) - 1, 1);
+    
+    
+    %% Determine L2 norms
+    mass_max = dns_masses(:, length(levels)); 
     for level_idx = 1 : length(levels) - 1
         level = levels(level_idx);
 
         % Determines L2-norm difference
         diff = dns_masses(:, level_idx) - mass_max;
-        norms(level_idx) = sqrt(sum(diff.^2) / length(diff));
+        norms(level_idx, imposedIdx) = sqrt(sum(diff.^2) / length(diff));
     end
-    plot(levels(1 : end - 1), norms, 'color', 'black', 'linewidth', 2);
+    
+    
+    %% Plot analytical solution
+    if imposed_coeff == "0"
+        RsAnalytical = zeros(size(tsAnalytical));
+        RsMax = zeros(size(tsAnalytical));
+    else
+        RsAnalytical = -cumtrapz(tsAnalytical, fluxes) / pi;
+        RsMax = -cumtrapz(tsAnalytical, fluxesMax) / pi;
+    end
+    
+    h(length(levels) + 1) = scatter(10, 10, [], 'white', 'Displayname', '');
+        
+    h(length(levels) + 2) = plot(tsAnalytical, RsAnalytical, 'linestyle', '--', 'linewidth', 2, ...
+        'color', 'black', 'displayname', 'Analytical');
 
-    sz = 100;
-    scatter(levels(1 : end - 1), norms, sz, colors, 'filled');
+    h(length(levels) + 3) = plot(tsAnalytical, RsMax, 'linestyle', ':', 'linewidth', 2, ...
+        'color', 'black', 'displayname', 'Maximum loss');
+
+    %% Tile figure options
+    grid on;
+    xlim([-0.32, 0.8]);
+    if imposedIdx == 1
+        ylim([-2.5*10^-3, 0.5 * 10^-3]);
+    else
+        ylim([-0.1, 0.01]);
+        yticks(-0.09 : 0.02 : 0.01); 
+    end
+%     ylim([-4, 5] * 10^(-3));
+    
+    % Axes labels
+    xlabel("$t$");
+    ylabel("$R_m(0, t)$");
+
+    % Create title
+    title({titleStr ''}, 'Fontsize', fontsize);
+    set(gca, 'TitleFontSizeMultiplier', 1);
+end
+
+%% Set options for entire figure
+% Set legend
+lh = legend(h(1 : length(levels) + 3), 'Numcolumns', 3);
+lh.Layout.Tile = 'South'; 
+
+% Set size in inches
+width = 6;
+height = 4;
+set(gcf,'units', 'inches', ...
+    'position',[0.5 * width, 0.5 * height, width, height]);
+
+%% Plot L2 norm error
+
+% Loop over types
+for imposedIdx = 1 : 2
+    
+    % Define axes options for the inset
+    insetWidth = 0.12;
+    insetHeight = 0.14;
+    verticalPos = 0.4;
+    if imposedIdx == 1
+        horizontalPos = 0.19;
+    else
+        horizontalPos = 0.67;
+    end
+
+    % Define inset axes
+    axes('Position',[horizontalPos, verticalPos, insetWidth, insetHeight]);
+    box on;
+    grid on;
+    hold on;
+
+    plot(levels(1 : end - 1), norms(:, imposedIdx), 'color', 'black', ...
+        'linewidth', lineWidth);
+
+    sz = 35;
+    scatter(levels(1 : end - 1), norms(:, imposedIdx), sz, colors, 'filled');
 
     set(gca, 'yscale', 'log');
     xlim([min(levels) - 0.5, max(levels) - 0.5])
@@ -136,29 +217,18 @@ for imposedIdx = 1 : 2
     yticks([10^-5, 10^-4, 10^-3]);
 
     grid on;
-    set(gca, "ticklabelinterpreter", "latex", "Fontsize", fontsize);
-    xlabel("$m$", 'interpreter', 'latex');
-    ylabel("$||R_m - R_{14}||_2$", 'interpreter', 'latex');
-
-    %% Overal figure settings
-    x0=400;
-    y0=400;
-    height=800;
-    width=600;
-
-    set(gcf,'position',[x0,y0,width,height]);
-    
-
-    if imposed_coeff == "0"
-        figname = "dns_validation_figures/areas/DNSAreas_Stationary";
-    else
-        figname = "dns_validation_figures/areas/DNSAreas_Imposed";
-    end
-    set(gcf, 'Renderer', 'Painters');
-    pause(1.5);
-    exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-    savefig(gcf, sprintf("%s.fig", figname));
-
+    xlabel("$m$");
+    ylabel("$||R_m - R_{14}||_2$");
 end
+
+%% Exporting figure
+
+set(gcf, 'Renderer', 'Painters');
+pause(1.5);
+
+figname = "dns_validation_figures/areas/DNSAreas";
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+savefig(gcf, sprintf("%s.fig", figname));
+
 
     
