@@ -1,4 +1,4 @@
-%% ForceValidation.m
+%% OriginPressureValidation.m
 % Validates the force in the DNS by comparing it for multiple levels
 
 clear;
@@ -53,9 +53,6 @@ tileFig = tiledlayout(1, 2, 'Tilespacing', 'compact', 'padding', 'compact');
 
 % Norms matrix
 norms = zeros(length(levels) - 1, 2);
-
-% Structure array for analytical solutions
-
 
 % Loop over types (stationary or moving) 
 for imposedIdx = 1 : 2
@@ -231,77 +228,8 @@ set(gcf, 'Renderer', 'Painters');
 pause(1.5);
 
 % Figure name
-figname = "dns_validation_figures/pressures/DNSPressure";
+figname = "dns_validation_figures/pressures/DNSOriginPressure";
 
 % Export figure
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 savefig(gcf, sprintf("%s.fig", figname));
-
-
-%% Zoomed in figure
-% close(figure(2));
-% figure(2);
-% hold on;
-% T_MAX = IMPACT_TIME + 0.3;
-% ts = - IMPACT_TIME : DELTA_T : T_MAX - IMPACT_TIME;
-% MAX_TIMESTEP = T_MAX / DELTA_T;
-% NO_TIMESTEPS = length(ts);
-% freq = 25;
-% 
-% % Plot DNS solutions
-% for imposedIdx = 1 : 2
-%     imposed_coeff = imposed_coeffs(imposedIdx); % Save coefficient
-% 
-%     % Save parent directory
-%     parent_dir = sprintf("%s/%s_maxlevel_validation/imposed_coeff_%s", ...
-%         master_dir, type, imposed_coeff);
-%     
-%     % Save level and directory
-%     level = 13;
-%     level_dir = sprintf("%s/max_level_%d", parent_dir, level);
-% 
-%     % Load matrix containing pressures
-%     pressures_mat = readmatrix(sprintf("%s/output.txt", level_dir));
-%     ts = pressures_mat(1 : NO_TIMESTEPS, 1) - IMPACT_TIME;
-%     p0s = pressures_mat(1 : NO_TIMESTEPS, 3);
-%     
-%     % Set color
-%     if imposedIdx == 1
-%         colorIdx = floor(0.1 * length(cmap));
-%         displayName = "DNS (stationary substrate)";
-%     else
-%         colorIdx = ceil(0.9 * length(cmap));
-%         displayName = "DNS (moving substrate)";
-%     end
-% 
-%     % Plot DNS solutions
-%     scatter(ts(1 : freq : end), p0s(1 : freq : end), sz, ...
-%         cmap(colorIdx, :), 'linewidth', lineWidth, ...
-%         'Displayname', displayName);
-% end
-% 
-% % Plot analytical solutions
-% [epsilon, ~, ~, ~, ~] = substrateparameters("stationary");
-% plot(analyticalStruct.tsStationary * epsilon^2, analyticalStruct.p0sStationary, ...
-%         'linestyle', '--', 'linewidth', 2 * lineWidth, ...
-%         'color', 'black', 'displayname', 'Analytical (stationary substrate)');
-%     
-% [epsilon, ~, ~, ~, ~] = substrateparameters("curvedDNS");
-% plot(analyticalStruct.tsMoving * epsilon^2, analyticalStruct.p0sMoving, ...
-%         'linestyle', ':', 'linewidth', 2 * lineWidth, ...
-%         'color', 'black', 'displayname', 'Analytical (moving substrate)');
-% 
-% % Set figure options
-% xlim([-0.05, 0.35]);
-% ylim([0, 7]);
-% 
-% % Set legend
-% lh = legend('Location', 'Northoutside', 'Numcolumns', 2);
-% 
-% 
-% % Set size in inches
-% width = 6;
-% height = 4;
-% set(gcf,'units', 'inches', ...
-%     'position',[0.5 * width, 0.5 * height, width, height]);
-
