@@ -13,7 +13,7 @@ cmap_mat = matfile('red_blue_cmap.mat');
 cmap = cmap_mat.cmap;
 
 %% Figure options
-fontsize = 12;
+fontsize = 11;
 lineWidth = 1.25;
 set(0,'defaultTextInterpreter','latex');
 set(0,'defaultAxesFontSize', fontsize);
@@ -65,7 +65,6 @@ for imposedIdx = 1 : 2
         master_dir, type, imposed_coeff);
 
     %% Determine analytical solutions
-
     % Set analytical type and title string
     if imposed_coeff == "0"
         analyticalType = "stationary";
