@@ -24,7 +24,8 @@ freq = 5; % Frequency
 
 %% Directory names
 master_dir = "/scratch/negus/DNS_Chapter_validation";
-type = ["imposed_membrane_0.0025"];
+% type = ["imposed_membrane_0.0025"];
+type = ["EasyCase"];
 levels = 10 : 13;
 
 %% Set up colors
@@ -38,30 +39,33 @@ end
 
 %% Save analytical solution
 epsilon = 1; % Analytical parameter for small time 
-a = 0.0025; % Imposed parameter
-[ws, w_ts, w_tts] = ImposedPlate(ts_analytical, a);
-lambda = pi / (2 * L);
+% a = 0.0025; % Imposed parameter
+% [ws, w_ts, w_tts] = ImposedPlate(ts_analytical, a);
+% lambda = pi / (2 * L);
 % p0sAnalytical = AnalyticalPressure2D(ts_analytical, ws, w_ts, w_tts, lambda, epsilon);
 
 
 %% Plot all cases
-imposed_coeffs = ["0"; "0.0025"];
-for imposedIdx = 1 : 2
+imposed_coeffs = ["0"; "0.00125"; "0.0025"];
+for imposedIdx = 1:3
     
     imposed_coeff = imposed_coeffs(imposedIdx);
     
-    parent_dir = sprintf("%s/%s_maxlevel_validation/imposed_coeff_%s", ...
-        master_dir, type, imposed_coeff);
+    
     
     if imposed_coeff == "0"
+        parent_dir = "/scratch/negus/DNS_Chapter_validation/imposed_coeff_0";
         p0sAnalytical = 1 ./ sqrt(ts_analytical); 
     else
-        p0sAnalytical = AnalyticalPressure2D(ts_analytical, ws, w_ts, w_tts, lambda, epsilon);
+        parent_dir = sprintf("%s/%s_maxlevel_validation/imposed_coeff_%s", ...
+        master_dir, type, imposed_coeff);
+%         p0sAnalytical = AnalyticalPressure2D(ts_analytical, ws, w_ts, w_tts, lambda, epsilon);
+        p0sAnalytical = 1 ./ sqrt(ts_analytical); 
     end
 
     % Create figure
-    close(figure(1));
-    figure(1);
+    close(figure(imposedIdx));
+    figure(imposedIdx);
     hold on;
 
     % Matrix to hold the turnover points
@@ -133,14 +137,14 @@ for imposedIdx = 1 : 2
     set(gcf,'position',[x0,y0,width,height]);
     pause(1.5);
 
-    if imposed_coeff == "0"
-        figname = "dns_validation_figures/pressures/DNSPressure_Stationary";
-    else
-        figname = "dns_validation_figures/pressures/DNSPressure_Imposed";
-    end
-    set(gcf, 'Renderer', 'Painters');
-    exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-    savefig(gcf, sprintf("%s.fig", figname));
+%     if imposed_coeff == "0"
+%         figname = "dns_validation_figures/pressures/DNSPressure_Stationary";
+%     else
+%         figname = "dns_validation_figures/pressures/DNSPressure_Imposed";
+%     end
+%     set(gcf, 'Renderer', 'Painters');
+%     exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+%     savefig(gcf, sprintf("%s.fig", figname));
 
 end
 
