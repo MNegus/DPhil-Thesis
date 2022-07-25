@@ -18,8 +18,8 @@ function Fs = innerforce(ts, SubstrateFunctions)
     Js = Js(ts > 0);
 
     % Solve for c(t)
-    options = optimoptions('fsolve', 'OptimalityTolerance', 1e-10, ...
-        'StepTolerance',1e-10);
+    options = optimoptions('fsolve', 'OptimalityTolerance', 1e-12, ...
+        'StepTolerance',1e-12);
     cGuess = 2 * sqrt(pi * ds ./ (4 * epsilon^2 * Js));
     zero_fun = @(c) c.^2 + 4 * c + 2 * log(c) + 1 ...
         - pi * ds ./ (epsilon^2 * Js);
