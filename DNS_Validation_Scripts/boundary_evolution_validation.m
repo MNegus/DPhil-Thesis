@@ -30,7 +30,7 @@ freq = 5; % Frequency
 %% Directory names
 master_dir = "/scratch/negus/DNS_Chapter_validation";
 type = ["imposed_0.05_omega_4"];
-levels = 10 : 13;
+levels = 11:12;
 
 %% Set up colors
 color_idxs = floor(linspace(1, length(cmap), length(levels)));
@@ -81,7 +81,7 @@ for imposedIdx = 2
     layout = tiledlayout(2, 1);
     
     %% Loop over time
-    for timestep = 1300 : 100 : 8000
+    for timestep = 1300 : 10: 1700
         tAnalytical = DELTA_T * timestep - IMPACT_TIME;
 
         %% Loop over the levels
@@ -131,7 +131,7 @@ for imposedIdx = 2
         scatter(xMaxAnalytical, pMaxAnalytical, 'filled');
     
 %         ylim([-0.1 * max(psAnalytical), 1.5 * max(psAnalytical)]);
-        ylim([-0.1, 10]);
+        ylim([-0.1, 20]);
 
         %% Velocity figure settings
         nexttile(1);
@@ -141,14 +141,14 @@ for imposedIdx = 2
         xlabel("$x$", 'interpreter', 'latex', "Fontsize", fontsize);
         ylabel("$v(x, 0, t)$", 'interpreter', 'latex');
         legend('location', 'northeast', 'interpreter', 'latex');
-        xlim([0, 3]);
+        xlim([0, 2]);
         ylim([-0.5, 0.5]); 
         
         %% Pressure figure settings
         nexttile(2);
         hold off;
         grid on;
-        xlim([0, 3]);
+        xlim([0, 2]);
         set(gca, "ticklabelinterpreter", "latex", "Fontsize", fontsize);
         xlabel("$x$", 'interpreter', 'latex', "Fontsize", fontsize);
         ylabel("$p(x, 0, t)$", 'interpreter', 'latex');
@@ -162,8 +162,8 @@ for imposedIdx = 2
             'Fontsize', 24);
         x0=400;
         y0=400;
-        height=1200;
-        width=1200;
+        height=800;
+        width=800;
 
         set(gcf,'position',[x0,y0,width,height]);
         drawnow;
