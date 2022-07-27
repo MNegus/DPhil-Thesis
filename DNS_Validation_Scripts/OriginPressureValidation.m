@@ -154,11 +154,12 @@ for imposedIdx = 1 : 2
 
     %% Tile figure options
     grid on;
-
+    set(gca, 'YScale', 'log')
+    
     % Set axes limits and ticks
     xlim([-0.2, 0.8]);
     xticks(-0.4 : 0.2 : 0.8);
-    ylim([0, 20]);
+    ylim([0, 100]);
 
     % Axes labels
     xlabel("$t$");
@@ -176,7 +177,7 @@ lh.Layout.Tile = 'South';
 
 % Set size in inches
 width = 6;
-height = 3.65;
+height = 4.5;
 set(gcf,'units', 'inches', ...
     'position',[0.5 * width, 0.5 * height, width, height]);
 
@@ -187,7 +188,7 @@ for imposedIdx = 1 : 2
     % Define axes options for the inset
     insetWidth = 0.11;
     insetHeight = 0.16;
-    verticalPos = 0.72;
+    verticalPos = 0.75;
     if imposedIdx == 1
         horizontalPos = 0.35;
     else

@@ -9,6 +9,9 @@ close all;
 cmap_mat = matfile('red_blue_cmap.mat');
 cmap = cmap_mat.cmap;
 
+% Adds analytical scripts to path
+addpath("../Analytical_Scripts/Imposed/");
+
 %% Figure options
 fontsize = 11;
 lineWidth = 1.25;
@@ -159,13 +162,13 @@ for imposedIdx = 1 : 2
         ylim([-2.5*10^-3, 0.5 * 10^-3]);
     else
         ylim([-0.1, 0.01]);
-        yticks(-0.09 : 0.02 : 0.01); 
+        yticks(-0.1 : 0.02 : 0); 
     end
 %     ylim([-4, 5] * 10^(-3));
     
     % Axes labels
     xlabel("$t$");
-    ylabel("$R_m(0, t)$");
+    ylabel("$R_m(t)$");
 
     % Create title
     title({titleStr ''}, 'Fontsize', fontsize);
