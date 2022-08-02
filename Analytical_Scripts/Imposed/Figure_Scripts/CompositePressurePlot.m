@@ -29,7 +29,7 @@ function CompositePressurePlot(dimension)
     t = 2;
 
     %% Load in substrate function
-    SubstrateFunctions = substratefunctions("stationary", dimension);
+    SubstrateFunctions = imposedsubstratefunctions("stationary", dimension);
 
     %% Find pressures
     [ps_composite, ps_outer, ps_inner] ...

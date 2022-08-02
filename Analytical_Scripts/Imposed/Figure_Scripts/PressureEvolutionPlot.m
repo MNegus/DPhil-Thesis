@@ -71,7 +71,7 @@ function PressureEvolutionPlot(dimension)
         end
 
         % Load substrate functions
-        SubstrateFunctions = substratefunctions(type, dimension);
+        SubstrateFunctions = imposedsubstratefunctions(type, dimension);
 
         % Move to next tile
         nexttile(tileNo);

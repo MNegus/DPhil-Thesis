@@ -65,7 +65,7 @@ function JetEvolutionPlot(dimension)
             t = ts(tIdx);
 
             % Load in substrate functions
-            SubstrateFunctions = substratefunctions(types(typeIdx), dimension);
+            SubstrateFunctions = imposedsubstratefunctions(types(typeIdx), dimension);
 
             % Find minimum tau
             d = SubstrateFunctions.d;

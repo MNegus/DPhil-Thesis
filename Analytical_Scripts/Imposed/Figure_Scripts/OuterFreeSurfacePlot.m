@@ -68,7 +68,7 @@ function OuterFreeSurfacePlot(dimension)
         for typeIdx = length(types) : -1 : 1
 
             % Save SubstrateCoefficients
-            SubstrateFunctions = substratefunctions(types(typeIdx), dimension);
+            SubstrateFunctions = imposedsubstratefunctions(types(typeIdx), dimension);
             lineColor = colors(typeIdx, :);
 
             if dimension == "2D"
@@ -86,7 +86,7 @@ function OuterFreeSurfacePlot(dimension)
         for typeIdx = 1 : length(types)
 
             % Save SubstrateCoefficients
-            SubstrateFunctions = substratefunctions(types(typeIdx), dimension);
+            SubstrateFunctions = imposedsubstratefunctions(types(typeIdx), dimension);
             lineColor = colors(typeIdx, :);
 
             % Load turnover point

@@ -46,7 +46,7 @@ function TimeDependentsPlot(dimension)
     
     % Load substrate functions
     for typeIdx = 1 : length(types)
-        SubstrateFunctions(typeIdx) = substratefunctions(types(typeIdx), dimension);
+        SubstrateFunctions(typeIdx) = imposedsubstratefunctions(types(typeIdx), dimension);
     end
 
     %% Load parameters
@@ -62,7 +62,7 @@ function TimeDependentsPlot(dimension)
         fig = tiledlayout(1, 3);
 
         % Need the flat functions struct
-        FlatFunctions = substratefunctions('flat', dimension);
+        FlatFunctions = imposedsubstratefunctions('flat', dimension);
 
         % Substrate position
         nexttile;
@@ -105,7 +105,7 @@ function TimeDependentsPlot(dimension)
         figure(figNo);
         figNo = figNo + 1;
         hold on;
-        CurvedFunctions = substratefunctions('curved', dimension);
+        CurvedFunctions = imposedsubstratefunctions('curved', dimension);
         
         L = epsilon * 2 * sqrt(tmax);
         xs = linspace(0, L, 1e3);
