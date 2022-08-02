@@ -6,9 +6,9 @@ function TimeDependentsPlot(dimension)
 
     close all;
 
-    addpath("../../");
-    addpath("../../Forces");
-    addpath("../../Energies");
+    addpath("../");
+    addpath("../Forces");
+    addpath("../Energies");
 
     %% Figure options
     set(0,'defaultTextInterpreter','latex'); %trying to set the default
