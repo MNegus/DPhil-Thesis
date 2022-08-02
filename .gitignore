@@ -1,5 +1,6 @@
 # MATLAB autosave files
 *.asv
+*.m~
 
 # Image files
 *.eps
