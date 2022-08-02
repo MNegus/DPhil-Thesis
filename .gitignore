@@ -12,3 +12,6 @@
 
 # Video files
 *.avi
+
+# zip files
+*.zip
