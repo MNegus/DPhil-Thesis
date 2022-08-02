@@ -1,13 +1,14 @@
-function SubstrateFunctions = substratefunctions(type, dimension)
-%SUBSTRATEFUNCTIONS Returns substrate coefficient functions for the imposed
-%substrate.
-%   WRITE UPDATED DESCRIPTION
+function SubstrateFunctions = imposedsubstratefunctions(type, dimension)
+%IMPOSEDSUBSTRATEFUNCTIONS Returns substrate coefficient functions for the 
+% imposed substrate. The SubstrateFunctions struct is then fed into
+% substratedependents which will solve for the substrate-dependent
+% quantities such as the turnover point and jet thickness.
 
     %% Check for valid input
     % Valid substrate type
     if (type ~= "stationary") && (type ~= "flat") && (type ~= "curved") ...
             && (type ~= "flatDNS") && (type ~= "curvedDNS")
-        error("Invalid type. Needs to either be 'stationary', 'flat' or 'curved'.");
+        error("Invalid type. Needs to either be 'stationary', 'flat', 'curved', 'flatDNS' or 'curvedDNS'.");
     end
     
     % Valid dimension
@@ -16,7 +17,7 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     end
     
     % Error if try curved and axisymmetric
-    if (dimension == "axi") && (type == "curved")
+    if (dimension == "axi") && ((type == "curved") || (type == "curvedDNS"))
         error("Cannot have a curved substrate in axisymmetric dimension.");
     end
 
@@ -79,32 +80,6 @@ function SubstrateFunctions = substratefunctions(type, dimension)
     
     if dimension == "2D"
     %% Two-dimensional quantities
-        %% Turnover points
-        d = @(t) 2 * sqrt((t - a(t)) ./ (1 + 2 * b(t)));
-        
-        d_t = @(t) ((1 + 2 * b(t)) .* (1 - a_t(t)) - 2 * (t - a(t)) .* b_t(t)) ...
-            ./ (sqrt(t - a(t)) .* (1 + 2 * b(t)).^(3/2));
-        d_tt = @(t) -((1 + 2 * b(t)) .* d_t(t).^2 ...
-            + 4 * b_t(t) .* d(t) .* d_t(t) ...
-            + 2 * a_tt(t) ...
-            + b_tt(t) .* d(t).^2) ./ ((1 + 2 * b(t)) .* d(t));
-
-        %% A, B, C functions
-        % B, jet-thickness factor
-        B = @(t) BFullFun(t, d, a_t, b_t);
-        SubstrateFunctions.B = B;
-    
-        C = @(t) CFullFun(t, d, d_t, B, a_t);
-        SubstrateFunctions.C = C;
-        
-        % A function
-        A = @(t) C(t) - 0.5 * a_tt(t) .* d(t).^2 ...
-            - (1 / 8) * b_tt(t) .* d(t).^4;
-        SubstrateFunctions.A = A;
-
-        %% Jet thickness
-        SubstrateFunctions.J = @(t) pi * (1 - B(t)).^2 .* d(t) ./ (8 * d_t(t).^2);
-
         %% Full substrate solution (only works for t being a scalar)
         SubstrateFunctions.w = @(x, t) a(t) * ones(size(x)) ...
             + b(t) * x.^2 / epsilon^2;
@@ -125,46 +100,11 @@ function SubstrateFunctions = substratefunctions(type, dimension)
         
         w_tt = SubstrateFunctions.a_tt;
         SubstrateFunctions.w_tt = w_tt;
-        
-        %% Turnover curves
-        d = @(t) sqrt(3 * (t - w(t)));
-        d_t = @(t) sqrt(3) * (1 - w_t(t)) ./ (2 * sqrt(t - w(t)));
-        d_tt = @(t) - sqrt(3) * ((1 - w_t(t)).^2 + 2 * (t - w(t)) .* w_tt(t)) ...
-            ./ (4 * (t - w(t)).^(3/2));
-        
-        %% Jet thickness
-        SubstrateFunctions.J = @(t) 2 * d(t).^3 / (9 * pi);
-        
-        %% Pressure coefficients
-        SubstrateFunctions.A = @(t) (4 * d(t).^3 / 9) .* (4 * d_t(t).^2 + d(t) .* d_tt(t));
-        SubstrateFunctions.C = @(t) 2 * sqrt(2) * d(t).^(3/2) * d_t(t).^2 / (3 * pi);
     end
     
-    %% Load in turnover point/curve functions
-    SubstrateFunctions.d = d;
-    SubstrateFunctions.d_t = d_t;
-    SubstrateFunctions.d_tt = d_tt;
     
-    %% Function definitions
-    % B function
-    function Bval = BFullFun(t, d, aHat_t, bHat_t)
-        Bval = aHat_t(t) + 0.5 * bHat_t(t) .* d(t).^2;
-        
-        zeroIdx = find(t == 0);
-        if ~isempty(zeroIdx)
-           Bval(zeroIdx) = aHat_t(0); 
-        end 
-    end
-
-    % C function
-    function Cval = CFullFun(t, d, d_t, B, aHat_t)
-       % Cs, overlap pressure factor
-        Cval = d(t) .* d_t(t) .* (1 - B(t));
-
-        zeroIdx = find(t == 0);
-        if ~isempty(zeroIdx)
-           Cval(zeroIdx) = 2 * (1 - aHat_t(0)); 
-        end 
-    end
+    %% Load in substrate dependent functions
+    SubstrateFunctions = substratedependents(SubstrateFunctions);
+    
 end
 
