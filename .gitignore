@@ -9,3 +9,6 @@
 
 # gfs files
 *.gfs
+
+# Video files
+*.avi
