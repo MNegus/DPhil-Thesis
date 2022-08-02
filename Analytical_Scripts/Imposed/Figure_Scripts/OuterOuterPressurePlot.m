@@ -33,7 +33,7 @@ maxP = 250;
 t = 0.5; % Times
 
 %% Load in substrate functions
-StationaryFunctions = substratefunctions("stationary", dimension);
+StationaryFunctions = imposedsubstratefunctions("stationary", dimension);
 epsilon = StationaryFunctions.epsilon;
 if dimension == "2D"
     substrateType = "curved";
@@ -42,7 +42,7 @@ else
     substrateType = "flat";
     Pfun = @(A, X, Z) epsilon * Pfun_axi(A, X, Z);
 end
-SubstrateFunctions = substratefunctions(substrateType, dimension);
+SubstrateFunctions = imposedsubstratefunctions(substrateType, dimension);
 
 
 %% Save A coefficients

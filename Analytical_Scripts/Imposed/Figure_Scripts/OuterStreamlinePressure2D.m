@@ -39,8 +39,8 @@ substrateType = "flat";
 
 %% Load in substrate functions
 dimension = "2D";
-StationaryFunctions = substratefunctions("stationary", dimension);
-SubstrateFunctions = substratefunctions(substrateType, dimension);
+StationaryFunctions = imposedsubstratefunctions("stationary", dimension);
+SubstrateFunctions = imposedsubstratefunctions(substrateType, dimension);
 
 %% Load in d values
 d_stat = StationaryFunctions.d(t);
