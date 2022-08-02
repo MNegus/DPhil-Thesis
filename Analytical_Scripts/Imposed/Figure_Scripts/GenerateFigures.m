@@ -14,7 +14,7 @@ end
 for dimension = "axi"
 
     %% Time dependents
-%     TimeDependentsPlot(dimension);
+    TimeDependentsPlot(dimension);
     
     %% Jet evolution
 %     JetEvolutionPlot(dimension);
@@ -29,7 +29,7 @@ for dimension = "axi"
 %     OuterFreeSurfacePlot(dimension);
 
     %% Outer outer pressure
-    OuterOuterPressurePlot(dimension);
+%     OuterOuterPressurePlot(dimension);
 
 
 end
