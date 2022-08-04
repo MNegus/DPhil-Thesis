@@ -1,5 +1,5 @@
-function hs = innerfreesurface_upper(xs, t, SubstrateFunctions)
-%%INNERFREESURFACE_UPPER Upper side of the free surface in inner region
+function hs = innerfreesurface_lower(xs, t, SubstrateFunctions)
+%%INNERFREESURFACE_LOWER Lower side of the free surface in inner region
 
     % Load in parameters
     d = SubstrateFunctions.d(t);
