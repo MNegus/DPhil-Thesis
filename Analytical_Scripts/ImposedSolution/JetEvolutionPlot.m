@@ -15,7 +15,7 @@ function JetEvolutionPlot(dimension)
     set(groot, 'DefaultLegendInterpreter', 'latex');
 
     %% Load in color map
-    mapObj = load("fine_red_blue_cmap.mat");
+    mapObj = load("../../fine_red_blue_cmap.mat");
     cmap = mapObj.cmap;
     blueCol = cmap(1, :);
     redCol = cmap(end, :);

@@ -10,7 +10,7 @@ addpath("../Analytical_Scripts/Imposed/");
 addpath("../Analytical_Scripts/Imposed/Pressures");
 
 % Load in red-blue colour map
-cmap_mat = matfile('red_blue_cmap.mat');
+cmap_mat = matfile("../fine_red_blue_cmap.mat");
 cmap = cmap_mat.cmap;
 
 fontsize = 22;

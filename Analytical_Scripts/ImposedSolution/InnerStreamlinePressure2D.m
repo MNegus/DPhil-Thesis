@@ -21,7 +21,7 @@ xMax = 1;
 zMax = 1;
 
 %% Load in color map
-mapObj = load("fine_red_blue_cmap.mat");
+mapObj = load("../../fine_red_blue_cmap.mat");
 cmap = mapObj.cmap;
 
 %% Parameter definitions
