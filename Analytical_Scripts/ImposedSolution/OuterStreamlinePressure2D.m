@@ -28,8 +28,7 @@ else
 end
 
 %% Load in color map
-% mapObj = load("red_blue_cmap.mat");
-mapObj = load("fine_red_blue_cmap.mat");
+mapObj = load("../../fine_red_blue_cmap.mat");
 cmap = mapObj.cmap;
 
 %% Quadratic substrate definition
