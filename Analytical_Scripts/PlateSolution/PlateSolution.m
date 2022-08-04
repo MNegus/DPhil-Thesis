@@ -11,7 +11,7 @@ function [ts, ws, w_ts, w_tts] = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon
     addpath("../Forces");
     
     %% Computational parameters
-    t0 = 1e-9; % Initial time (instead of initialising at t = 0)
+    t0 = 0; % Initial time (instead of initialising at t = 0)
     RelTol = 1e-4; % Relative tolerance of ode15i
     AbsTol = 1e-5; % Absolute tolerance of ode15i
     MaxStep = 1e-3; % Max timestep for ode15i
@@ -39,18 +39,27 @@ function [ts, ws, w_ts, w_tts] = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon
         SubstrateFunctions = substratedependents(SubstrateFunctions);
         
         % Find substrate force
-        if forceType == "outer"
-            % Outer force
-            forceTerm = outerforce(t, SubstrateFunctions);
+        if t == 0
+            forceTerm = 0;
+            
         else
-            % Composite force
-            [forceTerm, ~, ~] = substrateforce(t, SubstrateFunctions);
+            if forceType == "outer"
+                % Outer force
+                forceTerm = outerforce(t, SubstrateFunctions);
+            elseif forceType == "composite"
+                % Composite force
+                [forceTerm, ~, ~] = substrateforce(t, SubstrateFunctions);
+            else
+                error("Invalid forceType. Needs to be 'outer' or 'composite'.");
+            end
+            
         end
-        
         % Return residual
         res = [yp(1) - y(2); ...
             ALPHA * yp(2) / epsilon^2 + BETA * yp(1) + epsilon^2 * GAMMA * y(1) ...
-                - forceTerm];
+            - forceTerm];
+        
+        
     end
 
     %% Set initial conditions
