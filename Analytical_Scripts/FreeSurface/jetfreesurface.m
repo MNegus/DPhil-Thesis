@@ -1,4 +1,4 @@
-function [xs, hs] = jetfreesurface(xMax, t, SubstrateFunctions)
+function hs = jetfreesurface(xs, t, SubstrateFunctions)
 
     %% Find w
     if SubstrateFunctions.dimension == "2D"
@@ -15,6 +15,7 @@ function [xs, hs] = jetfreesurface(xMax, t, SubstrateFunctions)
     J = SubstrateFunctions.J;
     
     %% Find minimum tau (from manual xMax)
+    xMax = max(xs);
     xBarMax = xMax / epsilon;
     zeroFun = @(tau) xBarMax - 2 * d_t(tau) * (t - tau) - d(tau);
     tauMin = fsolve(zeroFun, 1e-6);
@@ -24,8 +25,13 @@ function [xs, hs] = jetfreesurface(xMax, t, SubstrateFunctions)
 %     zeroFun = @(tau) hBarMin - (d_t(tau) .* J(tau)) ./ (d_t(tau) - 2 * d_tt(tau) .* (t - tau));
 %     tauMin = fsolve(zeroFun, 1e-6);
 
-    %% Find taus
-    taus = linspace(tauMin, t, 1e3);
+    %% Find taus, clustered near t
+    lambda = 10;
+    b = (tauMin - t) / (1 - exp(-lambda));
+    a = tauMin - b;
+    taus = a + b * exp(-lambda * linspace(0, 1, 1e3));
+    
+%     taus = linspace(tauMin, t, 1e3);
 
     %% Determinant of Jacobian, throw error if zero at any point
     detJ = d_t(taus) - 2 * d_tt(taus) .* (t - taus);
@@ -45,7 +51,8 @@ function [xs, hs] = jetfreesurface(xMax, t, SubstrateFunctions)
     uBars = 2 * d_ts; % Velocity, if needed
     
     %% Determine solution in original variables
-    xs = epsilon * xBars;
-    hs = -epsilon^2 * w + epsilon^3 * hBars;
+%     xs = epsilon * xBars;
+    hs = -epsilon^2 * w + epsilon^3 * interp1(epsilon * xBars, hBars, xs, ...
+        'linear', 'extrap');
 
 end
