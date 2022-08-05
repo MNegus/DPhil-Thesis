@@ -20,6 +20,11 @@ function SubstrateFunctions = platesubstratefunctions(ts, ws, w_ts, w_tts, epsil
     SubstrateFunctions.b_t = @(t) zeros(size(t));
     SubstrateFunctions.b_tt = @(t) zeros(size(t));
     
+    % Set w functions (identical to a, fix this later)
+    SubstrateFunctions.w = SubstrateFunctions.a;
+    SubstrateFunctions.w_t = SubstrateFunctions.a_t;
+    SubstrateFunctions.w_tt = SubstrateFunctions.a_tt;
+    
     %% Load substrate dependents
     SubstrateFunctions = substratedependents(SubstrateFunctions);
 
