@@ -25,7 +25,14 @@ function hs = innerfreesurface_upper(xs, t, SubstrateFunctions)
     sigmaMaxFun = @(sigma) xTildeMax - (J / pi) * (sigma - log(sigma) - 1);
     sigmaMax = fsolve(sigmaMaxFun, 1e3);
     
-    sigmas = linspace(1, sigmaMax, 3 * length(xTildes));
+    % Cluster sigmas close to 1
+    sigmaMin = 1;
+    lambda = 10;
+    b = (sigmaMax - sigmaMin) / (exp(lambda) - 1);
+    a = sigmaMin - b;
+    sigmas = a + b * exp(lambda * linspace(0, 1, 3 * length(xTildes)));
+    
+%     sigmas = linspace(1, sigmaMax, 3 * length(xTildes));
     
     %% Inner variable free-surface
     xTildesParams = (J / pi) * (sigmas - log(sigmas) - 1);

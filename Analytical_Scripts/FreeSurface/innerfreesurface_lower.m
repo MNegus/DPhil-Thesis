@@ -26,7 +26,14 @@ function hs = innerfreesurface_lower(xs, t, SubstrateFunctions)
     xiMinFun = @(xi) xTildeMax - (J / pi) * (exp(xi) - xi - 1);
     xiMin = fsolve(xiMinFun, - pi * xTildeMax / J);
     
-    xis = linspace(xiMin, 0, 3 * length(xTildes));
+    % Cluster xis near 0
+    lambda = 10;
+    b = (0 - xiMin) / (exp(-lambda) - 1);
+    a = xiMin - b;
+
+    xis = a + b * exp(-lambda * linspace(0, 1, 1e3));
+    
+%     xis = linspace(xiMin, 0, 3 * length(xTildes));
     
     %% Inner variable free-surface
     xTildesParams = (J / pi) * (exp(xis) - xis - 1);
