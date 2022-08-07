@@ -5,10 +5,6 @@ function [ts, ws, w_ts, w_tts] = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon
 %   = F(t),
 %   where F(t) is the force (either given by the outer or composite
 %   solution). 
-
-    %% Add relevant paths
-    addpath("../");
-    addpath("../Forces");
     
     %% Computational parameters
     t0 = 0; % Initial time (instead of initialising at t = 0)
@@ -25,6 +21,7 @@ function [ts, ws, w_ts, w_tts] = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon
     %   -> yp.
     %   TODO: Make a separate function to do the loading below to make this
     %   all a bit neater. 
+        t
         % Save substrate functions struct
         SubstrateFunctions.dimension = "axi";
         SubstrateFunctions.epsilon = epsilon;
