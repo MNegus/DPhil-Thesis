@@ -53,16 +53,17 @@ function [xsTurnover, hsTurnover, xsFull, hsFull] = outer_inner_jet_freesurface_
     hsTurnover = [flip(hsCompositeJet), hsCompositeOuterInner];
     
     %% Outer-outer-outer-inner-jet full solution
-    
-    % Outer-outer composite
-    [hsOuterOuterLower, hsOuterOuterUpper] = outerouterfreesurface(xsUpper, t, SubstrateFunctions);
-    hsOverlapOuterOuter = outer_outer_overlap(xsUpper, t, SubstrateFunctions);
-    
-    hsUpperComposite = hsCompositeOuterInner + hsOuterOuterLower - hsOverlapOuterOuter;
-
-    % Full solution
-    xsFull = [xsTurnover, flip(xsUpper)];
-    hsFull = [flip(hsCompositeJet), hsUpperComposite, flip(hsOuterOuterUpper)];
+    xsFull = 0;
+    hsFull = 0;
+%     % Outer-outer composite
+%     [hsOuterOuterLower, hsOuterOuterUpper] = outerouterfreesurface(xsUpper, t, SubstrateFunctions);
+%     hsOverlapOuterOuter = outer_outer_overlap(xsUpper, t, SubstrateFunctions);
+%     
+%     hsUpperComposite = hsCompositeOuterInner + hsOuterOuterLower - hsOverlapOuterOuter;
+% 
+%     % Full solution
+%     xsFull = [xsTurnover, flip(xsUpper)];
+%     hsFull = [flip(hsCompositeJet), hsUpperComposite, flip(hsOuterOuterUpper)];
     
 
 end
