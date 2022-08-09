@@ -1,4 +1,4 @@
-%% PlateDisplacementComparison.m
+%% PlateAndForceComparison.m
 %
 
 clear;
@@ -17,7 +17,7 @@ redCol = cmap(end, :);
 blueCol = cmap(1, :);
 
 %% Figure options
-fontsize = 11;
+fontsize = 10;
 lineWidth = 1.25;
 set(0,'defaultTextInterpreter','latex');
 set(0,'defaultAxesFontSize', fontsize);
@@ -52,6 +52,13 @@ stat_output_mat = readmatrix(sprintf("%s/cleaned_data/output.txt", stat_dir));
 ts = stat_output_mat(:, 1) - IMPACT_TIME;
 FsStat = stat_output_mat(:, 3);
 
+% Turnover points
+stat_turnover_mat = readmatrix(sprintf("%s/turnover_points.csv", stat_dir));
+tsStatTurnover = stat_turnover_mat(:, 1) - IMPACT_TIME;
+dsStatTurnover = stat_turnover_mat(:, 2);
+JsStatTurnover = stat_turnover_mat(:, 3);
+JsStatTurnover(tsStatTurnover < 0) = 0;
+
 %% Load moving plate DNS solutions
 param_dir = sprintf("%s/Moving_Plate/ALPHA-%g_BETA-%g_GAMMA-%g", dns_master_dir, ...
     ALPHA, BETA, GAMMA);
@@ -61,6 +68,14 @@ FsMoving = moving_output_mat(:, 2);
 wsMoving = moving_output_mat(:, 6);
 w_tsMoving = moving_output_mat(:, 7);
 w_ttsMoving = moving_output_mat(:, 8);
+
+% Turnover points
+moving_turnover_mat = readmatrix(sprintf("%s/turnover_points.csv", param_dir));
+tsMovingTurnover = moving_turnover_mat(:, 1) - IMPACT_TIME;
+dsMovingTurnover = moving_turnover_mat(:, 2);
+JsMovingTurnover = moving_turnover_mat(:, 3);
+JsMovingTurnover(tsMovingTurnover < 0) = 0;
+
 
 %% Load outer solution
 % Solve plate equation
@@ -84,6 +99,9 @@ dsOuter = dsOuter(1 : tIdxMaxOuter);
 
 % Force solution
 FsOuter = outerforce(tsOuter, OuterSubstrateFunctions);
+
+% Jet thickness
+JsOuter = OuterSubstrateFunctions.J(tsOuter);
 
 %% Load composite solution
 % Solve plate equation
@@ -109,6 +127,9 @@ dsComp = dsComp(1 : tIdxMaxComp);
 [FsComp, ~, ~] ...
     = substrateforce(tsComp, CompSubstrateFunctions);
 
+% Jet thickness
+JsComp = CompSubstrateFunctions.J(tsComp);
+
 %% Load stationary solutions
 tMax = 1 / 3; % Max such that 1 = d(t)
 tsStat = linspace(0, tMax, 1e3);
@@ -123,6 +144,9 @@ dsStat = StatSubstrateFunctions.d(tsStat);
 % Force solution
 [FsCompStat, FsOuterStat, ~] ...
     = substrateforce(tsStat, StatSubstrateFunctions);
+
+% Jet thickness
+JsStat = StatSubstrateFunctions.J(tsStat);
 
 %% Plot substrate displacement
 tiledlayout(3, 1);
@@ -198,14 +222,12 @@ lh = legend(h(1 : 3), ...
     'NumColumns', 3);
 lh.Layout.Tile = 'North'; 
 
-
-
 set(gcf, 'Renderer', 'Painters');
 pause(0.5);
 
 figname = "PlateFigures/PlateComparison";
-% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-saveas(gcf, sprintf("%s.png", figname));
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+% saveas(gcf, sprintf("%s.png", figname));
 % savefig(gcf, sprintf("%s.fig", figname));
 
 %% Plot force
@@ -272,5 +294,144 @@ set(gcf, 'Renderer', 'Painters');
 pause(0.5);
 
 figname = "PlateFigures/ForceComparison";
-% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-saveas(gcf, sprintf("%s.png", figname));
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+% saveas(gcf, sprintf("%s.png", figname));
+
+%% Turnover point radius
+tiledlayout(1, 2);
+width = 6;
+height = 4;
+set(gcf,'units', 'inches', ...
+    'position',[0.5 * width, 0.5 * height, width, height]);
+
+% Stationary solutions
+nexttile;
+hold on;
+xline(tMax, '--', 'color', 0.75 * [1 1 1]);
+xline(tMax, ':', 'color', 0.75 * [1 1 1]);
+h(1) = plot(tsStatTurnover, dsStatTurnover, 'color', blueCol, 'linewidth', lineWidth);
+h(2) = plot(tsStat, dsStat, 'linestyle', '--', ...
+    'color', redCol, 'linewidth', lineWidth);
+h(3) = plot(tsStat, dsStat, 'linestyle', ':', ...
+    'color', redCol, 'linewidth', 1.25 * lineWidth);
+
+grid on;
+box on;
+
+xlabel("$t$");
+xticks([-0.1 : 0.1 : 0.4]);
+
+ylabel("$d(t)$");
+xlim([0, 0.45]);
+ylim([0, 1.2]);
+
+title("(a) Stationary substrate.", 'Fontsize', fontsize);
+set(gca, 'TitleFontSizeMultiplier', 1);
+
+% Moving solutions
+nexttile;
+hold on;
+xline(tsOuter(end), '--', 'color', 0.75 * [1 1 1]);
+xline(tsComp(end), ':', 'color', 0.75 * [1 1 1]);
+plot(tsMovingTurnover, dsMovingTurnover, 'color', blueCol, 'linewidth', lineWidth);
+plot(tsOuter, dsOuter, 'linestyle', '--', ...
+    'color', redCol, 'linewidth', lineWidth);
+plot(tsComp, dsComp, 'linestyle', ':', ...
+    'color', redCol, 'linewidth', 1.25 * lineWidth);
+
+grid on;
+box on;
+
+xlabel("$t$");
+xticks([-0.1 : 0.1 : 0.4]);
+
+ylabel("$d(t)$");
+xlim([0, 0.45]);
+ylim([0, 1.2]);
+
+title("(b) Moving substrate.", 'Fontsize', fontsize);
+set(gca, 'TitleFontSizeMultiplier', 1);
+
+
+% Set figure options
+lh = legend(h(1 : 3), ...
+    ["DNS", "Analytical (leading-order)", "Analytical (composite)"], ...
+    'NumColumns', 3);
+lh.Layout.Tile = 'North'; 
+
+set(gcf, 'Renderer', 'Painters');
+pause(0.5);
+
+figname = "PlateFigures/TurnoverRadiusComparison";
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+% saveas(gcf, sprintf("%s.png", figname));
+
+%% Turnover point height
+tiledlayout(1, 2);
+width = 6;
+height = 4;
+set(gcf,'units', 'inches', ...
+    'position',[0.5 * width, 0.5 * height, width, height]);
+
+% Stationary solutions
+nexttile;
+hold on;
+xline(tMax, '--', 'color', 0.75 * [1 1 1]);
+xline(tMax, ':', 'color', 0.75 * [1 1 1]);
+h(1) = plot(tsStatTurnover, JsStatTurnover, 'color', blueCol, 'linewidth', lineWidth);
+h(2) = plot(tsStat, (1 + 4 / pi) * JsStat, 'linestyle', '--', ...
+    'color', redCol, 'linewidth', lineWidth);
+h(3) = plot(tsStat, (1 + 4 / pi) * JsStat, 'linestyle', ':', ...
+    'color', redCol, 'linewidth', 1.25 * lineWidth);
+
+grid on;
+box on;
+
+xlabel("$t$");
+xticks([-0.1 : 0.1 : 0.4]);
+
+ylabel("$H(t)$");
+xlim([0, 0.45]);
+ylim([0, 0.3]);
+
+title("(a) Stationary substrate.", 'Fontsize', fontsize);
+set(gca, 'TitleFontSizeMultiplier', 1);
+
+% Moving solutions
+nexttile;
+hold on;
+xline(tsOuter(end), '--', 'color', 0.75 * [1 1 1]);
+xline(tsComp(end), ':', 'color', 0.75 * [1 1 1]);
+plot(tsMovingTurnover, JsMovingTurnover, 'color', blueCol, 'linewidth', lineWidth);
+plot(tsOuter, (1 + 4 / pi) * JsOuter, 'linestyle', '--', ...
+    'color', redCol, 'linewidth', lineWidth);
+plot(tsComp, (1 + 4 / pi) * JsComp, 'linestyle', ':', ...
+    'color', redCol, 'linewidth', 1.25 * lineWidth);
+
+grid on;
+box on;
+
+xlabel("$t$");
+xticks([-0.1 : 0.1 : 0.4]);
+
+ylabel("$H(t)$");
+xlim([0, 0.45]);
+ylim([0, 0.3]);
+
+title("(b) Moving substrate.", 'Fontsize', fontsize);
+set(gca, 'TitleFontSizeMultiplier', 1);
+
+
+% Set figure options
+lh = legend(h(1 : 3), ...
+    ["DNS", "Analytical (leading-order)", "Analytical (composite)"], ...
+    'NumColumns', 3);
+lh.Layout.Tile = 'North'; 
+
+set(gcf, 'Renderer', 'Painters');
+pause(0.5);
+
+figname = "PlateFigures/TurnoverHeightComparison";
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+% saveas(gcf, sprintf("%s.png", figname));
+
