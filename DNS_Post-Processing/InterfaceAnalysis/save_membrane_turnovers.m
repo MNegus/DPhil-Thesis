@@ -1,5 +1,5 @@
-%% save_plate_turnovers.m
-% Saves the turnover points for the validation cases with the plate code.
+%% save_membrane_turnovers.m
+% Saves the turnover points for the validation cases with the membrane code.
 
 function save_membrane_turnovers(master_dir)
     close all;
@@ -16,7 +16,7 @@ function save_membrane_turnovers(master_dir)
     curvature_time = 0.45;
 
 
-    %% Loop over both the 2D and the axisymmetric cases
+    %% Loop over both imposed cases
     % for acc = ["0.0"; "0.05"]
     accs = ["0", "0.0025"];
     for k = 1 : 2
