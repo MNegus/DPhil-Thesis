@@ -81,7 +81,7 @@ for ALPHA_str = ALPHA_strs
         = substrateforce(ts, SubstrateFunctions);
     
     % Jet thickness
-    JsAnalytical = SubstrateFunctions.J(ts);
+    Js = SubstrateFunctions.J(ts);
 
     % Create solutions struct
     SolStruct.ts = ts;
