@@ -5,7 +5,7 @@ function save_plate_param_turnovers(master_dir)
     max_level = 13;
     output_range = 0 : 10 : 8000;
     Delta = 6 ./ 2^max_level;
-    dt = 1e-4;
+    dt = 1e-3;
     transpose_coordinates = false;
     shift = 0;
     curvature_time = 0.45;
