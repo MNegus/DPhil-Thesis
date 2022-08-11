@@ -16,3 +16,6 @@
 
 # zip files
 *.zip
+
+# Analytical solution mat files
+Model_Comparisons/AnalyticalSolutions/
