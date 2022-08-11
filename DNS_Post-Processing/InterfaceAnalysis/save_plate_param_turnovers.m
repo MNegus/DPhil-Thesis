@@ -3,7 +3,7 @@ function save_plate_param_turnovers(master_dir)
 
     %% Options
     max_level = 13;
-    output_range = 0 : 10 : 8000;
+    output_range = 0 : 800;
     Delta = 6 ./ 2^max_level;
     dt = 1e-3;
     transpose_coordinates = false;
