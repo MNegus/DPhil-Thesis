@@ -10,7 +10,7 @@ function [ts, ws, w_ts, w_tts] = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon
     t0 = 0; % Initial time (instead of initialising at t = 0)
     RelTol = 1e-4; % Relative tolerance of ode15i
     AbsTol = 1e-5; % Absolute tolerance of ode15i
-    MaxStep = 1e-3; % Max timestep for ode15i
+    MaxStep = 5e-4; % Max timestep for ode15i
     tSpan = [t0 tMax]; % Time span
 
     
