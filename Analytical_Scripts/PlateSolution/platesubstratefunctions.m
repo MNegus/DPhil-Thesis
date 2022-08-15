@@ -11,9 +11,9 @@ function SubstrateFunctions = platesubstratefunctions(ts, ws, w_ts, w_tts, epsil
     SubstrateFunctions.epsilon = epsilon;
     
     %% Define interpolated functions for rigid displacement term
-    SubstrateFunctions.a = @(t) interp1(ts, ws, t);
-    SubstrateFunctions.a_t = @(t) interp1(ts, w_ts, t);
-    SubstrateFunctions.a_tt = @(t) interp1(ts, w_tts, t);
+    SubstrateFunctions.a = @(t) interp1(ts, ws, t, 'linear', 'extrap');
+    SubstrateFunctions.a_t = @(t) interp1(ts, w_ts, t, 'linear', 'extrap');
+    SubstrateFunctions.a_tt = @(t) interp1(ts, w_tts, t, 'linear', 'extrap');
     
     % Curved displacement terms set to 0
     SubstrateFunctions.b = @(t) zeros(size(t));
