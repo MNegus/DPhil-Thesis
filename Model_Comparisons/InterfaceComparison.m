@@ -89,41 +89,149 @@ w_tsComp = w_tsComp(1 : tIdxMaxComp);
 w_ttsComp = w_ttsComp(1 : tIdxMaxComp);
 dsComp = dsComp(1 : tIdxMaxComp);
 
+%% Plot interfaces in time
+% % Select timesteps to plot
+% tsPlot = linspace(0.005, 0.2, 4);
+% timesteps = floor((tsPlot + IMPACT_TIME) / DELTA_T);
+% 
+% % Set x limits
+% xMins = [0.08, 0.44, 0.6, 0.7];
+% plotWidths = [0.09, 0.09, 0.175, 0.29];
+% yMins = -0.25 * plotWidths;
+% 
+% % Arrays for stationary and moving params
+% dns_dirs = [stat_dir, moving_dir];
+% function_structs = [StatSubstrateFunctions, MovingSubstrateFunctions];
+% titleStrs = ["(a) Stationary substrate.", "(b) Moving substrate."];
+% 
+% % Loop over times
+% for timestepIdx = 1 : length(timesteps)
+% % for timestepIdx = 4
+% 
+%     timestep = timesteps(timestepIdx);
+%     t = tsPlot(timestepIdx);
+% 
+%     tiledlayout(1, 2);
+%     width = 3;
+%     height = 3;
+%     set(gcf,'units', 'inches', ...
+%         'position',[0.5 * width, 0.5 * height, width, height]);
+% 
+%     % Loop over types
+%     for typeIdx = 1 : 2
+%         dns_dir = dns_dirs(typeIdx);
+%         SubstrateFunctions = function_structs(typeIdx);
+%         
+%         nexttile;
+%         hold on;
+% 
+%         %% Plot analytical solution
+%         d = SubstrateFunctions.d(t);
+%         J = SubstrateFunctions.J(t);
+%         w = SubstrateFunctions.w(t);
+%         xMaxUpper = 1;
+%         xMaxLower = 1;
+%     
+%         % Load full composite solution
+%         [xsTurnover, hsTurnover, ~, ~] ...
+%             = outer_inner_jet_freesurface_composite(xMaxUpper, xMaxLower, ...
+%             t, SubstrateFunctions);
+% 
+%         plot(xsTurnover, hsTurnover, 'linestyle', ':', ...
+%             'color', redCol, 'linewidth', 1.25 * lineWidth, 'Displayname', 'Analytical');
+%     
+%         %% Plot DNS solution
+%         interface_filename = sprintf("%s/interfaces/interface_%d.txt", ...
+%             dns_dir, timestep);
+%         transpose_coordinates = false;
+%         
+%         % Load interface points
+%         [start_points, end_points] = ...
+%             read_interface_points(interface_filename, transpose_coordinates);
+%         
+%         % Extract bulk droplet interface
+%         tol = 1e-3;
+%         [interface_start_points, interface_end_points] ...
+%             = extract_interface(start_points, end_points, tol);
+%         
+%         % Determine substrate position
+%         if typeIdx == 1
+%             wVal = 0;
+%         else
+%             wVal = wsMovingFun(t);
+%         end
+% 
+%         % Restrict vertical limits of points
+%         yMax = yMins(timestepIdx) + plotWidths(timestepIdx);
+%         keepIdxs = (interface_start_points(:, 1) < yMax + wVal) ...
+%             & (interface_end_points(:, 1) < yMax + wVal);
+%         interface_start_points = interface_start_points(keepIdxs, :);
+%         interface_end_points = interface_end_points(keepIdxs, :);
+% 
+%         % Find line segments
+%         xsStart = interface_start_points(:, 2);
+%         ysStart = interface_start_points(:, 1) - wVal;
+%     
+%         xsEnd = interface_end_points(:, 2);
+%         ysEnd = interface_end_points(:, 1) - wVal;     
+% 
+%         % Plot droplet interface
+%         plot([xsStart'; xsEnd'], [ysStart'; ysEnd'], ...
+%             'color', blueCol, 'linewidth', lineWidth);
+% 
+%         % Plot substrate
+%         yline(-wVal, 'LineStyle', '--');
+% 
+%         % Figure properties
+%         grid on;
+%         box on;
+%         xlabel("$r$");
+%         ylabel("$z$");
+%         xlim([xMins(timestepIdx), xMins(timestepIdx) + plotWidths(timestepIdx)]);
+%         ylim([yMins(timestepIdx), yMins(timestepIdx) + plotWidths(timestepIdx)]);
+%         pbaspect([1 1 1]);
+% 
+%     end
+%     % Export figure
+%     pause(0.5);
+%     figname = append("PlateFigures/TurnoverInterfaceComparison_", num2str(t));
+%     exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+%     % saveas(gcf, sprintf("%s.png", figname));
+% end
+
 %% Plot free surfaces in time
 % Select timesteps to plot
-% tsPlot = 0.005 : 0.03: 0.1
-tsPlot = linspace(0.002, 0.2, 4);
+tsPlot = linspace(0.005, 0.2, 4)
 timesteps = floor((tsPlot + IMPACT_TIME) / DELTA_T);
 
 % Variable colors
 colorFreq = floor((length(cmap) / 3) / length(timesteps));
 
-% figure();
-% hold on;
 tiles = tiledlayout(2, 1);
 width = 6;
-height = 4;
-% tiles.Units = 'inches';
-% tiles.OuterPosition = [0.25 0.25 width height];
+height = 6;
 
-set(gcf,'units', 'inches', ...
-    'position',[0.5 * width, 0.5 * height, width, height]);
+% set(gcf,'units', 'inches', ...
+%     'position',[0.5 * width, 0.5 * height, width, height]);
 
 % Set y limit to plot interface
 yMax = 0.1;
 
+% % Set x limits
+% xWidth = 0.15;
+% xStarts = [0.09, 0.43, 0.625, 0.72];
+
 % Arrays for stationary and moving params
 dns_dirs = [stat_dir, moving_dir];
 function_structs = [StatSubstrateFunctions, MovingSubstrateFunctions];
-titleStrs = ["(a) Stationary substrate.", "(b) Moving substrate."];
+titleStrs = ["(a) Stationary plate.", "(b) Moving plate."];
 
 
 % Loop over types
 for typeIdx = 1 : 2
     dns_dir = dns_dirs(typeIdx);
     SubstrateFunctions = function_structs(typeIdx);
-
-    nexttile(typeIdx);
+    nexttile;
     hold on;
 
     for timestepIdx = 1 : length(timesteps)
@@ -153,7 +261,7 @@ for typeIdx = 1 : 2
         if timestepIdx == 1
             h(2) = q;
         end
-        scatter(d, (1 + 4 / pi) * J - w);
+%         scatter(d, (1 + 4 / pi) * J - w);
     
         %% Plot DNS solution
         interface_filename = sprintf("%s/interfaces/interface_%d.txt", ...
@@ -200,7 +308,13 @@ for typeIdx = 1 : 2
             'color', DNSLineColor, 'linewidth', lineWidth);
         end
 
-        
+        % Figure properties
+        grid on;
+        box on;
+        xlim([0, 1]);
+        xlabel("$r$");
+        ylabel("$z$");
+        ylim([-0.05, yMax]);
 
     end
 
@@ -210,13 +324,7 @@ for typeIdx = 1 : 2
 %             'LineWidth', lineWidth);
 %     end
 
-    %% Figure properties
-    grid on;
-    box on;
-    xlim([0, 1.0]);
-    xlabel("$r$");
-    ylabel("$z$");
-    ylim([-0.05, yMax]);
+    %
 
     title(titleStrs(typeIdx), 'Fontsize', fontsize);
     set(gca, 'TitleFontSizeMultiplier', 1);
