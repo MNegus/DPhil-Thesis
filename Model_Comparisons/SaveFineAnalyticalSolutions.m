@@ -24,7 +24,7 @@ GAMMA = 0;
 
 % for ALPHA_str = ALPHA_strs
 for ALPHA = ALPHAS
-
+    ALPHA
     % Save plate solution 
     [ts, ws, w_ts, w_tts] ...
         = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon, "composite");
@@ -33,16 +33,9 @@ for ALPHA = ALPHAS
     SubstrateFunctions = platesubstratefunctions(ts, ...
         ws, w_ts, w_tts, epsilon);
     
-    % Find where turnover point reaches 1
+    % Turnover points
     ds = SubstrateFunctions.d(ts);
-    tIdxMaxComp = sum(ds <= 1);
-    
-    % Restrict solutions temporally
-%     ts = ts(1 : tIdxMaxComp);
-%     ws = ws(1 : tIdxMaxComp);
-%     w_ts = w_ts(1 : tIdxMaxComp);
-%     w_tts = w_tts(1 : tIdxMaxComp);
-%     ds = ds(1 : tIdxMaxComp);
+    d_ts = SubstrateFunctions.d_t(ts);
     
     % Force solution
     [FsComp, FsOuter, ~] ...
@@ -51,14 +44,20 @@ for ALPHA = ALPHAS
     % Jet thickness
     Js = SubstrateFunctions.J(ts);
 
+    % Energies
+    [EOuters, EJets] = dropletenergy(ts, SubstrateFunctions);
+
     % Create solutions struct
     SolStruct.ts = ts;
     SolStruct.ws = ws;
     SolStruct.w_ts = w_ts;
     SolStruct.w_tts = w_tts;
     SolStruct.ds = ds;
+    SolStruct.d_ts = d_ts;
     SolStruct.FsComp = FsComp;
     SolStruct.Js = Js;
+    SolStruct.EOuters = EOuters;
+    SolStruct.EJets = EJets;
     SolStruct.SubstrateFunctions = SubstrateFunctions;
 
     % Save solutions struct
@@ -82,7 +81,7 @@ BETAS = BETA_crit * 10.^linspace(-3, 3, 500);
 
 % for ALPHA_str = ALPHA_strs
 for BETA = BETAS
-
+    BETA
     % Save plate solution 
     [ts, ws, w_ts, w_tts] ...
         = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon, "composite");
@@ -91,16 +90,9 @@ for BETA = BETAS
     SubstrateFunctions = platesubstratefunctions(ts, ...
         ws, w_ts, w_tts, epsilon);
     
-    % Find where turnover point reaches 1
+    % Turnover points
     ds = SubstrateFunctions.d(ts);
-    tIdxMaxComp = sum(ds <= 1);
-    
-    % Restrict solutions temporally
-%     ts = ts(1 : tIdxMaxComp);
-%     ws = ws(1 : tIdxMaxComp);
-%     w_ts = w_ts(1 : tIdxMaxComp);
-%     w_tts = w_tts(1 : tIdxMaxComp);
-%     ds = ds(1 : tIdxMaxComp);
+    d_ts = SubstrateFunctions.d_t(ts);
     
     % Force solution
     [FsComp, FsOuter, ~] ...
@@ -109,14 +101,20 @@ for BETA = BETAS
     % Jet thickness
     Js = SubstrateFunctions.J(ts);
 
+    % Energies
+    [EOuters, EJets] = dropletenergy(ts, SubstrateFunctions);
+
     % Create solutions struct
     SolStruct.ts = ts;
     SolStruct.ws = ws;
     SolStruct.w_ts = w_ts;
     SolStruct.w_tts = w_tts;
     SolStruct.ds = ds;
+    SolStruct.d_ts = d_ts;
     SolStruct.FsComp = FsComp;
     SolStruct.Js = Js;
+    SolStruct.EOuters = EOuters;
+    SolStruct.EJets = EJets;
     SolStruct.SubstrateFunctions = SubstrateFunctions;
 
     % Save solutions struct
@@ -138,7 +136,7 @@ GAMMAS = 10.^linspace(-1, 7, 500);
 
 % for ALPHA_str = ALPHA_strs
 for GAMMA = GAMMAS
-
+    GAMMA
     % Save plate solution 
     [ts, ws, w_ts, w_tts] ...
         = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon, "composite");
@@ -147,16 +145,9 @@ for GAMMA = GAMMAS
     SubstrateFunctions = platesubstratefunctions(ts, ...
         ws, w_ts, w_tts, epsilon);
     
-    % Find where turnover point reaches 1
+    % Turnover points
     ds = SubstrateFunctions.d(ts);
-    tIdxMaxComp = sum(ds <= 1);
-    
-    % Restrict solutions temporally
-%     ts = ts(1 : tIdxMaxComp);
-%     ws = ws(1 : tIdxMaxComp);
-%     w_ts = w_ts(1 : tIdxMaxComp);
-%     w_tts = w_tts(1 : tIdxMaxComp);
-%     ds = ds(1 : tIdxMaxComp);
+    d_ts = SubstrateFunctions.d_t(ts);
     
     % Force solution
     [FsComp, FsOuter, ~] ...
@@ -165,14 +156,20 @@ for GAMMA = GAMMAS
     % Jet thickness
     Js = SubstrateFunctions.J(ts);
 
+    % Energies
+    [EOuters, EJets] = dropletenergy(ts, SubstrateFunctions);
+
     % Create solutions struct
     SolStruct.ts = ts;
     SolStruct.ws = ws;
     SolStruct.w_ts = w_ts;
     SolStruct.w_tts = w_tts;
     SolStruct.ds = ds;
+    SolStruct.d_ts = d_ts;
     SolStruct.FsComp = FsComp;
     SolStruct.Js = Js;
+    SolStruct.EOuters = EOuters;
+    SolStruct.EJets = EJets;
     SolStruct.SubstrateFunctions = SubstrateFunctions;
 
     % Save solutions struct

@@ -1,10 +1,14 @@
 %% SaveAnalyticalSolutions.m
 % Saves all of the analytical solutions used in the plate chapter
 
+clear;
+close all;
+
 % Adds analytical scripts to path
 addpath("../Analytical_Scripts/");
 addpath("../Analytical_Scripts/PlateSolution/");
 addpath("../Analytical_Scripts/Forces/");
+addpath("../Analytical_Scripts/Energies/")
 
 % General parameters
 epsilon = 1;
@@ -30,6 +34,9 @@ ds = SubstrateFunctions.d(ts);
 % Jet thickness
 Js = SubstrateFunctions.J(ts);
 
+% Energies
+[EOuters, EJets] = dropletenergy(ts, SubstrateFunctions);
+
 % Create solutions struct
 SolStruct.ts = ts;
 SolStruct.ws = zeros(size(ts));
@@ -38,6 +45,8 @@ SolStruct.w_tts = zeros(size(ts));
 SolStruct.ds = ds;
 SolStruct.FsComp = FsComp;
 SolStruct.Js = Js;
+SolStruct.EOuters = EOuters;
+SolStruct.EJets = EJets;
 SolStruct.SubstrateFunctions = SubstrateFunctions;
 
 % Save struct
@@ -106,7 +115,9 @@ end
 mkdir("AnalyticalSolutions/BETA_varying");
 
 ALPHA = 2;
-BETA_strs = ["0.0", "7.07", "28.28", "141.42"];
+% BETA_strs = ["0.0", "7.07", "28.28", "141.42"];
+% BETA_strs = ["0.0", "9.427", "18.85", "28.28", "37.71", "47.13"]
+BETA_strs = ["0.0", "7.07", "14.14", "28.28", "56.57", "113.1"];
 GAMMA = 100;
 
 for BETA_str = BETA_strs
@@ -163,7 +174,7 @@ mkdir("AnalyticalSolutions/GAMMA_varying");
 
 ALPHA = 2;
 BETA = 0;
-GAMMA_strs = ["10.0", "20.0", "100.0", "500.0", "1000.0"];
+GAMMA_strs = ["10.0", "20.0", "100.0", "500.0", "1000.0", "7250", "21000"];
 
 for GAMMA_str = GAMMA_strs
     % Load numerical value for BETA
