@@ -17,7 +17,7 @@ redCol = cmap(end, :);
 blueCol = cmap(1, :);
 
 %% Figure options
-fontsize = 7.5;
+fontsize = 8.5;
 lineWidth = 1;
 set(0,'defaultTextInterpreter','latex');
 set(0,'defaultAxesFontSize', fontsize);
