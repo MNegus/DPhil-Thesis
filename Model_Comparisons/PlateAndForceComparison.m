@@ -8,6 +8,7 @@ close all;
 addpath("../Analytical_Scripts/");
 addpath("../Analytical_Scripts/PlateSolution/");
 addpath("../Analytical_Scripts/Forces/");
+addpath("../Analytical_Scripts/Energies/");
 
 % Load in red-blue colour map
 cmap_mat = matfile("../fine_red_blue_cmap.mat");
@@ -103,6 +104,8 @@ FsOuter = outerforce(tsOuter, OuterSubstrateFunctions);
 % Jet thickness
 JsOuter = OuterSubstrateFunctions.J(tsOuter);
 
+tsOuter(end)
+
 %% Load composite solution
 % Solve plate equation
 [tsComp, wsComp, w_tsComp, w_ttsComp] ...
@@ -130,6 +133,12 @@ dsComp = dsComp(1 : tIdxMaxComp);
 % Jet thickness
 JsComp = CompSubstrateFunctions.J(tsComp);
 
+% Energies
+[EOuterComp, EJetComp] = dropletenergy(tsComp, CompSubstrateFunctions);
+
+
+tsComp(end)
+
 %% Load stationary solutions
 tMax = 1 / 3; % Max such that 1 = d(t)
 tsStat = linspace(0, tMax, 1e3);
@@ -147,6 +156,9 @@ dsStat = StatSubstrateFunctions.d(tsStat);
 
 % Jet thickness
 JsStat = StatSubstrateFunctions.J(tsStat);
+
+% Energies
+[EOuterStat, EJetStat] = dropletenergy(tsStat, StatSubstrateFunctions);
 
 %% Plot substrate displacement
 tiledlayout(3, 1);
@@ -257,7 +269,7 @@ xticks(xTicks);
 ylabel("$F(t)$");
 ylim([0, 6]);
 
-title("(a) Stationary substrate.", 'Fontsize', fontsize);
+title("(a) Stationary plate.", 'Fontsize', fontsize);
 set(gca, 'TitleFontSizeMultiplier', 1);
 
 % Moving solutions
@@ -280,7 +292,7 @@ xticks(xTicks);
 ylabel("$F(t)$");
 ylim([0, 6]);
 
-title("(b) Moving substrate.", 'Fontsize', fontsize);
+title("(b) Moving plate.", 'Fontsize', fontsize);
 set(gca, 'TitleFontSizeMultiplier', 1);
 
 
@@ -300,7 +312,7 @@ exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 %% Turnover point radius
 tiledlayout(1, 2);
 width = 6;
-height = 4;
+height = 3;
 set(gcf,'units', 'inches', ...
     'position',[0.5 * width, 0.5 * height, width, height]);
 
@@ -325,7 +337,7 @@ ylabel("$d(t)$");
 xlim([0, 0.45]);
 ylim([0, 1.2]);
 
-title("(a) Stationary substrate.", 'Fontsize', fontsize);
+title("(a) Stationary plate.", 'Fontsize', fontsize);
 set(gca, 'TitleFontSizeMultiplier', 1);
 
 % Moving solutions
@@ -349,7 +361,7 @@ ylabel("$d(t)$");
 xlim([0, 0.45]);
 ylim([0, 1.2]);
 
-title("(b) Moving substrate.", 'Fontsize', fontsize);
+title("(b) Moving plate.", 'Fontsize', fontsize);
 set(gca, 'TitleFontSizeMultiplier', 1);
 
 
@@ -369,7 +381,7 @@ exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 %% Turnover point height
 tiledlayout(1, 2);
 width = 6;
-height = 4;
+height = 3;
 set(gcf,'units', 'inches', ...
     'position',[0.5 * width, 0.5 * height, width, height]);
 
@@ -394,7 +406,7 @@ ylabel("$H(t)$");
 xlim([0, 0.45]);
 ylim([0, 0.3]);
 
-title("(a) Stationary substrate.", 'Fontsize', fontsize);
+title("(a) Stationary plate.", 'Fontsize', fontsize);
 set(gca, 'TitleFontSizeMultiplier', 1);
 
 % Moving solutions
@@ -418,7 +430,7 @@ ylabel("$H(t)$");
 xlim([0, 0.45]);
 ylim([0, 0.3]);
 
-title("(b) Moving substrate.", 'Fontsize', fontsize);
+title("(b) Moving plate.", 'Fontsize', fontsize);
 set(gca, 'TitleFontSizeMultiplier', 1);
 
 
@@ -435,3 +447,15 @@ figname = "PlateFigures/TurnoverHeightComparison";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 % saveas(gcf, sprintf("%s.png", figname));
 
+%% Plot energies
+figure(7);
+hold on;
+plot(tsStat, EOuterStat, 'color', 'black', 'LineStyle', '--');
+plot(tsStat, EJetStat, 'color', 'black', 'LineStyle', ':');
+
+plot(tsComp, EOuterComp, 'Color', redCol, 'LineStyle', '--');
+plot(tsComp, EJetComp, 'Color', redCol, 'LineStyle', ':');
+
+%% Energy differences
+tOuterMax = tsOuter(end)
+tCompMax = tsComp(end)
