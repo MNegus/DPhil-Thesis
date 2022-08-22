@@ -21,7 +21,7 @@ function [ts, ws, w_ts, w_tts] = PlateSolution(tMax, ALPHA, BETA, GAMMA, epsilon
     %   -> yp.
     %   TODO: Make a separate function to do the loading below to make this
     %   all a bit neater. 
-        t
+%         t
         % Save substrate functions struct
         SubstrateFunctions.dimension = "axi";
         SubstrateFunctions.epsilon = epsilon;
