@@ -145,7 +145,7 @@ for timestepIdx = 1 : length(timesteps)
     xlabel("$r$");
     ylabel("$p(r, 0, t)$");
 
-    title("(b) Stationary substrate.", 'Fontsize', fontsize);
+    title("(a) Stationary plate.", 'Fontsize', fontsize);
     set(gca, 'TitleFontSizeMultiplier', 1);
 
     %% Moving solution for pressure
@@ -175,7 +175,7 @@ for timestepIdx = 1 : length(timesteps)
     xlabel("$r$");
     ylabel("$p(r, -w(t), t)$");
 
-    title("(b) Moving substrate.", 'Fontsize', fontsize);
+    title("(b) Moving plate.", 'Fontsize', fontsize);
     set(gca, 'TitleFontSizeMultiplier', 1);
 
     %% Solution for the stresses
