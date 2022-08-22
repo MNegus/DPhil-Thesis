@@ -17,5 +17,8 @@
 # zip files
 *.zip
 
+# Text files
+*.txt
+
 # Analytical solution mat files
 Model_Comparisons/AnalyticalSolutions/
