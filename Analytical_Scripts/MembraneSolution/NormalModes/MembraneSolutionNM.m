@@ -1,4 +1,4 @@
-function [ws, w_ts, ps] = w_solution_normal_modes(xs, as, a_ts, q_ts, d, L, N, EPSILON)
+function [ws, w_ts, ps] = MembraneSolutionNM(xs, as, a_ts, q_ts, d, L, N, EPSILON)
 %     ws = zeros(size(xs));
 %     w_ts = zeros(size(xs));
 %     ps = zeros(size(xs));
