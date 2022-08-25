@@ -1,4 +1,4 @@
-function N = N_stable(alpha, beta, gamma, L, q, delta_d)
+function N = NMax(alpha, beta, gamma, L, q, delta_d)
 
 %     lambda = @(n) pi * (2 * n - 1) / (2 * L);
 % 

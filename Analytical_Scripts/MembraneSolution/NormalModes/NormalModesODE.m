@@ -1,4 +1,4 @@
-function [t_vals, d_vals, a_vals, a_t_vals, ks] = a_ode_solution(alpha, beta, gamma, epsilon, dd, dmax, N, L)
+function [t_vals, d_vals, a_vals, a_t_vals, ks] = NormalModesODE(alpha, beta, gamma, epsilon, dd, dmax, N, L)
 
 % Discretised dvals
 d_vals = 0 : dd : dmax;
@@ -25,7 +25,7 @@ a_t_vals = zeros(length(t_vals), N);
 for k = 1 : length(t_vals)
     d = d_vals(k);
     gvals = pi * d * besselj(1, epsilon * d * lambdas) ./ (epsilon * lambdas);
-    Mval = mass_matrix(d, alpha, epsilon, L, N);
+    Mval = MassMatrix(d, alpha, epsilon, L, N);
     a_t_vals(k, :) = Mval \ (ks .* bvals(k, :)' + gvals / sqrt(L));
 end
 
@@ -44,7 +44,7 @@ function dydd = full_odefun(d, y, lambdas, ks, alpha, epsilon, L, N)
     gs = pi * d * besselj(1, epsilon * d * lambdas) ./ (epsilon * lambdas);
     Gammas = besselj(0, epsilon * d * lambdas);
     Gammas_d = - epsilon * lambdas .* besselj(1, epsilon * d * lambdas);
-    M = mass_matrix(d, alpha, epsilon, L, N);
+    M = MassMatrix(d, alpha, epsilon, L, N);
     Fs = M \ (ks .* bs + gs / sqrt(L));
     Q = (sqrt(L) * d + 2 * dot(as, Gammas_d)) / (2 * sqrt(L) - 2 * dot(Fs, Gammas));
     if Q < 0

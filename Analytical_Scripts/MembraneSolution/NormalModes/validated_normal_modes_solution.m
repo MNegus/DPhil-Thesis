@@ -23,15 +23,15 @@ function [N, delta_d, ds, as, a_ts, a_tts, q_ts] ...
     while (converged == 0)
         %% Determines N_max for current delta_d
         delta_d
-        N_max = N_stable(alpha, beta, gamma, L, q, delta_d)
+        N_max = NMax(alpha, beta, gamma, L, q, delta_d)
         
         %% Initialise N and solves ode
         N0 = min(64, floor(N_max / 4));
         N = N0;
         [t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, kvals] ...
-            = a_ode_solution(alpha, beta, gamma, epsilon, delta_d, d_max, N, L);
+            = NormalModesODE(alpha, beta, gamma, epsilon, delta_d, d_max, N, L);
         % Converts solution to t-form
-        [ds, as, a_ts, a_tts, q_ts] = a_solution_t_form(ts, ...
+        [ds, as, a_ts, a_tts, q_ts] = NormalModesTemporalForm(ts, ...
             t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, kvals, alpha, delta_t);
         
         
@@ -43,11 +43,11 @@ function [N, delta_d, ds, as, a_ts, a_tts, q_ts] ...
             pause(2)
             % Solves ode with new N
             [new_t_vals_d_form, new_d_vals_d_form, new_as_d_form, new_a_ts_d_form, new_kvals] ...
-                = a_ode_solution(alpha, beta, gamma, epsilon, delta_d, d_max, new_N, L);
+                = NormalModesODE(alpha, beta, gamma, epsilon, delta_d, d_max, new_N, L);
             
             % New solution in t form
             [new_ds, new_as, new_a_ts, new_a_tts, new_q_ts] ...
-                = a_solution_t_form(ts, new_t_vals_d_form, ...
+                = NormalModesTemporalForm(ts, new_t_vals_d_form, ...
                     new_d_vals_d_form, new_as_d_form, new_a_ts_d_form, ...
                     new_kvals, alpha, delta_t);
             
@@ -55,8 +55,8 @@ function [N, delta_d, ds, as, a_ts, a_tts, q_ts] ...
             diff = 0;
             figure(1);
             for k = 1 : length(ts)
-                [ws, ~, ~] = w_solution_normal_modes(xs, as(k, :), a_ts(k, :), q_ts(k, :), ds(k), L, N, epsilon);
-                [new_ws, ~, ~] = w_solution_normal_modes(xs, new_as(k, :), new_a_ts(k, :), new_q_ts(k, :), new_ds(k), L, new_N, epsilon);
+                [ws, ~, ~] = MembraneSolutionNM(xs, as(k, :), a_ts(k, :), q_ts(k, :), ds(k), L, N, epsilon);
+                [new_ws, ~, ~] = MembraneSolutionNM(xs, new_as(k, :), new_a_ts(k, :), new_q_ts(k, :), new_ds(k), L, new_N, epsilon);
                 diff = max(diff, max(abs(ws - new_ws)))
                 delta_d
                 N

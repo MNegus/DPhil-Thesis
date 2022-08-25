@@ -1,4 +1,4 @@
-function [M, S] = mass_matrix(d, alpha, epsilon, L, N)
+function [M, S] = MassMatrix(d, alpha, epsilon, L, N)
 
     %% Save lambdas
     lambdas = pi * (2 * (1 : N) - 1) / (2 * L);

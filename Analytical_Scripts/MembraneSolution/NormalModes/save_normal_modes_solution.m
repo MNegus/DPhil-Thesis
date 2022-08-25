@@ -9,10 +9,10 @@ function save_normal_modes_solution(data_dir, alpha, beta, gamma, epsilon, N, L,
 
     %% Solves the ode in d-form
     [t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, kvals] ...
-        = a_ode_solution(alpha, beta, gamma, epsilon, delta_d, d_max, N, L);
+        = NormalModesODE(alpha, beta, gamma, epsilon, delta_d, d_max, N, L);
 
     %% Converts solution to t-form
-    [ds, as, a_ts, a_tts, q_ts] = a_solution_t_form(ts, ...
+    [ds, as, a_ts, a_tts, q_ts] = NormalModesTemporalForm(ts, ...
         t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, kvals, alpha, delta_t);
     
     %% Saves matrices in data_dir
