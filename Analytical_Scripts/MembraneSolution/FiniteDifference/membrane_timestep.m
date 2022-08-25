@@ -7,19 +7,22 @@ function [w_next, p, w_t, d, d_t, J] = membrane_timestep(...
     w_next = A_mat \ rhs;
 
     %% Solves for remaining quantities
-    % Membrane derivatives
+    % Membrane velocity
     w_t = (w_next - w_previous) / (2 * DELTA_T);
+
+    % Membrane acceleration
     w_tt = (w_previous - 2 * w + w_next) / (DELTA_T^2);
     
+    % Membrane x derivative
     w_x = zeros(M, 1);
     w_x(2 : M - 1) = (w(3 : M) - w(1 : M - 2)) / (2 * DELTA_X);
     w_x(M) = -w(M - 1) / (2 * DELTA_X);
-    w_x_fun = @(x) interp1(xs, w_x, x, 'linear', 'extrap');
     
     % Continous functions for w and its derivatives
     w_fun = @(x) interp1(xs, w, x, 'linear', 'extrap');
     w_t_fun = @(x) interp1(xs, w_t, x, 'linear', 'extrap');
     w_tt_fun = @(x) interp1(xs, w_tt, x, 'linear', 'extrap');
+    w_x_fun = @(x) interp1(xs, w_x, x, 'linear', 'extrap');
     
     % Pressure, turnover points and jet thickness
     [p, d, d_t, J] = w_dependents(xs, t, w_fun, ...
