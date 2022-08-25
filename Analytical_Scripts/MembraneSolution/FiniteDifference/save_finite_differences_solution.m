@@ -19,7 +19,7 @@ function save_finite_differences_solution(parent_dir, ...
     
 
     %% Matrix definitions
-    [A_mat, B_mat] = matrix_definitions(ALPHA, BETA, GAMMA, M, DELTA_X, DELTA_T);
+    [A_mat, B_mat] = MatrixDefinitions(ALPHA, BETA, GAMMA, M, DELTA_X, DELTA_T);
 
     %% Initialise arrays
     w_previous = zeros(size(xs));
