@@ -90,116 +90,6 @@ w_tsComp = w_tsComp(1 : tIdxMaxComp);
 w_ttsComp = w_ttsComp(1 : tIdxMaxComp);
 dsComp = dsComp(1 : tIdxMaxComp);
 
-%% Plot interfaces in time
-% % Select timesteps to plot
-% tsPlot = linspace(0.005, 0.2, 4);
-% timesteps = floor((tsPlot + IMPACT_TIME) / DELTA_T);
-% 
-% % Set x limits
-% xMins = [0.08, 0.44, 0.6, 0.7];
-% plotWidths = [0.09, 0.09, 0.175, 0.29];
-% yMins = -0.25 * plotWidths;
-% 
-% % Arrays for stationary and moving params
-% dns_dirs = [stat_dir, moving_dir];
-% function_structs = [StatSubstrateFunctions, MovingSubstrateFunctions];
-% titleStrs = ["(a) Stationary substrate.", "(b) Moving substrate."];
-% 
-% % Loop over times
-% for timestepIdx = 1 : length(timesteps)
-% % for timestepIdx = 4
-% 
-%     timestep = timesteps(timestepIdx);
-%     t = tsPlot(timestepIdx);
-% 
-%     tiledlayout(1, 2);
-%     width = 3;
-%     height = 3;
-%     set(gcf,'units', 'inches', ...
-%         'position',[0.5 * width, 0.5 * height, width, height]);
-% 
-%     % Loop over types
-%     for typeIdx = 1 : 2
-%         dns_dir = dns_dirs(typeIdx);
-%         SubstrateFunctions = function_structs(typeIdx);
-%         
-%         nexttile;
-%         hold on;
-% 
-%         %% Plot analytical solution
-%         d = SubstrateFunctions.d(t);
-%         J = SubstrateFunctions.J(t);
-%         w = SubstrateFunctions.w(t);
-%         xMaxUpper = 1;
-%         xMaxLower = 1;
-%     
-%         % Load full composite solution
-%         [xsTurnover, hsTurnover, ~, ~] ...
-%             = outer_inner_jet_freesurface_composite(xMaxUpper, xMaxLower, ...
-%             t, SubstrateFunctions);
-% 
-%         plot(xsTurnover, hsTurnover, 'linestyle', ':', ...
-%             'color', redCol, 'linewidth', 1.25 * lineWidth, 'Displayname', 'Analytical');
-%     
-%         %% Plot DNS solution
-%         interface_filename = sprintf("%s/interfaces/interface_%d.txt", ...
-%             dns_dir, timestep);
-%         transpose_coordinates = false;
-%         
-%         % Load interface points
-%         [start_points, end_points] = ...
-%             read_interface_points(interface_filename, transpose_coordinates);
-%         
-%         % Extract bulk droplet interface
-%         tol = 1e-3;
-%         [interface_start_points, interface_end_points] ...
-%             = extract_interface(start_points, end_points, tol);
-%         
-%         % Determine substrate position
-%         if typeIdx == 1
-%             wVal = 0;
-%         else
-%             wVal = wsMovingFun(t);
-%         end
-% 
-%         % Restrict vertical limits of points
-%         yMax = yMins(timestepIdx) + plotWidths(timestepIdx);
-%         keepIdxs = (interface_start_points(:, 1) < yMax + wVal) ...
-%             & (interface_end_points(:, 1) < yMax + wVal);
-%         interface_start_points = interface_start_points(keepIdxs, :);
-%         interface_end_points = interface_end_points(keepIdxs, :);
-% 
-%         % Find line segments
-%         xsStart = interface_start_points(:, 2);
-%         ysStart = interface_start_points(:, 1) - wVal;
-%     
-%         xsEnd = interface_end_points(:, 2);
-%         ysEnd = interface_end_points(:, 1) - wVal;     
-% 
-%         % Plot droplet interface
-%         plot([xsStart'; xsEnd'], [ysStart'; ysEnd'], ...
-%             'color', blueCol, 'linewidth', lineWidth);
-% 
-%         % Plot substrate
-%         yline(-wVal, 'LineStyle', '--');
-% 
-%         % Figure properties
-%         grid on;
-%         box on;
-%         xlabel("$r$");
-%         ylabel("$z$");
-%         xlim([xMins(timestepIdx), xMins(timestepIdx) + plotWidths(timestepIdx)]);
-%         ylim([yMins(timestepIdx), yMins(timestepIdx) + plotWidths(timestepIdx)]);
-%         pbaspect([1 1 1]);
-% 
-%     end
-%     % Export figure
-%     pause(0.5);
-%     figname = append("PlateFigures/TurnoverInterfaceComparison_", num2str(t));
-%     exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-%     % saveas(gcf, sprintf("%s.png", figname));
-% end
-
 %% Plot free surfaces in time (t up to 0.2)
 % Select timesteps to plot
 tsPlot = linspace(0.005, 0.2, 4)
@@ -283,7 +173,6 @@ for typeIdx = 1 : 2
             wVal = 0;
         else
             wVal = wsMovingFun(t);
-%             wVal = 0;
         end
 
         % Restrict vertical limits of points
@@ -298,6 +187,9 @@ for typeIdx = 1 : 2
     
         xsEnd = interface_end_points(:, 2);
         ysEnd = interface_end_points(:, 1) - wVal;     
+
+        % Plot plate
+        yline(-wVal, 'LineStyle', '--', 'Color', DNSLineColor);
 
         % Plot droplet interface
         plot([xsStart'; xsEnd'], [ysStart'; ysEnd'], ...
