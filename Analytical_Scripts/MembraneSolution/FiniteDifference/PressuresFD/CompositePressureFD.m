@@ -1,4 +1,4 @@
-function ps = composite_pressure(xs, t, d, d_t, A, C, J, m_tt_fun, w_tt_fun, epsilon)
+function ps = CompositePressureFD(xs, t, d, d_t, A, C, J, m_tt_fun, w_tt_fun, epsilon)
 
     if (t == 0)
         ps = zeros(size(xs));

@@ -1,4 +1,4 @@
-function ps = inner_pressure(xs, d, d_t, J, epsilon)
+function ps = InnerPressureFD(xs, d, d_t, J, epsilon)
 
     %% Use etas_definition and map etas back onto xs
     % Find first value in xs such that x > epsilon * d
