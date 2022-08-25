@@ -1,25 +1,22 @@
-function [ws, w_ts, ps] = MembraneSolutionNM(xs, as, a_ts, q_ts, d, L, N, EPSILON)
-%     ws = zeros(size(xs));
-%     w_ts = zeros(size(xs));
-%     ps = zeros(size(xs));
+function [ws, w_ts, ps] = MembraneSolutionNM(xs, as, a_ts, q_ts, d, L, N, epsilon)
+%MEMBRANESOLUTIONNM Outputs the solution for the membrane with normal modes
+%   At a particular time, for N normal modes, outputs the membrane
+%   displacement, ws, its time deriative w_ts, and the pressure ps, given
+%   the length N vectors as, a_ts, q_ts, and the turnover point d.
     
-%     lambda = @(n) pi * (2 * n - 1) / (2 * L);
-    
+    %% Save lambdas
     lambdas = pi * (2 * (1 : N) - 1) / (2 * L);
     
-    %% FIND AN ALTERNATIVE USING MATRIX MULTIPLICATION
-%     for n = 1 : N
-%         ws = ws + as(n) * cos(lambda(n) * xs) / sqrt(L);
-%         w_ts = w_ts + a_ts(n) * cos(lambda(n) * xs) / sqrt(L);
-%         ps = ps - q_ts(n) * cos(lambda(n) * xs) / sqrt(L);
-%     end
-    
-    %% Matrix multiplication
+    %% Determine the solutions as a function of xs
+    % Membrane displacement
     ws = sum(as .* cos(xs * lambdas), 2) / sqrt(L);
+
+    % Membrane time derivative
     w_ts = sum(a_ts .* cos(xs * lambdas), 2) / sqrt(L);
+
+    % Pressure
     ps = sum(-q_ts .* cos(xs * lambdas), 2) / sqrt(L);
-    
-    ps(xs >= EPSILON * d) = 0;
+    ps(xs >= epsilon * d) = 0; % Cut off pressure for x > epsilon * d
     
 
 end
