@@ -48,8 +48,8 @@ BETA = 0;
 GAMMA = 20;
 
 %% DNS directories
-stat_dir = sprintf("%s/Stationary_Plate/axi", dns_master_dir);
-moving_dir = sprintf("%s/Moving_Plate/ALPHA-2_BETA-0_GAMMA-20", dns_master_dir);
+stat_dir = sprintf("%s/Stationary_Plate_Output/axi", dns_master_dir);
+moving_dir = sprintf("%s/Moving_Plate_Output/", dns_master_dir);
 
 %% Load DNS substrate position
 moving_output_mat = readmatrix(sprintf("%s/cleaned_data/output.txt", moving_dir));
