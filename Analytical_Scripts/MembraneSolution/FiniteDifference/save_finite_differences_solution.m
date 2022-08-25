@@ -23,7 +23,7 @@ function save_finite_differences_solution(parent_dir, ...
 
     %% Initialise arrays
     w_previous = zeros(size(xs));
-    w = initialise_membrane(w_previous, A_mat, B_mat);
+    w = InitialiseMembrane(w_previous, A_mat, B_mat);
     w_t = zeros(size(xs));
     w_next = zeros(size(xs));
     p = zeros(size(xs));
