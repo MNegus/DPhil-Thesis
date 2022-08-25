@@ -1,4 +1,4 @@
-function save_normal_modes_solution(data_dir, alpha, beta, gamma, epsilon, N, L, tmax, delta_t)
+function SaveNMSolution(data_dir, alpha, beta, gamma, epsilon, N, L, tmax, delta_t)
     
     %% Derived parameters
     ts = 0 : delta_t : tmax;

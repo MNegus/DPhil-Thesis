@@ -1,5 +1,5 @@
 function [N, delta_d, ds, as, a_ts, a_tts, q_ts] ...
-    = validated_normal_modes_solution(alpha, beta, gamma, epsilon, L, tmax, delta_t)
+    = ValidatedNMSolution(alpha, beta, gamma, epsilon, L, tmax, delta_t)
     
     %% Derived parameters
     ts = 0 : delta_t : tmax;

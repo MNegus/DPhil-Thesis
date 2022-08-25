@@ -1,7 +1,7 @@
-function save_validated_normal_modes_solution(data_dir, alpha, beta, gamma, epsilon, L, tmax, delta_t)
+function SaveValidatedNMSolution(data_dir, alpha, beta, gamma, epsilon, L, tmax, delta_t)
 
     [N, delta_d, ds, as, a_ts, a_tts, q_ts] ...
-        = validated_normal_modes_solution(alpha, beta, gamma, epsilon, L, tmax, delta_t);
+        = ValidatedNMSolution(alpha, beta, gamma, epsilon, L, tmax, delta_t);
     
     %% Saves matrices in data_dir
     save(sprintf("%s/N.mat", data_dir), 'N');
