@@ -106,7 +106,7 @@ xlim([10^-3, 10^3]);
 xticks(xTicks);
 ylim('padded');
 xlabel("$\alpha$");
-ylabel("$d(t_c)$");
+ylabel("$d_0(t_c)$");
 
 
 nexttile;
@@ -124,7 +124,7 @@ xlim([10^-3, 10^3]);
 xticks(xTicks);
 ylim('padded');
 xlabel("$\alpha$");
-ylabel("$\dot{d}(t_c)$");
+ylabel("$\dot{d}_0(t_c)$");
 
 
 nexttile;
@@ -227,7 +227,7 @@ xlim([10^-2, xLimMax]);
 xticks(xTicks);
 ylim([0.492, 0.501]);
 xlabel("$\beta$");
-ylabel("$d(t_c)$");
+ylabel("$d_0(t_c)$");
 
 
 nexttile;
@@ -245,7 +245,7 @@ xlim([10^-2, xLimMax]);
 xticks(xTicks);
 ylim([2.82, 3.05]);
 xlabel("$\beta$");
-ylabel("$\dot{d}(t_c)$");
+ylabel("$\dot{d}_0(t_c)$");
 % xticks(xTicks);
 
 
@@ -304,7 +304,7 @@ b = log10(21000);
 inc = b - a;
 GAMMA_TESTS = 10.^(a - 4 * inc : inc : a + 2 * inc)
 GAMMA_TESTS(end)
-%%
+
 ts = linspace(0, tMax, 1e2);
 dMaxs = zeros(size(GAMMAS));
 d_tMaxs = zeros(size(GAMMAS));
@@ -335,6 +335,7 @@ set(gcf,'units', 'inches', ...
     'position',[0.5 * width, 0.5 * height, width, height]);
 
 xTicks = 10.^(-2 : 2 : 8);
+xMax = 10.^(7.2);
 
 nexttile;
 scatter(GAMMAS, dMaxs, sz, blueCol);
@@ -347,12 +348,12 @@ end
 set(gca, 'XScale', 'log');
 grid on;
 box on;
-xlim([10^-2, 10^8]);
+xlim([10^-2.5, xMax]);
 xticks(xTicks);
 xtickangle(0)
 ylim([0.492, 0.501]);
 xlabel("$\gamma$");
-ylabel("$d(t_c)$");
+ylabel("$d_0(t_c)$");
 
 
 nexttile;
@@ -366,12 +367,12 @@ end
 set(gca, 'XScale', 'log');
 grid on;
 box on;
-xlim([10^-2, 10^8]);
+xlim([10^-2.5, xMax]);
 xticks(xTicks);
 xtickangle(0)
 ylim([2.82, 3.05]);
 xlabel("$\gamma$");
-ylabel("$\dot{d}(t_c)$");
+ylabel("$\dot{d}_0(t_c)$");
 
 
 nexttile;
@@ -383,7 +384,7 @@ for GAMMA = GAMMA_TESTS
 end
 
 box on;
-xlim([10^-2, 10^8]);
+xlim([10^-2.5, xMax]);
 xticks(xTicks);
 xtickangle(0)
 ylim([0.0192, 0.0202]);
@@ -407,7 +408,7 @@ end
 set(gca, 'XScale', 'log');
 grid on;
 box on;
-xlim([10^-2, 10^8]);
+xlim([10^-2.5, xMax]);
 xticks(xTicks);
 xtickangle(0)
 ylim([0.069, 0.085]);
