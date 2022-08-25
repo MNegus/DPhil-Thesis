@@ -2,7 +2,7 @@ function [p, d, d_t, J] = w_dependents(xs, t, w_fun, ...
     w_t_fun, w_tt_fun, w_x_fun, pressure_type, EPSILON)
     
     %% Determine d and d_t
-    [d, d_t] = turnover_point(t, w_fun, w_t_fun, w_x_fun, EPSILON);
+    [d, d_t] = TurnoverPointFD(t, w_fun, w_t_fun, w_x_fun, EPSILON);
 
     % Finds d_idx such that x(d_idx) < epsilon * d but x(d_idx) >= epsilon * d
     d_idx = sum(xs < EPSILON * d);
@@ -20,6 +20,7 @@ function [p, d, d_t, J] = w_dependents(xs, t, w_fun, ...
         m_t_fun = @(s) interp1(s_vals, m_t, s, 'linear', 'extrap');
         m_tt_fun = @(s) interp1(s_vals, m_tt, s, 'linear', 'extrap');
     end
+    
     %% Determine time-dependent quantities
     [A, B, C, J] = time_dependents(d, d_t, w_t_fun, w_tt_fun, m_t_fun, EPSILON);
     

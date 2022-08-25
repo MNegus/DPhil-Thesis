@@ -1,4 +1,4 @@
-function [d, d_t] = turnover_point(t, w_fun, w_t_fun, w_x_fun, epsilon)
+function [d, d_t] = TurnoverPointFD(t, w_fun, w_t_fun, w_x_fun, epsilon)
 
     %% Function definitions
     function res = full_d_zero_fun(d, t, w_fun, epsilon)
