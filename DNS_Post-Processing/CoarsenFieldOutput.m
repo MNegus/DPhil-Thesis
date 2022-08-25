@@ -2,7 +2,7 @@
 
 % Data directory
 dns_master_dir = "/home/michael/scratch/DPhil_DNS_Data/";
-dns_dirs = ["Stationary_Plate/axi/", "Moving_Plate/ALPHA-2_BETA-0_GAMMA-20/"];
+dns_dirs = ["Stationary_Plate_Output/axi/", "Moving_Plate_Output/"];
 
 for dir = dns_dirs
     data_dir = sprintf("%s/%s", dns_master_dir, dir);
@@ -14,11 +14,11 @@ for dir = dns_dirs
     N = 2731;
     
     % Original axes limits
-    box_width = 2;
+    box_width = 2.5;
     
     % Coarsened axes limits
-    xMax = 2;
-    yMax = 2;
+    xMax = 2.5;
+    yMax = 2.5;
     
     % Dimension of coarsened
     NCoarse = 256;
