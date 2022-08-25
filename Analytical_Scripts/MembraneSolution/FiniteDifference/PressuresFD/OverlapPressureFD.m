@@ -1,4 +1,4 @@
-function ps = overlap_pressure(xs, d, C, epsilon)
+function ps = OverlapPressureFD(xs, d, C, epsilon)
     ps = zeros(size(xs));
     
     %% Finds idx such that xs(idx) < epsilon * d and xs(idx + 1) >= epsilon * d

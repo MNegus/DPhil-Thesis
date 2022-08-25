@@ -1,4 +1,4 @@
- function ps = outer_pressure(xs, m_tt_fun, w_tt_fun, d, A, epsilon)
+ function ps = OuterPressureFD(xs, m_tt_fun, w_tt_fun, d, A, epsilon)
     ps = zeros(size(xs));
     
     if (d == 0)

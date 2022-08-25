@@ -26,9 +26,9 @@ function [p, d, d_t, J] = w_dependents(xs, t, w_fun, ...
     
     %% Determine pressure at current timestep
     if pressure_type == "outer"
-        p = outer_pressure(xs, m_tt_fun, w_tt_fun, d, A, epsilon);
+        p = OuterPressureFD(xs, m_tt_fun, w_tt_fun, d, A, epsilon);
     elseif pressure_type == "composite"
-        p = composite_pressure(xs, t, d, d_t, A, C, J, m_tt_fun, w_tt_fun, epsilon);
+        p = CompositePressureFD(xs, t, d, d_t, A, C, J, m_tt_fun, w_tt_fun, epsilon);
     else
         error("Invalid pressure_type");
     end
