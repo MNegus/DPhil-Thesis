@@ -4,13 +4,13 @@ function ps = CompositePressureFD(xs, t, d, d_t, A, C, J, m_tt_fun, w_tt_fun, ep
         ps = zeros(size(xs));
     else
         % Calculate outer pressure
-        outer_ps = outer_pressure(xs, m_tt_fun, w_tt_fun, d, A, epsilon);
+        outer_ps = OuterPressureFD(xs, m_tt_fun, w_tt_fun, d, A, epsilon);
         
         % Calculate overlap pressure
-        overlap_ps = overlap_pressure(xs, d, C, epsilon);
+        overlap_ps = OverlapPressureFD(xs, d, C, epsilon);
 
         % Calculate inner pressure
-        inner_ps = inner_pressure(xs, d, d_t, J, epsilon);
+        inner_ps = InnerPressureFD(xs, d, d_t, J, epsilon);
 
         % Calculate composite pressure
         ps = outer_ps + inner_ps - overlap_ps;
