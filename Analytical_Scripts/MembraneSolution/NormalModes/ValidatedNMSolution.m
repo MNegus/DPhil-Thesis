@@ -28,11 +28,11 @@ function [N, delta_d, ts, ds, as, a_ts, a_tts, q_ts] ...
         %% Initialise N and solves ode
         N0 = min(64, floor(N_max / 4));
         N = N0;
-        [t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, kvals] ...
+        [t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, omegas] ...
             = NormalModesODE(alpha, beta, gamma, epsilon, delta_d, d_max, N, L);
         % Converts solution to t-form
         [ds, as, a_ts, a_tts, q_ts] = NormalModesTemporalForm(ts, ...
-            t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, kvals, alpha, delta_t);
+            t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, omegas, alpha, epsilon, delta_t);
         
         
         %% Loops until we've found an N or N >= N_max
@@ -50,18 +50,21 @@ function [N, delta_d, ts, ds, as, a_ts, a_tts, q_ts] ...
             [new_ds, new_as, new_a_ts, new_a_tts, new_q_ts] ...
                 = NormalModesTemporalForm(ts, new_t_vals_d_form, ...
                     new_d_vals_d_form, new_as_d_form, new_a_ts_d_form, ...
-                    new_kvals, alpha, delta_t);
+                    new_kvals, alpha, epsilon, delta_t);
             
             % Compares ws solution for all time between the two
             diff = 0;
 %             figure(1);
             for k = 1 : length(ts)
-                [ws, ~, ~] = MembraneSolutionNM(xs, as(k, :), a_ts(k, :), q_ts(k, :), ds(k), L, N, epsilon);
-                [new_ws, ~, ~] = MembraneSolutionNM(xs, new_as(k, :), new_a_ts(k, :), new_q_ts(k, :), new_ds(k), L, new_N, epsilon);
+                [ws, w_ts, ~] = MembraneSolutionNM(xs, as(k, :), a_ts(k, :), q_ts(k, :), ds(k), L, N, epsilon);
+                [new_ws, new_w_ts, ~] = MembraneSolutionNM(xs, new_as(k, :), new_a_ts(k, :), new_q_ts(k, :), new_ds(k), L, new_N, epsilon);
+                
                 diff = max(diff, max(abs(ws - new_ws)))
-                delta_d
-                N
+%                 diff = max(diff, max(abs(w_ts - new_w_ts)))
+                
                 if (diff > tol)
+                    delta_d
+                    N
                     break;
                 end
 %                 plot(xs, ws);
