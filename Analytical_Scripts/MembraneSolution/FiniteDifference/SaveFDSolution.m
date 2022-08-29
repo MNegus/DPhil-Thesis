@@ -23,20 +23,25 @@ function SaveFDSolution(parent_dir, ...
 
     %% Initialise arrays
     w_previous = zeros(size(xs));
+
+    % Save initial array
+    w_next = w_previous;
+    save(sprintf("%s/w_%d.mat", fd_data_dir, 0), 'w_next');
+
+    % Save array at k = 1
     w = InitialiseMembrane(w_previous, A_mat, B_mat);
+    w_next = w;
+    save(sprintf("%s/w_%d.mat", fd_data_dir, 1), 'w_next');
+
+    % Initialise remaining arrays
     w_t = zeros(size(xs));
-    w_next = zeros(size(xs));
+    save(sprintf("%s/w_t_%d.mat", fd_data_dir, 0), 'w_t');
     p = zeros(size(xs));
+    save(sprintf("%s/p_%d.mat", fd_data_dir, 0), 'p');
     p_previous = zeros(size(xs));
     ds = zeros(size(T_VALS));
     d_ts = zeros(size(T_VALS));
     Js = zeros(size(T_VALS));
-    
-    %% Save initial arrays
-    save(sprintf("%s/w_%d.mat", fd_data_dir, 0), 'w_previous');
-    save(sprintf("%s/w_%d.mat", fd_data_dir, 1), 'w');
-    save(sprintf("%s/w_t_%d.mat", fd_data_dir, 0), 'w_t');
-    save(sprintf("%s/p_%d.mat", fd_data_dir, 0), 'p');
     
     %% Loops over time
     for k = 1 : length(T_VALS) - 1
@@ -49,8 +54,8 @@ function SaveFDSolution(parent_dir, ...
             xs, t, w, w_previous, p_previous, pressure_type, ...
             EPSILON, DELTA_T, DELTA_X, M, Cpressure, A_mat, B_mat);
         
-        plot(xs, w);
-        drawnow;
+%         plot(xs, w);
+%         drawnow;
         
         ds(k) = d;
         d_ts(k) = d_t;
