@@ -1,19 +1,12 @@
-function N = NMax(alpha, beta, gamma, L, q, delta_d)
-
-%     lambda = @(n) pi * (2 * n - 1) / (2 * L);
-% 
-%     tN = @(N) 2 * pi * sqrt(alpha / (beta * lambda(N)^2 + gamma * lambda(N)^4));
-%     
-%     N_zero_fun = @(N) delta_d - tN(N) / q;
-%     
-%     N = fsolve(N_zero_fun, 2);
-
+function N = NMax(alpha, beta, gamma, L, q, epsilon, delta_t)
+%NMAX Finds the maximum allowable value of N for a given delta_t
 
     if (gamma > 0)
-        c = alpha * (2 * pi / (q * delta_d))^2;
-        lambda2 = (-beta + sqrt(beta^2 + 4 * gamma * c)) / (2 * gamma);
-        N = 0.5 + (L / pi) * sqrt(lambda2);
+        c = alpha * gamma * (2 * pi / (q * delta_t))^2;
+        lambda2 = (sqrt(epsilon^4 * beta^2 + 4 * c) - epsilon^2 * beta) / (2 * gamma);
+        N = 0.5 + (L / (epsilon * pi)) * sqrt(lambda2);
     else
+        error("gamma = 0 not supported.")
         N = 0.5 + (2 * L / pi) * sqrt(alpha / beta);
     end
 end
