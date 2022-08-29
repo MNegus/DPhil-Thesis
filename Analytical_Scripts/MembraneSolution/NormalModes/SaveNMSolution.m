@@ -16,10 +16,13 @@ function SaveNMSolution(data_dir, alpha, beta, gamma, epsilon, N, L, tmax, delta
         t_vals_d_form, d_vals_d_form, as_d_form, a_ts_d_form, kvals, alpha, delta_t);
     
     %% Saves matrices in data_dir
-    save(sprintf("%s/N.mat", data_dir), 'N');
-    save(sprintf("%s/ds.mat", data_dir), 'ds');
-    save(sprintf("%s/as.mat", data_dir), 'as');
-    save(sprintf("%s/a_ts.mat", data_dir), 'a_ts');
-    save(sprintf("%s/a_tts.mat", data_dir), 'a_tts');
-    save(sprintf("%s/q_ts.mat", data_dir), 'q_ts');
+    SolStruct.N = N;
+    SolStruct.ts = ts;
+    SolStruct.ds = ds;
+    SolStruct.as = as;
+    SolStruct.a_ts = a_ts;
+    SolStruct.a_tts = a_tts;
+    SolStruct.q_ts = q_ts;
+
+    save(sprintf("%s/SolStruct.mat", data_dir), 'SolStruct');
 end
