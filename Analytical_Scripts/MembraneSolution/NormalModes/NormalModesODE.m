@@ -26,7 +26,7 @@ for k = 1 : length(t_vals)
     d = d_vals(k);
     gvals = pi * d * besselj(1, epsilon * d * ks) ./ (epsilon * ks);
     Mval = MassMatrix(d, alpha, epsilon, L, N);
-    a_t_vals(k, :) = Mval \ (omegas .* bvals(k, :)' + gvals / sqrt(L));
+    a_t_vals(k, :) = Mval \ (omegas .* bvals(k, :)' + epsilon^2 * gvals / (alpha * sqrt(L)));
 end
 
 %% ODE function definition
