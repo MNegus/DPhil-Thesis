@@ -107,6 +107,7 @@ xticks(xTicks);
 ylim('padded');
 xlabel("$\alpha$");
 ylabel("$d_0(t_c)$");
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 
 nexttile;
@@ -125,6 +126,7 @@ xticks(xTicks);
 ylim('padded');
 xlabel("$\alpha$");
 ylabel("$\dot{d}_0(t_c)$");
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 
 nexttile;
@@ -143,6 +145,7 @@ xticks(xTicks);
 ylim('padded');
 xlabel("$\alpha$");
 ylabel("$H(t_c)$");
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 
 nexttile;
@@ -162,6 +165,8 @@ xticks(xTicks);
 ylim('padded');
 xlabel("$\alpha$");
 ylabel("$E(t_c)$");
+set(gca,'xminorgrid','off','yminorgrid','off')
+
 legend(["$E_{K, outer}$", "$E_{K, splash}$"], 'Location', 'Southeast');
 
 figname = "PlateFigures/ALPHAVaryAnalytical";
@@ -228,6 +233,7 @@ xticks(xTicks);
 ylim([0.492, 0.501]);
 xlabel("$\beta$");
 ylabel("$d_0(t_c)$");
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 
 nexttile;
@@ -246,7 +252,7 @@ xticks(xTicks);
 ylim([2.82, 3.05]);
 xlabel("$\beta$");
 ylabel("$\dot{d}_0(t_c)$");
-% xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 
 nexttile;
@@ -266,7 +272,7 @@ ylim([0.0192, 0.0202]);
 xlabel("$\beta$");
 ylabel("$H(t_c)$");
 xticks(xTicks);
-
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 nexttile;
 hold on;
@@ -286,6 +292,7 @@ ylim([0.069, 0.085]);
 xlabel("$\beta$");
 ylabel("$E(t_c)$");
 xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 legend(["$E_{K, outer}$", "$E_{K, splash}$"], 'Location', 'best');
 
@@ -354,7 +361,7 @@ xtickangle(0)
 ylim([0.492, 0.501]);
 xlabel("$\gamma$");
 ylabel("$d_0(t_c)$");
-
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 nexttile;
 scatter(GAMMAS, d_tMaxs, sz, blueCol);
@@ -373,7 +380,7 @@ xtickangle(0)
 ylim([2.82, 3.05]);
 xlabel("$\gamma$");
 ylabel("$\dot{d}_0(t_c)$");
-
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 nexttile;
 scatter(GAMMAS, HMaxs, sz, blueCol);
@@ -394,7 +401,7 @@ set(gca, 'XScale', 'log');
 grid on;
 xlabel("$\gamma$");
 ylabel("$H(t_c)$");
-
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 nexttile;
 hold on;
@@ -415,7 +422,7 @@ ylim([0.069, 0.085]);
 xlabel("$\gamma$");
 ylabel("$E(t_c)$");
 legend(["$E_{K, outer}$", "$E_{K, splash}$"], 'Location', 'Northwest');
-
+set(gca,'xminorgrid','off','yminorgrid','off')
 
 figname = "PlateFigures/GAMMAVaryAnalytical";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
