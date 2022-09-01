@@ -42,6 +42,8 @@ function SaveFDSolution(parent_dir, ...
     ds = zeros(size(T_VALS));
     d_ts = zeros(size(T_VALS));
     Js = zeros(size(T_VALS));
+    pMaxs = zeros(size(T_VALS));
+    p0s = zeros(size(T_VALS));
     
     %% Loops over time
     for k = 1 : length(T_VALS) - 1
@@ -50,7 +52,7 @@ function SaveFDSolution(parent_dir, ...
         t
 
         %% Composite timestep
-        [w_next, p, w_t, d, d_t, J] = MembraneTimestep(...
+        [w_next, p, w_t, d, d_t, J, pMax] = MembraneTimestep(...
             xs, t, w, w_previous, p_previous, pressure_type, ...
             EPSILON, DELTA_T, DELTA_X, M, Cpressure, A_mat, B_mat);
         
@@ -60,6 +62,8 @@ function SaveFDSolution(parent_dir, ...
         ds(k) = d;
         d_ts(k) = d_t;
         Js(k) = J;
+        pMaxs(k) = pMax;
+        p0s(k) = p(1);
 
         % Saves arrays
         save(sprintf("%s/w_%d.mat", fd_data_dir, k + 1), 'w_next');
@@ -81,5 +85,7 @@ function SaveFDSolution(parent_dir, ...
     save(sprintf("%s/ds.mat", fd_data_dir), 'ds');
     save(sprintf("%s/d_ts.mat", fd_data_dir), 'd_ts');
     save(sprintf("%s/Js.mat", fd_data_dir), 'Js');
+    save(sprintf("%s/pMaxs.mat", fd_data_dir), 'pMaxs');
+    save(sprintf("%s/p0s.mat", fd_data_dir), 'p0s');
     
 end
