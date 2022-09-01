@@ -1,4 +1,4 @@
-function [p, d, d_t, J] = MembraneDependents(xs, t, w_fun, ...
+function [p, d, d_t, J, pMax] = MembraneDependents(xs, t, w_fun, ...
     w_t_fun, w_tt_fun, w_x_fun, pressure_type, epsilon)
     
     %% Determine d and d_t
@@ -35,5 +35,9 @@ function [p, d, d_t, J] = MembraneDependents(xs, t, w_fun, ...
     
     % Restrict large values of p
     p(p > 1e4) = 0;
+
+    %% Determine maximum pressure
+%     pMax = MaxPressureFD(t, d, d_t, A, C, J, m_tt_fun, w_tt_fun, epsilon);
+    pMax = d_t^2 / (2 * epsilon^2);
 
 end
