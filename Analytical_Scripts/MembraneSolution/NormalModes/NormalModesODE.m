@@ -1,4 +1,4 @@
-function [t_vals, d_vals, a_vals, a_t_vals, d_t_vals, J_vals, omegas] = NormalModesODE(alpha, beta, gamma, epsilon, dd, dmax, N, L)
+function SolStruct = NormalModesODE(alpha, beta, gamma, epsilon, dd, dmax, N, L)
 
 % Discretised dvals
 d_vals = 0 : dd : dmax;
@@ -11,13 +11,14 @@ y0 = zeros(2 * N, 1);
 opts = odeset('RelTol',1e-4,'AbsTol',1e-4, 'Stats', 'on', 'Maxstep', dd);
 [d_vals, y] = ode45(odefun, d_vals, y0, opts);
 a_vals = y(:, 1 : N);
-bvals = y(:, N + 1 : 2 * N);
+b_vals = y(:, N + 1 : 2 * N);
 
-% Determines time dependent vales
+% Determines time dependent values
 t_vals = zeros(size(d_vals));
 a_t_vals = zeros(length(t_vals), N);
 d_t_vals = zeros(size(d_vals));
 J_vals = zeros(size(d_vals));
+E_outer_vals = zeros(size(d_vals));
 
 for k = 1 : length(t_vals)
     % Determine t_vals
@@ -28,7 +29,7 @@ for k = 1 : length(t_vals)
     d = d_vals(k);
     gvals = pi * d * besselj(1, epsilon * d * ks) ./ (epsilon * ks);
     Mval = MassMatrix(d, alpha, epsilon, L, N);
-    a_t_vals(k, :) = Mval \ (omegas .* bvals(k, :)' + epsilon^2 * gvals / (alpha * sqrt(L)));
+    a_t_vals(k, :) = Mval \ (omegas .* b_vals(k, :)' + epsilon^2 * gvals / (alpha * sqrt(L)));
 
     % Determine d_t_val
     Gamma_vals = besselj(0, epsilon * d * ks);
@@ -39,7 +40,24 @@ for k = 1 : length(t_vals)
     % Determine J_val
     B = (1 / sqrt(L)) * dot(a_t_vals(k, :), Gamma_vals);
     J_vals(k) = pi * (1 - B)^2 * d / (8 * d_t_vals(k)^2);
+
+    % Determine outer kinetic energy
+    q_vals = -(alpha / epsilon^2) * (a_t_vals(k, :) - omegas' .* b_vals(k, :));
+    E_outer_vals(k) = -(epsilon^2 / 2) ...
+        * ((2 / sqrt(L)) * dot(q_vals, sin(epsilon * ks * d) ./ ks) - dot(q_vals, a_t_vals(k, :)));
 end
+
+
+% Load solutions into structure
+SolStruct.t_vals = t_vals;
+SolStruct.d_vals = d_vals;
+SolStruct.a_vals = a_vals;
+SolStruct.b_vals = b_vals;
+SolStruct.a_t_vals = a_t_vals;
+SolStruct.d_t_vals = d_t_vals;
+SolStruct.J_vals = J_vals;
+SolStruct.omegas = omegas;
+SolStruct.E_outer_vals = E_outer_vals;
 
 %% ODE function definition
 function dydd = full_odefun(d, y, ks, omegas, alpha, epsilon, L, N)
