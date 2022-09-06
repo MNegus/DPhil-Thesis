@@ -13,6 +13,13 @@ addpath("../Analytical_Scripts/ImposedSolution/")
 
 parent_dir = "/home/michael/scratch/AnalyticalMembraneTests/";
 
+% Load in red-blue colour map
+cmap_mat = matfile("../fine_red_blue_cmap.mat");
+cmap = cmap_mat.cmap;
+
+redCol = cmap(end, :);
+blueCol = cmap(1, :);
+
 %% Figure options
 fontsize = 10;
 lineWidth = 1.25;
@@ -23,6 +30,13 @@ set(0,'defaultLegendFontSize', fontsize, 'DefaultLegendFontSizeMode','manual');
 set(0, 'defaultAxesTickLabelInterpreter', 'latex');
 set(0, 'defaultFigureRenderer', 'painters');
 set(0, 'DefaultLegendInterpreter', 'latex');
+
+% Scatter size
+sz = 20;
+
+% Tiled layout sizes
+width = 6;
+height = 5;
 
 %% Parameters
 EPSILON = 1;
@@ -37,7 +51,7 @@ DELTA_X = L / (N_MEMBRANE - 1);
 M = N_MEMBRANE - 1;
 xs = (0 : DELTA_X : L - DELTA_X)';
 
-ts_analytical = 0 : DELTA_T : T_MAX
+ts_analytical = 0 : DELTA_T : T_MAX;
 
 tTest = 1 / 16;
 tTestIdx = tTest / DELTA_T;
@@ -46,21 +60,26 @@ tTestIdx = tTest / DELTA_T;
 %% Loop over GAMMAS
 BETA = 0;
 ALPHA = 1.1;
-GAMMAS = 668.0 * 10.^linspace(-3, 2, 101);
+GAMMAS = 668.0 * 10.^linspace(-3, 2, 101)
 gamma_vary_dir = sprintf("%s/GAMMA_varying", parent_dir);
 
 GAMMA_TESTS = GAMMAS(10: 20 : end);
 
+xTicks = [10^-1, 10^0, 10^1, 10^2, 10^3, 10^4, 10^5];
+
 % Arrays for solutions
 dsMax = zeros(size(GAMMAS));
 d_tsMax = zeros(size(GAMMAS));
-JsMax = zeros(size(GAMMAS));
+psMax = zeros(size(GAMMAS));
+HsMax = zeros(size(GAMMAS));
 wsMax = zeros(size(GAMMAS));
+E_outersMax = zeros(size(GAMMAS));
+E_jetsMax = zeros(size(GAMMAS));
 
 
 for GAMMAIdx = 1 : length(GAMMAS)
 
-    GAMMA = GAMMAS(GAMMAIdx)
+    GAMMA = GAMMAS(GAMMAIdx);
 
     % GAMMA directory
     param_dir = sprintf("%s/GAMMA_%g", gamma_vary_dir, GAMMA);
@@ -76,12 +95,17 @@ for GAMMAIdx = 1 : length(GAMMAS)
     N_M = SolStruct.N;
     ds = SolStruct.ds;
     d_ts = SolStruct.d_ts;
+    E_outers = SolStruct.E_outers;
+    E_jets = SolStruct.E_jets;
 
 
     % Save maximum variables
     dsMax(GAMMAIdx) = interp1(SolStruct.ts, SolStruct.ds, tTest);
     d_tsMax(GAMMAIdx) = interp1(SolStruct.ts, SolStruct.d_ts, tTest);
-    JsMax(GAMMAIdx) = interp1(SolStruct.ts, SolStruct.Js, tTest);
+    psMax(GAMMAIdx) = d_tsMax(GAMMAIdx)^2 / 2;
+    HsMax(GAMMAIdx) = (1 + 4 / pi) * interp1(SolStruct.ts, SolStruct.Js, tTest);
+    E_outersMax(GAMMAIdx) = interp1(SolStruct.ts, E_outers, tTest);
+    E_jetsMax(GAMMAIdx) = interp1(SolStruct.ts, E_jets, tTest);
 
     % Save maximum displacement
     [wsMax(GAMMAIdx), ~, ~] = MembraneSolutionNM(0, as(tTestIdx, :), ...
@@ -90,63 +114,89 @@ for GAMMAIdx = 1 : length(GAMMAS)
 
 end
 %
-% Plot gammas
+%% Plot gammas
 fig = tiledlayout(2, 2);
+set(gcf,'units', 'inches', ...
+    'position',[0.5 * width, 0.5 * height, width, height]);
 
 nexttile(1);
-scatter(GAMMAS, dsMax);
+scatter(GAMMAS, dsMax, sz, blueCol);
 for GAMMA = GAMMA_TESTS
     xline(GAMMA);
 end
 set(gca, 'XScale', 'Log');
 ylabel("$d_0(t_c)$");
 xlabel("$\gamma$");
-xlim("padded");
+xlim([10^-0.5, 10^5.5]);
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
 ylim("padded");
-
+grid on;
+box on;
 
 nexttile(2);
-scatter(GAMMAS, d_tsMax);
+scatter(GAMMAS, HsMax, sz, blueCol);
 for GAMMA = GAMMA_TESTS
     xline(GAMMA);
 end
 set(gca, 'XScale', 'Log');
-ylabel("$\dot{d}_0(t_c)$")
+ylabel("$H(t_c)$");
 xlabel("$\gamma$");
-xlim("padded");
+xlim([10^-0.5, 10^5.5]);
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
 ylim("padded");
+grid on;
+box on;
 
 nexttile(3);
-scatter(GAMMAS, JsMax);
+scatter(GAMMAS, psMax, sz, blueCol);
 for GAMMA = GAMMA_TESTS
     xline(GAMMA);
 end
 set(gca, 'XScale', 'Log');
-ylabel("$J(t_c)$");
+ylabel("max($p(x, t_c)$)")
 xlabel("$\gamma$");
-xlim("padded");
+xlim([10^-0.5, 10^5.5]);
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
 ylim("padded");
+grid on;
+box on;
 
 nexttile(4);
-scatter(GAMMAS, wsMax);
+% scatter(GAMMAS, wsMax);
+hold on;
+scatter(GAMMAS, E_outersMax, sz, blueCol);
+scatter(GAMMAS, E_jetsMax, sz, redCol);
 for GAMMA = GAMMA_TESTS
     xline(GAMMA);
 end
 set(gca, 'XScale', 'Log');
-ylabel("$w(0, t_c)$");
+ylabel("$E_K(t_c)$");
 xlabel("$\gamma$");
-xlim("padded");
-ylim("padded");
+xlim([10^-0.5, 10^5.5]);
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
+ylim([0.095, 0.2]);
+grid on;
+box on;
+legend(["$E_{K, outer}$", "$E_{K, jets}$"], 'Location', 'Northwest');
 
+figname = "MembraneFigures/MembraneGAMMAVary";
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
 
 %% DELTA varying
 BETA = 0;
 DELTAS = 2.^linspace(-3, 3, 101);
 
-DELTA_TESTS = 2.^linspace(-3, 3, 5)
-ALPHA_TESTS = 1.1 * DELTA_TESTS
-GAMMA_TESTS = 668.0 * DELTA_TESTS.^3
+DELTA_TESTS = 2.^linspace(-3, 3, 5);
+ALPHA_TESTS = 1.1 * DELTA_TESTS;
+GAMMA_TESTS = 668.0 * DELTA_TESTS.^3;
+
+xTicks = [1/8, 1/4, 1/2, 1, 2, 4, 8];
+xLim = [2.^(-3.5), 2^(3.5)];
 
 ALPHAS = 1.1 * DELTAS;
 GAMMAS = 668.0 * DELTAS.^3;
@@ -155,8 +205,11 @@ delta_vary_dir = sprintf("%s/DELTA_varying", parent_dir);
 % Arrays for solutions
 dsMax = zeros(size(DELTAS));
 d_tsMax = zeros(size(DELTAS));
-JsMax = zeros(size(DELTAS));
+psMax = zeros(size(DELTAS));
+HsMax = zeros(size(DELTAS));
 wsMax = zeros(size(DELTAS));
+E_outersMax = zeros(size(DELTAS));
+E_jetsMax = zeros(size(DELTAS));
 
 for DELTAIdx = 1 : length(DELTAS)
     DELTA = DELTAS(DELTAIdx);
@@ -164,7 +217,7 @@ for DELTAIdx = 1 : length(DELTAS)
     GAMMA = GAMMAS(DELTAIdx);
 
     % DELTA directory
-    param_dir = sprintf("%s/DELTA_%g", delta_vary_dir, DELTA)
+    param_dir = sprintf("%s/DELTA_%g", delta_vary_dir, DELTA);
 
     % Normal modes
     nm_data_dir = sprintf("%s/NormalModes", param_dir);
@@ -178,12 +231,17 @@ for DELTAIdx = 1 : length(DELTAS)
     N_M = SolStruct.N;
     ds = SolStruct.ds;
     d_ts = SolStruct.d_ts;
+    E_outers = SolStruct.E_outers;
+    E_jets = SolStruct.E_jets;
 
 
     % Save maximum variables
     dsMax(DELTAIdx) = interp1(SolStruct.ts, SolStruct.ds, tTest);
     d_tsMax(DELTAIdx) = interp1(SolStruct.ts, SolStruct.d_ts, tTest);
-    JsMax(DELTAIdx) = interp1(SolStruct.ts, SolStruct.Js, tTest);
+    psMax(DELTAIdx) = d_tsMax(DELTAIdx)^2 / 2;
+    HsMax(DELTAIdx) = (1 + 4 / pi) * interp1(SolStruct.ts, SolStruct.Js, tTest);
+    E_outersMax(DELTAIdx) = interp1(SolStruct.ts, E_outers, tTest);
+    E_jetsMax(DELTAIdx) = interp1(SolStruct.ts, E_jets, tTest);
 
     % Save maximum displacement
     [wsMax(DELTAIdx), ~, ~] = MembraneSolutionNM(0, as(tTestIdx, :), ...
@@ -195,61 +253,102 @@ end
 %
 % Plot deltas
 fig = tiledlayout(2, 2);
+set(gcf,'units', 'inches', ...
+    'position',[0.5 * width, 0.5 * height, width, height]);
 
 nexttile(1);
-scatter(DELTAS, dsMax);
+scatter(DELTAS, dsMax, sz, blueCol);
 for DELTA = DELTA_TESTS
     xline(DELTA);
 end
 set(gca, 'XScale', 'Log');
-xlim("padded");
-ylim("padded");
 ylabel("$d_0(t_c)$");
 xlabel("$\delta$");
-
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
+xlim(xLim);
+ylim("padded");
+grid on;
+box on;
 
 nexttile(2);
-scatter(DELTAS, d_tsMax);
+scatter(DELTAS, HsMax, sz, blueCol);
 for DELTA = DELTA_TESTS
     xline(DELTA);
 end
 set(gca, 'XScale', 'Log');
 xlim("padded");
 ylim("padded");
-ylabel("$\dot{d}_0(t_c)$")
+ylabel("$H(t_c)$")
+xlabel("$\delta$");
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
+ylim("padded");
+grid on;
+box on;
+
 
 nexttile(3);
-scatter(DELTAS, JsMax);
+scatter(DELTAS, psMax, sz, blueCol);
 for DELTA = DELTA_TESTS
     xline(DELTA);
 end
 set(gca, 'XScale', 'Log');
 xlim("padded");
 ylim("padded");
-ylabel("$J(t_c)$")
+ylabel("max($p(x, t_c)$)")
+xlabel("$\delta$");
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
+ylim("padded");
+grid on;
+box on;
+
 
 nexttile(4);
-scatter(DELTAS, wsMax);
+% scatter(DELTAS, wsMax);
+hold on;
+scatter(DELTAS, E_outersMax, sz, blueCol);
+scatter(DELTAS, E_jetsMax, sz, redCol);
 for DELTA = DELTA_TESTS
     xline(DELTA);
 end
 set(gca, 'XScale', 'Log');
 xlim("padded");
 ylim("padded");
-ylabel("$w(0, t_c)$")
+ylabel("$E_K(t_c)$");
+xlabel("$\delta$");
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
+ylim("padded");
+grid on;
+box on;
+legend(["$E_{K, outer}$", "$E_{K, jets}$"], 'Location', 'Southeast');
+
+
+figname = "MembraneFigures/MembraneDELTAVary";
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
 %% BETA varying
 BETAS = 10.^linspace(-1, 5, 101);
 BETA_TESTS = 10.^linspace(-1, 5, 5);
+BETA_TESTS = BETA_TESTS(2 : end);
 ALPHA = 1.1;
 GAMMA = 668.0;
 beta_vary_dir = sprintf("%s/BETA_varying", parent_dir);
 
+% Axes labels and limits
+xTicks = [10^-1, 10^0, 10^1, 10^2, 10^3, 10^4, 10^5];
+xLim = [10^-1.5, 10^5.5];
+
 % Arrays for solutions
 dsMax = zeros(size(BETAS));
 d_tsMax = zeros(size(BETAS));
-JsMax = zeros(size(BETAS));
+psMax = zeros(size(BETAS));
+HsMax = zeros(size(BETAS));
 wsMax = zeros(size(BETAS));
+E_outersMax = zeros(size(BETAS));
+E_jetsMax = zeros(size(BETAS));
 
 for BETAIdx = 1 : length(BETAS)
     BETA = BETAS(BETAIdx);
@@ -269,12 +368,16 @@ for BETAIdx = 1 : length(BETAS)
     N_M = SolStruct.N;
     ds = SolStruct.ds;
     d_ts = SolStruct.d_ts;
-
+    E_outers = SolStruct.E_outers;
+    E_jets = SolStruct.E_jets;
 
     % Save maximum variables
     dsMax(BETAIdx) = interp1(SolStruct.ts, SolStruct.ds, tTest);
     d_tsMax(BETAIdx) = interp1(SolStruct.ts, SolStruct.d_ts, tTest);
-    JsMax(BETAIdx) = interp1(SolStruct.ts, SolStruct.Js, tTest);
+    psMax(BETAIdx) = d_tsMax(BETAIdx)^2 / 2;
+    HsMax(BETAIdx) = (1 + 4 / pi) * interp1(SolStruct.ts, SolStruct.Js, tTest);
+    E_outersMax(BETAIdx) = interp1(SolStruct.ts, E_outers, tTest);
+    E_jetsMax(BETAIdx) = interp1(SolStruct.ts, E_jets, tTest);
 
     % Save maximum displacement
     [wsMax(BETAIdx), ~, ~] = MembraneSolutionNM(0, as(tTestIdx, :), ...
@@ -285,52 +388,82 @@ end
 %
 % Plot betas
 fig = tiledlayout(2, 2);
+set(gcf,'units', 'inches', ...
+    'position',[0.5 * width, 0.5 * height, width, height]);
 
 nexttile(1);
-scatter(BETAS, dsMax);
+scatter(BETAS, dsMax, sz, blueCol);
 for BETA = BETA_TESTS
     xline(BETA);
 end
 set(gca, 'XScale', 'Log');
-xlim("padded");
 ylim("padded");
 ylabel("$d_0(t_c)$");
 xlabel("$\beta$");
-
+xticks(xTicks);
+xlim(xLim);
+set(gca,'xminorgrid','off','yminorgrid','off');
+ylim("padded");
+grid on;
+box on;
 
 nexttile(2);
-scatter(BETAS, d_tsMax);
+scatter(BETAS, HsMax, sz, blueCol);
 for BETA = BETA_TESTS
     xline(BETA);
 end
 set(gca, 'XScale', 'Log');
 xlim("padded");
 ylim("padded");
-ylabel("$\dot{d}_0(t_c)$")
+ylabel("$H(t_c)$")
 xlabel("$\beta$");
+xticks(xTicks);
+xlim(xLim);
+set(gca,'xminorgrid','off','yminorgrid','off');
+ylim("padded");
+grid on;
+box on;
 
 nexttile(3);
-scatter(BETAS, JsMax);
+scatter(BETAS, psMax, sz, blueCol);
 for BETA = BETA_TESTS
     xline(BETA);
 end
 set(gca, 'XScale', 'Log');
 xlim("padded");
 ylim("padded");
-ylabel("$J(t_c)$")
+ylabel("max($p(x, t_c)$)")
 xlabel("$\beta$");
+xticks(xTicks);
+xlim(xLim);
+set(gca,'xminorgrid','off','yminorgrid','off');
+ylim("padded");
+grid on;
+box on;
 
 
 nexttile(4);
-scatter(BETAS, wsMax);
+% scatter(BETAS, wsMax);
+hold on;
+scatter(BETAS, E_outersMax, sz, blueCol);
+scatter(BETAS, E_jetsMax, sz, redCol);
 for BETA = BETA_TESTS
     xline(BETA);
 end
 set(gca, 'XScale', 'Log');
 xlim("padded");
 ylim("padded");
-ylabel("$w(0, t_c)$")
+ylabel("$E_K(t_c)$")
 xlabel("$\beta$");
+xticks(xTicks);
+set(gca,'xminorgrid','off','yminorgrid','off');
+ylim("padded");
+grid on;
+box on;
+legend(["$E_{K, outer}$", "$E_{K, jets}$"], 'Location', 'Northwest');
+
+figname = "MembraneFigures/MembraneBETAVary";
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
 
 %% Plot large delta/gamma solutions
