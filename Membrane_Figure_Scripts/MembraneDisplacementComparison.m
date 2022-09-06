@@ -34,6 +34,7 @@ parent_dir = "/home/michael/scratch/AnalyticalMembraneTests/";
 param_dir = append(parent_dir, "RubberSheet");
 
 % Stationary DNS directory
+
 stat_dns_dir = "/home/michael/scratch/DPhil_DNS_Data/Stationary_Membrane";
 
 % DNS directory
@@ -64,10 +65,12 @@ as = SolStruct.as;
 a_ts = SolStruct.a_ts;
 q_ts = SolStruct.q_ts;
 ds = SolStruct.ds;
-N_M = SolStruct.N;
+N_M = SolStruct.N
 d_ts = SolStruct.d_ts;
 Js = SolStruct.Js;
 Hs = (1 + 4 / pi) * Js;
+E_outers = SolStruct.E_outers;
+E_jets = SolStruct.E_jets;
 
 %% Plot normal modes stuff
 figure(17);
@@ -417,6 +420,10 @@ pause(0.5);
 figname = "MembraneFigures/MembraneTurnoverHeightComparison";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
+(HsStat(dIdxStat) - Hs(dIdxStat)) / HsStat(dIdxStat)
+
+(Hs_stat_DNS(375) - Hs_DNS(375)) / Hs_stat_DNS(375)
+
 %% Maximum pressure
 % DNS times
 timesteps = 0 : 7000;
@@ -494,6 +501,15 @@ legend("Stationary membrane", "Moving membrane", 'Location', 'northoutside', 'Nu
 
 figname = "MembraneFigures/MembraneMassLoss";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+
+%% Plot energy
+close(figure(65));
+figure(65);
+hold on;
+plot(ts_analytical, E_outers);
+plot(ts_analytical, E_jets);
+plot(ts_analytical, pi * ts_analytical);
+
 
 %% Turnover point (STATIONARY COMPARISON)
 % 
