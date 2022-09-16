@@ -22,7 +22,9 @@ function SolStruct = NormalModesTemporalForm(ts, ...
     
     % Determines solution for a_tts by numerical differentiation
     SolStruct.a_tts = zeros(size(SolStruct.a_ts));
-    SolStruct.a_tts(2 : end, :) = diff(SolStruct.a_ts, 1, 1) / DELTA_T;
+%     SolStruct.a_tts(2 : end, :) = diff(SolStruct.a_ts, 1, 1) / DELTA_T;
+    SolStruct.a_tts(2 : end - 1, :) = (SolStruct.a_ts(3 : end, :) - SolStruct.a_ts(1 : end - 2, :)) / (2 * DELTA_T);
+    SolStruct.a_tts(end, :) = SolStruct.a_tts(end - 1, :);
     
     % Determines q and q_ts using governing equations
     SolStruct.qs = -(alpha / epsilon^2) * (SolStruct.a_ts - omegas' .* SolStruct.bs);
