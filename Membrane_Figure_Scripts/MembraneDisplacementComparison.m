@@ -474,12 +474,12 @@ exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
 %% Mass loss plot
 stat_output_mat = importdata(sprintf("%s/output.txt", stat_dns_dir));
-stat_dns_ts = stat_output_mat(:, 1);
+stat_dns_ts = stat_output_mat(:, 1) - IMPACT_TIME;
 stat_dns_area = stat_output_mat(:, 2) / (2 * pi);
 stat_mass_ratio = (stat_dns_area - pi / 2) / (pi / 2);
 
 output_mat = importdata(sprintf("%s/output.txt", dns_dir));
-dns_ts = output_mat(:, 1);
+dns_ts = output_mat(:, 1) - IMPACT_TIME;
 dns_area = output_mat(:, 2) / (2 * pi);
 mass_ratio = (dns_area - pi / 2) / (pi / 2);
 
@@ -487,17 +487,18 @@ close(figure(56));
 figure(56);
 hold on;
 width = 5;
-height = 3;
+height = 2;
 set(gcf,'units', 'inches', ...
     'position',[0.5 * width, 0.5 * height, width, height]);
 scatter(stat_dns_ts, stat_mass_ratio, sz, blueCol);
 scatter(dns_ts, mass_ratio, sz, redCol);
 ylim("padded");
+xlim("padded");
 grid on;
 box on;
 xlabel("$t$");
 ylabel("$R(t)$");
-legend("Stationary membrane", "Moving membrane", 'Location', 'northoutside', 'Numcolumns', 2);
+legend("Stationary membrane", "Moving membrane", 'Location', 'southwest', 'Numcolumns', 1);
 
 figname = "MembraneFigures/MembraneMassLoss";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
