@@ -94,26 +94,47 @@ SaveValidatedNMSolution(nm_data_dir, ALPHA, BETA, GAMMA, EPSILON, L, T_MAX, DELT
 
 %% Loop over GAMMAS
 BETA = 0;
-ALPHA = 1.1;
-GAMMAS = 668.0 * 10.^linspace(-3, 2, 101);
-gamma_vary_dir = sprintf("%s/GAMMA_varying", parent_dir);
+DELTA = 0.125;
+ALPHA = 1.1 * DELTA;
+GAMMAS = 10.^linspace(0, 6, 101);
+gamma_vary_dir = sprintf("%s/NEW_GAMMA_varying", parent_dir);
 mkdir(gamma_vary_dir)
+
+%%
 for GAMMA = GAMMAS
-    %% GAMMA directory
+    % GAMMA directory
+    GAMMA
+    param_dir = sprintf("%s/GAMMA_%g", gamma_vary_dir, GAMMA);
+    mkdir(param_dir);
+
+    % Normal modes
+    nm_data_dir = sprintf("%s/NormalModes", param_dir);
+    mkdir(nm_data_dir);
+    SaveValidatedNMSolution(nm_data_dir, ALPHA, BETA, GAMMA, EPSILON, L, T_MAX, DELTA_T);
+
+end
+
+%%
+% Save GAMMA_TESTS with finite difference
+
+DELTA = 0.125;
+ALPHA = 1.1 * DELTA;
+GAMMAS = 10.^linspace(0, 6, 101);
+
+GAMMA_TESTS = GAMMAS(1 : 25 : end);
+DELTA_T = 1e-4;
+for GAMMA = GAMMA_TESTS(end)
+    % GAMMA directory
     GAMMA
     param_dir = sprintf("%s/GAMMA_%g", gamma_vary_dir, GAMMA);
     mkdir(param_dir);
     
-    %% Finite differences
-%     fd_data_dir = sprintf("%s/FiniteDifference", param_dir)
-%     mkdir(fd_data_dir);
-%     mkdir(append(fd_data_dir, "/composite"));
-%     SaveFDSolution(fd_data_dir, ALPHA, BETA, GAMMA, EPSILON, N_MEMBRANE, L, T_MAX, DELTA_T, "composite");
-
-    %% Normal modes
-    nm_data_dir = sprintf("%s/NormalModes", param_dir);
-    mkdir(nm_data_dir);
-    SaveValidatedNMSolution(nm_data_dir, ALPHA, BETA, GAMMA, EPSILON, L, T_MAX, DELTA_T);
+    % Finite differences
+    fd_data_dir = sprintf("%s/FiniteDifference", param_dir);
+    mkdir(fd_data_dir);
+    mkdir(append(fd_data_dir, "/composite"));
+    mkdir(append(fd_data_dir, "/outer"));
+    SaveFDSolution(fd_data_dir, ALPHA, BETA, GAMMA, EPSILON, N_MEMBRANE, L, T_MAX, DELTA_T, "composite");
 
 end
 
@@ -124,21 +145,16 @@ ALPHAS = 1.1 * DELTAS;
 GAMMAS = 668.0 * DELTAS.^3;
 delta_vary_dir = sprintf("%s/DELTA_varying", parent_dir);
 mkdir(delta_vary_dir)
-% for DELTA = DELTAS(1 : end)
+
+%%
 for DELTA_idx = 1 : length(DELTAS)
     DELTA = DELTAS(DELTA_idx);
     ALPHA = ALPHAS(DELTA_idx);
     GAMMA = GAMMAS(DELTA_idx);
 
-    % GAMMA directory
+    % DELTA directory
     param_dir = sprintf("%s/DELTA_%g", delta_vary_dir, DELTA)
     mkdir(param_dir)
-    
-    % Finite differences
-%     fd_data_dir = sprintf("%s/FiniteDifference", param_dir)
-%     mkdir(fd_data_dir);
-%     mkdir(append(fd_data_dir, "/composite"));
-%     SaveFDSolution(fd_data_dir, ALPHA, BETA, GAMMA, EPSILON, N_MEMBRANE, L, T_MAX, DELTA_T, "composite");
 
     % Normal modes
     nm_data_dir = sprintf("%s/NormalModes", param_dir);
@@ -147,10 +163,34 @@ for DELTA_idx = 1 : length(DELTAS)
 
 end
 
+%%
+% Save DELTA tests with finite difference
+DELTA_TESTS = 2.^linspace(-3, 3, 5);
+ALPHA_TESTS = 1.1 * DELTA_TESTS;
+GAMMA_TESTS = 668.0 * DELTA_TESTS.^3;
+
+for DELTA_idx = 1 : length(DELTA_TESTS)
+    DELTA = DELTA_TESTS(DELTA_idx);
+    ALPHA = ALPHA_TESTS(DELTA_idx);
+    GAMMA = GAMMA_TESTS(DELTA_idx);
+
+    % DELTA directory
+    param_dir = sprintf("%s/DELTA_%g", delta_vary_dir, DELTA)
+    mkdir(param_dir)
+    
+    % Finite differences
+    fd_data_dir = sprintf("%s/FiniteDifference", param_dir)
+    mkdir(fd_data_dir);
+    mkdir(append(fd_data_dir, "/composite"));
+    SaveFDSolution(fd_data_dir, ALPHA, BETA, GAMMA, EPSILON, N_MEMBRANE, L, T_MAX, DELTA_T, "composite");
+end
+
 %% Loop over BETAS
-BETAS = 10.^linspace(-1, 5, 101);
-ALPHA = 1.1;
-GAMMA = 668.0;
+BETAS = 3 * 10.^linspace(-1, 4, 101);
+DELTA = 2.^(-3);
+ALPHA = 1.1 * DELTA;
+GAMMA = 668.0 * DELTA.^3;
+
 beta_vary_dir = sprintf("%s/BETA_varying", parent_dir);
 mkdir(beta_vary_dir)
 for BETA = BETAS
