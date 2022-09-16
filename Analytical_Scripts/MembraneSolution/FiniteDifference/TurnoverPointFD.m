@@ -31,8 +31,6 @@ function [d, d_t] = TurnoverPointFD(t, w_fun, w_t_fun, w_x_fun, epsilon)
         d = fsolve(d_zero_fun, 2 * sqrt(t), options);
 
         %% Determine d'(t)
-%         d_t_zero_fun = @(d_t) full_d_t_zero_fun(d_t, d, w_t_fun, w_x_fun, epsilon);
-%         d_t = fsolve(d_t_zero_fun, 1 / sqrt(t), options);
         d_t = full_d_t_zero_fun(d, w_t_fun, w_x_fun, epsilon);
     end
 end
