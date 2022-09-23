@@ -5,7 +5,7 @@
 # Image files
 *.eps
 *.png
-*.svg
+#*.svg
 *.fig
 
 # gfs files
