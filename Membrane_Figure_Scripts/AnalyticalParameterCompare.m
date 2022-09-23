@@ -13,6 +13,8 @@ addpath("../Analytical_Scripts/ImposedSolution/")
 
 parent_dir = "/home/michael/scratch/AnalyticalMembraneTests/";
 
+delta_vary_dir = sprintf("%s/DELTA_varying", parent_dir);
+
 % Load in red-blue colour map
 cmap_mat = matfile("../fine_red_blue_cmap.mat");
 cmap = cmap_mat.cmap;
@@ -425,6 +427,63 @@ legend(h(1:2), ["$v_{phase}(k_{N_M})$", "$v_{group}(k_{N_M})$"], ...
 figname = "MembraneFigures/PhaseGroupVelocitiesGAMMA";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
+%% Plot turnovers for GAMMA varying
+GAMMA_strs = ["1.0", "31.62", "1000.0", "31620.0", "1000000.0"];
+
+LineColorIdxs = floor(linspace(1, length(cmap), length(GAMMA_TESTS)));
+
+close(figure(9));
+figure(9);
+width = 5;
+height = 3;
+set(gcf,'units', 'inches', ...
+    'position',[0.5 * width, 0.5 * height, width, height]);
+hold on;
+
+for GAMMAIdx = 1 : length(GAMMA_TESTS)
+
+    GAMMA = GAMMA_TESTS(GAMMAIdx);
+
+    % Set line color
+    lineColor = cmap(LineColorIdxs(GAMMAIdx), :);
+
+    % GAMMA directory
+    param_dir = sprintf("%s/GAMMA_%g", gamma_vary_dir, GAMMA);
+
+    % Normal modes
+    nm_data_dir = sprintf("%s/NormalModes", param_dir);
+
+    % Load solution struct
+    SolStruct = load(sprintf("%s/SolStruct.mat", nm_data_dir)).SolStruct;
+    ts = SolStruct.ts;
+    ds = SolStruct.ds;
+    d_ts = SolStruct.d_ts;
+    dMaxIdx = sum(ds <= 1);
+
+    % Displayname 
+    displayName = append("$\gamma = $", GAMMA_strs(GAMMAIdx));
+
+    % Plot turnovers
+    h(GAMMAIdx) = plot(ts(1 : dMaxIdx), d_ts(1 : dMaxIdx), 'LineWidth', lineWidth, ...
+            'Color', lineColor, 'DisplayName', displayName);
+
+end
+
+h(GAMMAIdx + 1) = plot(ts, 1 ./ sqrt(ts), 'LineWidth', lineWidth, ...
+        'Color', 'black', 'DisplayName', 'Stationary');
+
+set(gca, 'YScale', 'log')
+xline(1 / 16, 'Linestyle', '--');
+xlim([0, 0.2]);
+ylim([1, 10]);
+grid on;
+box on;
+xlabel("$t$");
+ylabel("$\dot{d}_0(t)$");
+legend(h(1 : GAMMAIdx + 1), 'Location', 'northoutside', 'numcolumns', 3);
+
+figname = "MembraneFigures/TurnoversNMGAMMA";
+exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
 %% DELTA varying
 close all;
@@ -701,7 +760,17 @@ for BETAIdx = 1 : length(BETAS)
             L, N_M, EPSILON);
 end
 
-%
+% Find beta = 0 solutions
+param_dir = sprintf("%s/DELTA_%g", delta_vary_dir, 1/8);
+nm_data_dir = sprintf("%s/NormalModes", param_dir);
+SolStruct = load(sprintf("%s/SolStruct.mat", nm_data_dir)).SolStruct;
+dBETA0 = interp1(SolStruct.ts, SolStruct.ds, tTest);
+d_tBETA0 = interp1(SolStruct.ts, SolStruct.d_ts, tTest);
+pBETA0 = d_tBETA0^2 / 2;
+HBETA0 = (1 + 4 / pi) * interp1(SolStruct.ts, SolStruct.Js, tTest);
+E_outersBETA0 = interp1(SolStruct.ts, SolStruct.E_outers, tTest);
+E_jetsBETA0 = interp1(SolStruct.ts, SolStruct.E_jets, tTest);
+
 % Plot betas
 fig = tiledlayout(2, 2);
 set(gcf,'units', 'inches', ...
@@ -713,6 +782,7 @@ for BETA = BETA_TESTS
     xline(BETA);
 end
 yline(dStat, 'LineStyle', '--');
+yline(dBETA0, 'Linestyle', ':');
 set(gca, 'XScale', 'Log');
 ylim("padded");
 ylabel("$d_0(t_c)$");
@@ -730,6 +800,7 @@ for BETA = BETA_TESTS
     xline(BETA);
 end
 yline(HStat, 'LineStyle', '--');
+yline(HBETA0, 'Linestyle', ':');
 set(gca, 'XScale', 'Log');
 xlim("padded");
 ylim("padded");
@@ -748,6 +819,7 @@ for BETA = BETA_TESTS
     xline(BETA);
 end
 yline(pMaxStat, 'LineStyle', '--');
+yline(pBETA0, 'Linestyle', ':');
 set(gca, 'XScale', 'Log');
 xlim("padded");
 ylim("padded");
@@ -770,6 +842,8 @@ for BETA = BETA_TESTS
     xline(BETA);
 end
 yline(EStat, 'LineStyle', '--');
+yline(E_outersBETA0, 'Linestyle', ':', 'color', blueCol);
+yline(E_jetsBETA0, 'Linestyle', ':', 'color', redCol);
 set(gca, 'XScale', 'Log');
 xlim(xLim);
 ylim("padded");
