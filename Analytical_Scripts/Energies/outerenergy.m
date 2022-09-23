@@ -22,6 +22,7 @@ function Es = outerenergy(ts, SubstrateFunctions)
         
         % Determine energy
         Es = (4 * epsilon^3 / 9) * ds.^4 .* d_ts .* (1 - w_ts);
+        Es(1) = 0;
     else
         error("Invalid dimension. Needs to either be '2D' or 'axi'");
     end

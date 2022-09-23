@@ -17,6 +17,7 @@ function Es = jetsenergy(ts, SubstrateFunctions)
         % Load substrate functions
         ds = SubstrateFunctions.d(ts);
         d_ts = SubstrateFunctions.d_t(ts);
+        d_ts(1) = 0;
         
         % Define integrand 
         integrand = (8 * epsilon^3 / 9) * ds.^4 .* d_ts.^3;
