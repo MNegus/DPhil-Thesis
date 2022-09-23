@@ -144,7 +144,7 @@ xlim([0.5, 10^6.5]);
 xticks([10^0, 10^2, 10^4, 10^6]);
 set(gca,'xminorgrid','off','yminorgrid','off');
 xlabel("$N_M$")
-ylabel("Error")
+ylabel("Error$(N_M)$")
 grid on;
 box on;
 
@@ -237,7 +237,7 @@ xlim([0.5, 10^4.5]);
 xticks([10^0, 10^2, 10^4, 10^6]);
 set(gca,'xminorgrid','off','yminorgrid','off');
 xlabel("$N_M$")
-ylabel("Error")
+ylabel("Error$(N_M)$")
 grid on;
 box on;
 
