@@ -123,27 +123,28 @@ function TimeDependentsPlot(dimension)
             else
                 ws = CurvedFunctions.w(xs, t);
             end
-            plot(xs, ws, 'color', cmap(k * colorFreq, :), 'linewidth', 1.5);
+            plot(xs, -ws, 'color', cmap(k * colorFreq, :), 'linewidth', 1.5);
         end
         grid on;
         xlabel("$x$");
-        ylabel("$w(x, t)$");
+        ylabel("$-w(x, t)$");
         ylim([-0.6, 0.4]);
         
         set(gcf,'position', [100, 100, 800, 400]);
     
         % Time arrow
-        annotation('arrow',[0.242 0.242],...
-        [0.709 0.873]);
-
-        % Time textbox
-        annotation('textbox',...
-            [0.250180327868853 0.84 0.0826065573770493 0.0700000000000006],...
+        annotation(gcf,'arrow',[0.226 0.226],...
+            [0.561 0.379]);
+        
+        % Arrow textbox
+        annotation(gcf,'textbox',...
+            [0.234130945152803 0.381984732824432 0.0826065573770491 0.0700000000000004],...
             'String','$t$',...
             'LineStyle','none',...
             'Interpreter','latex',...
-            'FitBoxToText','off', ...
-            'Fontsize', 18);
+            'FontSize',18,...
+            'FitBoxToText','off');
+
 
         % Export figure
         filename = sprintf("CurvedImposed_%s", dimension);
