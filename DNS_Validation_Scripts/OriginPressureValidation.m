@@ -5,8 +5,9 @@ clear;
 close all;
 
 % Adds analytical scripts to path
-addpath("../Analytical_Scripts/Imposed/");
-addpath("../Analytical_Scripts/Imposed/Pressures");
+addpath("../Analytical_Scripts/");
+addpath("../Analytical_Scripts/ImposedSolution/");
+addpath("../Analytical_Scripts/Pressures");
 
 % Load in red-blue colour map
 cmap_mat = matfile("../fine_red_blue_cmap.mat");
@@ -33,7 +34,7 @@ NO_TIMESTEPS = length(ts);
 freq = 100; % Frequency of scatter
 
 %% Directory names
-master_dir = "/scratch/negus/DNS_Chapter_validation";
+master_dir = "~/scratch/DPhil_DNS_Data";
 type = ["imposed_0.05_omega_4"];
 levels = 10 : 14;
 imposed_coeffs = ["0", "0.05"]; % Coefficients of imposed substrate
@@ -76,7 +77,7 @@ for imposedIdx = 1 : 2
     
     % Load analytical substrate functions and parameters
     [epsilon, ~, ~, ~, ~] = substrateparameters(analyticalType);
-    SubstrateFunctions = substratefunctions(analyticalType, "2D");
+    SubstrateFunctions = imposedsubstratefunctions(analyticalType, "2D");
 
     % Find analytical times
     tsAnalytical = (1e-9 : DELTA_T : T_MAX - IMPACT_TIME) / epsilon^2;
@@ -157,9 +158,9 @@ for imposedIdx = 1 : 2
     set(gca, 'YScale', 'log')
     
     % Set axes limits and ticks
-    xlim([-0.2, 0.8]);
+    xlim([-0.125, 0.8]);
     xticks(-0.4 : 0.2 : 0.8);
-    ylim([0, 100]);
+    ylim([10^-2, 100]);
 
     % Axes labels
     xlabel("$t$");
@@ -186,13 +187,13 @@ set(gcf,'units', 'inches', ...
 for imposedIdx = 1 : 2
 
     % Define axes options for the inset
-    insetWidth = 0.11;
+    insetWidth = 0.12;
     insetHeight = 0.16;
-    verticalPos = 0.75;
+    verticalPos = 0.32;
     if imposedIdx == 1
-        horizontalPos = 0.35;
+        horizontalPos = 0.34;
     else
-        horizontalPos = 0.835;
+        horizontalPos = 0.825;
     end
 
     % Define inset axes
@@ -213,7 +214,7 @@ for imposedIdx = 1 : 2
     % Set axes options
     set(gca, 'yscale', 'log');
     xlim([min(levels) - 0.5, max(levels) - 0.5])
-    ylim([0.1, 2]);
+    ylim([0.1, 10]);
     
     xticks(levels(1 : end - 1));
 %     yticks([10^-3, 10^-2, 10^-1]);
