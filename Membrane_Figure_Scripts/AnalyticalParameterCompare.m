@@ -38,7 +38,7 @@ sz = 20;
 
 % Tiled layout sizes
 width = 6;
-height = 5;
+height = 6;
 
 %% Parameters
 EPSILON = 1;
@@ -67,166 +67,8 @@ HStat = (1 + 4 / pi) * JStat;
 pMaxStat = d_tStat^2 / 2;
 EStat = pi * tTest;
 
+
 %% Loop over GAMMAS
-% close all;
-% BETA = 0;
-% ALPHA = 1.1;
-% GAMMAS = 668.0 * 10.^linspace(-3, 2, 101);
-% gamma_vary_dir = sprintf("%s/GAMMA_varying", parent_dir);
-% 
-% GAMMA_TESTS = GAMMAS(10: 20 : end);
-% 
-% xTicks = [10^-1, 10^0, 10^1, 10^2, 10^3, 10^4, 10^5];
-% 
-% % Arrays for solutions
-% dsMax = zeros(size(GAMMAS));
-% d_tsMax = zeros(size(GAMMAS));
-% psMax = zeros(size(GAMMAS));
-% HsMax = zeros(size(GAMMAS));
-% wsMax = zeros(size(GAMMAS));
-% E_outersMax = zeros(size(GAMMAS));
-% E_jetsMax = zeros(size(GAMMAS));
-% N_Ms = zeros(size(GAMMAS));
-% 
-% 
-% for GAMMAIdx = 1 : length(GAMMAS)
-% 
-%     GAMMA = GAMMAS(GAMMAIdx);
-% 
-%     % GAMMA directory
-%     param_dir = sprintf("%s/GAMMA_%g", gamma_vary_dir, GAMMA);
-% 
-%     % Normal modes
-%     nm_data_dir = sprintf("%s/NormalModes", param_dir);
-% 
-%     % Load solution struct
-%     SolStruct = load(sprintf("%s/SolStruct.mat", nm_data_dir)).SolStruct;
-%     as = SolStruct.as;
-%     a_ts = SolStruct.a_ts;
-%     q_ts = SolStruct.q_ts;
-%     N_M = SolStruct.N;
-%     ds = SolStruct.ds;
-%     d_ts = SolStruct.d_ts;
-%     E_outers = SolStruct.E_outers;
-%     E_jets = SolStruct.E_jets;
-% 
-%     % Save maximum variables
-%     dsMax(GAMMAIdx) = interp1(SolStruct.ts, SolStruct.ds, tTest);
-%     d_tsMax(GAMMAIdx) = interp1(SolStruct.ts, SolStruct.d_ts, tTest);
-%     psMax(GAMMAIdx) = d_tsMax(GAMMAIdx)^2 / 2;
-%     HsMax(GAMMAIdx) = (1 + 4 / pi) * interp1(SolStruct.ts, SolStruct.Js, tTest);
-%     E_outersMax(GAMMAIdx) = interp1(SolStruct.ts, E_outers, tTest);
-%     E_jetsMax(GAMMAIdx) = interp1(SolStruct.ts, E_jets, tTest);
-%     N_Ms(GAMMAIdx) = N_M;
-% 
-%     % Save maximum displacement
-%     [wsMax(GAMMAIdx), ~, ~] = MembraneSolutionNM(0, as(tTestIdx, :), ...
-%             a_ts(tTestIdx, :), q_ts(tTestIdx, :), ds(tTestIdx), ...
-%             L, N_M, EPSILON);
-% 
-% end
-% 
-% % Plot gammas
-% fig = tiledlayout(2, 2);
-% set(gcf,'units', 'inches', ...
-%     'position',[0.5 * width, 0.5 * height, width, height]);
-% 
-% nexttile(1);
-% scatter(GAMMAS, dsMax, sz, blueCol);
-% for GAMMA = GAMMA_TESTS
-%     xline(GAMMA);
-% end
-% yline(dStat, 'LineStyle', '--');
-% set(gca, 'XScale', 'Log');
-% ylabel("$d_0(t_c)$");
-% xlabel("$\gamma$");
-% xlim([10^-0.5, 10^5.5]);
-% xticks(xTicks);
-% set(gca,'xminorgrid','off','yminorgrid','off');
-% ylim("padded");
-% grid on;
-% box on;
-% 
-% nexttile(2);
-% scatter(GAMMAS, HsMax, sz, blueCol);
-% for GAMMA = GAMMA_TESTS
-%     xline(GAMMA);
-% end
-% yline(HStat, 'LineStyle', '--');
-% set(gca, 'XScale', 'Log');
-% ylabel("$H(t_c)$");
-% xlabel("$\gamma$");
-% xlim([10^-0.5, 10^5.5]);
-% xticks(xTicks);
-% set(gca,'xminorgrid','off','yminorgrid','off');
-% ylim("padded");
-% grid on;
-% box on;
-% 
-% nexttile(3);
-% scatter(GAMMAS, psMax, sz, blueCol);
-% for GAMMA = GAMMA_TESTS
-%     xline(GAMMA);
-% end
-% yline(pMaxStat, 'LineStyle', '--');
-% set(gca, 'XScale', 'Log');
-% ylabel("max($p(x, t_c)$)")
-% xlabel("$\gamma$");
-% xlim([10^-0.5, 10^5.5]);
-% xticks(xTicks);
-% set(gca,'xminorgrid','off','yminorgrid','off');
-% ylim("padded");
-% grid on;
-% box on;
-% 
-% nexttile(4);
-% hold on;
-% scatter(GAMMAS, E_outersMax, sz, blueCol);
-% scatter(GAMMAS, E_jetsMax, sz, redCol);
-% for GAMMA = GAMMA_TESTS
-%     xline(GAMMA);
-% end
-% yline(EStat, 'LineStyle', '--');
-% set(gca, 'XScale', 'Log');
-% ylabel("$E_K(t_c)$");
-% xlabel("$\gamma$");
-% xlim([10^-0.5, 10^5.5]);
-% xticks(xTicks);
-% set(gca,'xminorgrid','off','yminorgrid','off');
-% ylim([0.095, 0.2]);
-% grid on;
-% box on;
-% legend(["$E_{K, outer}$", "$E_{K, jets}$"], 'Location', 'Northwest');
-% 
-% figname = "MembraneFigures/MembraneGAMMAVary";
-% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-% 
-% % Plot the normal modes numbers
-% figure(2);
-% NHeight = 2;
-% NWidth = 4;
-% set(gcf,'units', 'inches', ...
-%     'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
-% scatter(GAMMAS, N_Ms, sz, blueCol);
-% for GAMMA = GAMMA_TESTS
-%     xline(GAMMA);
-% end
-% set(gca, 'XScale', 'log');
-% set(gca, 'YScale', 'log');
-% grid on;
-% box on;
-% set(gca,'xminorgrid','off','yminorgrid','off');
-% ylabel("$N_M$");
-% xlabel("$\gamma$");
-% xlim([10^-0.5, 10^5.5]);
-% ylim([10^1, 10^3]);
-% xticks(xTicks);
-% 
-% figname = "MembraneFigures/NormalModesGAMMA";
-% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-
-
-%% Loop over NEW GAMMAS
 close all;
 BETA = 0;
 DELTA = 0.125;
@@ -287,8 +129,13 @@ for GAMMAIdx = 1 : length(GAMMAS)
 
 end
 
+% Determine phase and group velocity
+ks = pi * (2 * N_Ms - 1) / (2 * L);
+vPhases = sqrt((BETA + GAMMAS .* ks.^2) / ALPHA);
+vGroups = (BETA + 2 * GAMMAS .* ks.^2) ./ sqrt(ALPHA * (BETA + GAMMAS .* ks.^2));
+
 % Plot gammas
-fig = tiledlayout(2, 2);
+fig = tiledlayout(3, 2, 'TileSpacing', 'compact');
 set(gcf,'units', 'inches', ...
     'position',[0.5 * width, 0.5 * height, width, height]);
 
@@ -354,28 +201,14 @@ xlabel("$\gamma$");
 xlim(xLim);
 xticks(xTicks);
 set(gca,'xminorgrid','off','yminorgrid','off');
-% ylim([0.095, 0.2]);
+ylim([0.0, 0.22]);
 grid on;
 box on;
 legend(["$E_{K, outer}$", "$E_{K, jets}$"], 'Location', 'Northwest');
 
-figname = "MembraneFigures/MembraneGAMMAVary";
-exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-
-%% Plot the normal modes numbers (NEW gamma varying)
-% Determine phase and group velocity
-ks = pi * (2 * N_Ms - 1) / (2 * L);
-vPhases = sqrt((BETA + GAMMAS .* ks.^2) / ALPHA);
-vGroups = (BETA + 2 * GAMMAS .* ks.^2) ./ sqrt(ALPHA * (BETA + GAMMAS .* ks.^2));
-
-
-figure(2);
-NHeight = 2;
-NWidth = 3;
-set(gcf,'units', 'inches', ...
-    'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
 
 % Normal modes plot
+nexttile(5);
 h(1) = scatter(GAMMAS, N_Ms, sz, blueCol);
 hold on;
 for GAMMA = GAMMA_TESTS
@@ -392,18 +225,13 @@ set(gca,'xminorgrid','off','yminorgrid','off');
 ylabel("$N_M$");
 xlabel("$\gamma$");
 xlim(xLim);
-ylim('padded');
+ylim([2, 600]);
 xticks(xTicks);
 legend(h(1:2), ["NM solution", "$N_M \sim \gamma^{-1/4}$"], ...
-    'Location', 'Northeast');
-
-figname = "MembraneFigures/NormalModesGAMMA";
-exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+    'Location', 'Northeast', 'FontSize', 0.9 * fontsize);
 
 % Velocity plot
-figure(3);
-set(gcf,'units', 'inches', ...
-    'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+nexttile(6);
 h(1) = scatter(GAMMAS, vPhases, sz, blueCol);
 hold on;
 h(2) = scatter(GAMMAS, vGroups, sz, redCol);
@@ -421,11 +249,76 @@ xlabel("$\gamma$");
 xlim(xLim);
 ylim('padded');
 xticks(xTicks);
-legend(h(1:2), ["$v_{phase}(k_{N_M})$", "$v_{group}(k_{N_M})$"], ...
+legend(h(1:2), ["$v_{phase}$", "$v_{group}$"], ...
     'Location', 'Northwest');
 
-figname = "MembraneFigures/PhaseGroupVelocitiesGAMMA";
+figname = "MembraneFigures/MembraneGAMMAVary";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+
+%% Plot the normal modes numbers (NEW gamma varying)
+% Determine phase and group velocity
+% ks = pi * (2 * N_Ms - 1) / (2 * L);
+% vPhases = sqrt((BETA + GAMMAS .* ks.^2) / ALPHA);
+% vGroups = (BETA + 2 * GAMMAS .* ks.^2) ./ sqrt(ALPHA * (BETA + GAMMAS .* ks.^2));
+% 
+% 
+% figure(2);
+% NHeight = 2;
+% NWidth = 3;
+% set(gcf,'units', 'inches', ...
+%     'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+% 
+% % Normal modes plot
+% h(1) = scatter(GAMMAS, N_Ms, sz, blueCol);
+% hold on;
+% for GAMMA = GAMMA_TESTS
+%     xline(GAMMA);
+% end
+% h(2) = plot(GAMMAS, N_Ms(1) ./ GAMMAS.^0.25, 'Linewidth', lineWidth, 'Color', ...
+%     redCol, 'LineStyle', '--');
+% hold off;
+% set(gca, 'XScale', 'log');
+% set(gca, 'YScale', 'log');
+% grid on;
+% box on;
+% set(gca,'xminorgrid','off','yminorgrid','off');
+% ylabel("$N_M$");
+% xlabel("$\gamma$");
+% xlim(xLim);
+% ylim('padded');
+% xticks(xTicks);
+% legend(h(1:2), ["NM solution", "$N_M \sim \gamma^{-1/4}$"], ...
+%     'Location', 'Northeast');
+% 
+% figname = "MembraneFigures/NormalModesGAMMA";
+% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+% 
+% % Velocity plot
+% figure(3);
+% set(gcf,'units', 'inches', ...
+%     'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+% h(1) = scatter(GAMMAS, vPhases, sz, blueCol);
+% hold on;
+% h(2) = scatter(GAMMAS, vGroups, sz, redCol);
+% for GAMMA = GAMMA_TESTS
+%     xline(GAMMA);
+% end
+% hold off;
+% set(gca, 'XScale', 'log');
+% set(gca, 'YScale', 'log');
+% grid on;
+% box on;
+% set(gca,'xminorgrid','off','yminorgrid','off');
+% ylabel("$v(k_{N_M})$");
+% xlabel("$\gamma$");
+% xlim(xLim);
+% ylim('padded');
+% xticks(xTicks);
+% legend(h(1:2), ["$v_{phase}(k_{N_M})$", "$v_{group}(k_{N_M})$"], ...
+%     'Location', 'Northwest');
+% 
+% figname = "MembraneFigures/PhaseGroupVelocitiesGAMMA";
+% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
 %% Plot turnovers for GAMMA varying
 GAMMA_strs = ["1.0", "31.62", "1000.0", "31620.0", "1000000.0"];
@@ -434,10 +327,10 @@ LineColorIdxs = floor(linspace(1, length(cmap), length(GAMMA_TESTS)));
 
 close(figure(9));
 figure(9);
-width = 5;
-height = 3;
+Nwidth = 5;
+Nheight = 3;
 set(gcf,'units', 'inches', ...
-    'position',[0.5 * width, 0.5 * height, width, height]);
+    'position',[0.5 * Nwidth, 0.5 * Nheight, Nwidth, Nheight]);
 hold on;
 
 for GAMMAIdx = 1 : length(GAMMA_TESTS)
@@ -470,7 +363,7 @@ for GAMMAIdx = 1 : length(GAMMA_TESTS)
 end
 
 h(GAMMAIdx + 1) = plot(ts, 1 ./ sqrt(ts), 'LineWidth', lineWidth, ...
-        'Color', 'black', 'DisplayName', 'Stationary');
+        'Color', 'black', 'Linestyle', '--', 'DisplayName', 'Stationary');
 
 set(gca, 'YScale', 'log')
 xline(1 / 16, 'Linestyle', '--');
@@ -494,7 +387,8 @@ DELTA_TESTS = 2.^linspace(-3, 3, 5);
 ALPHA_TESTS = 1.1 * DELTA_TESTS;
 GAMMA_TESTS = 668.0 * DELTA_TESTS.^3;
 
-xTicks = [1/8, 1/4, 1/2, 1, 2, 4, 8];
+% xTicks = [1/8, 1/4, 1/2, 1, 2, 4, 8];
+xTicks = [1/8, 1, 8];
 xLim = [2.^(-3.5), 2^(3.5)];
 
 ALPHAS = 1.1 * DELTAS;
@@ -553,7 +447,7 @@ end
 
 %
 % Plot deltas
-fig = tiledlayout(2, 2);
+fig = tiledlayout(3, 2, 'TileSpacing','Compact');
 set(gcf,'units', 'inches', ...
     'position',[0.5 * width, 0.5 * height, width, height]);
 
@@ -630,24 +524,8 @@ grid on;
 box on;
 legend(["$E_{K, outer}$", "$E_{K, jets}$"], 'Location', 'Southeast');
 
-
-%
-figname = "MembraneFigures/MembraneDELTAVary";
-exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-
-%% Plot the normal modes numbers (NEW delta varying)
-% Determine phase and group velocity
-ks = pi * (2 * N_Ms - 1) / (2 * L);
-vPhases = sqrt((BETA + GAMMAS .* ks.^2) ./ ALPHAS);
-vGroups = (BETA + 2 * GAMMAS .* ks.^2) ./ sqrt(ALPHAS .* (BETA + GAMMAS .* ks.^2));
-
-figure(2);
-NHeight = 2;
-NWidth = 3;
-set(gcf,'units', 'inches', ...
-    'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
-
 % Normal modes plot
+nexttile(5);
 h(1) = scatter(DELTAS, N_Ms, sz, blueCol);
 hold on;
 for DELTA = DELTA_TESTS
@@ -667,15 +545,10 @@ xlim(xLim);
 ylim([10^0.75, 10^2.5]);
 xticks(xTicks);
 legend(h(1:2), ["NM solution", "$N_M \sim \delta^{-1/2}$"], ...
-    'Location', 'Northeast');
-
-figname = "MembraneFigures/NormalModesDELTA";
-exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+    'Location', 'Northeast', 'FontSize', 0.9 * fontsize);
 
 % Velocity plot
-figure(3);
-set(gcf,'units', 'inches', ...
-    'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+nexttile(6);
 h(1) = scatter(DELTAS, vPhases, sz, blueCol);
 hold on;
 h(2) = scatter(DELTAS, vGroups, sz, redCol);
@@ -691,13 +564,79 @@ set(gca,'xminorgrid','off','yminorgrid','off');
 ylabel("$v(k_{N_M})$");
 xlabel("$\delta$");
 xlim(xLim);
-ylim([50, 2000]);
+ylim([50, 6000]);
 xticks(xTicks);
-legend(h(1:2), ["$v_{phase}(k_{N_M})$", "$v_{group}(k_{N_M})$"], ...
-    'Location', 'Northwest');
+legend(h(1:2), ["$v_{phase}$", "$v_{group}$"], ...
+    'Location', 'Southeast');
 
-figname = "MembraneFigures/PhaseGroupVelocitiesDELTA";
+
+%
+figname = "MembraneFigures/MembraneDELTAVary";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+
+%% Plot the normal modes numbers (NEW delta varying)
+% % Determine phase and group velocity
+% ks = pi * (2 * N_Ms - 1) / (2 * L);
+% vPhases = sqrt((BETA + GAMMAS .* ks.^2) ./ ALPHAS);
+% vGroups = (BETA + 2 * GAMMAS .* ks.^2) ./ sqrt(ALPHAS .* (BETA + GAMMAS .* ks.^2));
+% 
+% figure(2);
+% NHeight = 2;
+% NWidth = 3;
+% set(gcf,'units', 'inches', ...
+%     'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+% 
+% % Normal modes plot
+% h(1) = scatter(DELTAS, N_Ms, sz, blueCol);
+% hold on;
+% for DELTA = DELTA_TESTS
+%     xline(DELTA);
+% end
+% h(2) = plot(DELTAS, N_Ms(1) * (DELTAS(1) ./ DELTAS).^0.5, 'Linewidth', lineWidth, 'Color', ...
+%     redCol, 'LineStyle', '--');
+% hold off;
+% set(gca, 'XScale', 'log');
+% set(gca, 'YScale', 'log');
+% grid on;
+% box on;
+% set(gca,'xminorgrid','off','yminorgrid','off');
+% ylabel("$N_M$");
+% xlabel("$\delta$");
+% xlim(xLim);
+% ylim([10^0.75, 10^2.5]);
+% xticks(xTicks);
+% legend(h(1:2), ["NM solution", "$N_M \sim \delta^{-1/2}$"], ...
+%     'Location', 'Northeast');
+% 
+% figname = "MembraneFigures/NormalModesDELTA";
+% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+% 
+% % Velocity plot
+% figure(3);
+% set(gcf,'units', 'inches', ...
+%     'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+% h(1) = scatter(DELTAS, vPhases, sz, blueCol);
+% hold on;
+% h(2) = scatter(DELTAS, vGroups, sz, redCol);
+% for DELTA = DELTA_TESTS
+%     xline(DELTA);
+% end
+% hold off;
+% set(gca, 'XScale', 'log');
+% set(gca, 'YScale', 'log');
+% grid on;
+% box on;
+% set(gca,'xminorgrid','off','yminorgrid','off');
+% ylabel("$v(k_{N_M})$");
+% xlabel("$\delta$");
+% xlim(xLim);
+% ylim([50, 2000]);
+% xticks(xTicks);
+% legend(h(1:2), ["$v_{phase}(k_{N_M})$", "$v_{group}(k_{N_M})$"], ...
+%     'Location', 'Northwest');
+% 
+% figname = "MembraneFigures/PhaseGroupVelocitiesDELTA";
+% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
 
 
 %% BETA varying
@@ -772,7 +711,7 @@ E_outersBETA0 = interp1(SolStruct.ts, SolStruct.E_outers, tTest);
 E_jetsBETA0 = interp1(SolStruct.ts, SolStruct.E_jets, tTest);
 
 % Plot betas
-fig = tiledlayout(2, 2);
+fig = tiledlayout(3, 2);
 set(gcf,'units', 'inches', ...
     'position',[0.5 * width, 0.5 * height, width, height]);
 
@@ -856,22 +795,8 @@ grid on;
 box on;
 legend(["$E_{K, outer}$", "$E_{K, jets}$"], 'Location', 'Northwest');
 
-figname = "MembraneFigures/MembraneBETAVary";
-exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
-
-%% Plot the normal modes numbers (NEW beta varying)
-% Determine phase and group velocity
-ks = pi * (2 * N_Ms - 1) / (2 * L);
-vPhases = sqrt((BETAS + GAMMA * ks.^2) / ALPHA);
-vGroups = (BETAS + 2 * GAMMA * ks.^2) ./ sqrt(ALPHA * (BETAS + GAMMA .* ks.^2));
-
-figure(2);
-NHeight = 2;
-NWidth = 3;
-set(gcf,'units', 'inches', ...
-    'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
-
 % Normal modes plot
+nexttile(5);
 h(1) = scatter(BETAS, N_Ms, sz, blueCol);
 hold on;
 for BETA = BETA_TESTS
@@ -891,15 +816,10 @@ xlim(xLim);
 ylim([30, 150]);
 xticks(xTicks);
 legend(h(1:2), ["NM solution", "$N_M \sim \beta^{-1/2}$"], ...
-    'Location', 'Southwest');
-
-figname = "MembraneFigures/NormalModesBETA";
-exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+    'Location', 'Southwest', 'FontSize', 0.9 * fontsize);
 
 % Velocity plot
-figure(3);
-set(gcf,'units', 'inches', ...
-    'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+nexttile(6);
 h(1) = scatter(BETAS, vPhases, sz, blueCol);
 hold on;
 h(2) = scatter(BETAS, vGroups, sz, redCol);
@@ -917,8 +837,72 @@ xlabel("$\beta$");
 xlim(xLim);
 ylim('padded');
 xticks(xTicks);
-legend(h(1:2), ["$v_{phase}(k_{N_M})$", "$v_{group}(k_{N_M})$"], ...
+legend(h(1:2), ["$v_{phase}$", "$v_{group}$"], ...
     'Location', 'Northwest');
 
-figname = "MembraneFigures/PhaseGroupVelocitiesBETA";
+figname = "MembraneFigures/MembraneBETAVary";
 exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+
+%% Plot the normal modes numbers (NEW beta varying)
+% % Determine phase and group velocity
+% ks = pi * (2 * N_Ms - 1) / (2 * L);
+% vPhases = sqrt((BETAS + GAMMA * ks.^2) / ALPHA);
+% vGroups = (BETAS + 2 * GAMMA * ks.^2) ./ sqrt(ALPHA * (BETAS + GAMMA .* ks.^2));
+% 
+% figure(2);
+% NHeight = 2;
+% NWidth = 3;
+% set(gcf,'units', 'inches', ...
+%     'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+% 
+% % Normal modes plot
+% h(1) = scatter(BETAS, N_Ms, sz, blueCol);
+% hold on;
+% for BETA = BETA_TESTS
+%     xline(BETA);
+% end
+% h(2) = plot(BETAS, N_Ms(end - 3) * (BETAS(end - 3) ./ BETAS).^0.5, ...
+%     'Linewidth', lineWidth, 'Color', redCol, 'LineStyle', '--');
+% hold off;
+% set(gca, 'XScale', 'log');
+% set(gca, 'YScale', 'log');
+% grid on;
+% box on;
+% set(gca,'xminorgrid','off','yminorgrid','off');
+% ylabel("$N_M$");
+% xlabel("$\beta$");
+% xlim(xLim);
+% ylim([30, 150]);
+% xticks(xTicks);
+% legend(h(1:2), ["NM solution", "$N_M \sim \beta^{-1/2}$"], ...
+%     'Location', 'Southwest');
+% 
+% figname = "MembraneFigures/NormalModesBETA";
+% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
+% 
+% % Velocity plot
+% figure(3);
+% set(gcf,'units', 'inches', ...
+%     'position',[0.5 * NWidth, 0.5 * NHeight, NWidth, NHeight]);
+% h(1) = scatter(BETAS, vPhases, sz, blueCol);
+% hold on;
+% h(2) = scatter(BETAS, vGroups, sz, redCol);
+% for BETA = BETA_TESTS
+%     xline(BETA);
+% end
+% hold off;
+% set(gca, 'XScale', 'log');
+% set(gca, 'YScale', 'log');
+% grid on;
+% box on;
+% set(gca,'xminorgrid','off','yminorgrid','off');
+% ylabel("$v(k_{N_M})$");
+% xlabel("$\beta$");
+% xlim(xLim);
+% ylim('padded');
+% xticks(xTicks);
+% legend(h(1:2), ["$v_{phase}(k_{N_M})$", "$v_{group}(k_{N_M})$"], ...
+%     'Location', 'Northwest');
+% 
+% figname = "MembraneFigures/PhaseGroupVelocitiesBETA";
+% exportgraphics(gcf, sprintf("%s.png", figname), "Resolution", 300);
